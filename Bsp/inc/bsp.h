@@ -22,9 +22,7 @@
 #include "gpio.h"
 
 
-#include "ys32t031_tsc.h"
-#include "ys32t031_tsc_lib.h"
-#include "ys32t031_tsc_config.h"
+
 
 #include "tx_api.h"
 
@@ -37,21 +35,18 @@
 //
 #include "bsp_power.h"
 #include "bsp_led.h"
-#include "bsp_peripheral.h"
+
 #include "bsp_key.h"
 #include "bsp_cmd_link.h"
-#include "bsp_xdp.h"
+#include "bsp_usart.h"
 #include "bsp_tm1639.h"
-#include "bsp_smg.h"
+
 #include "bsp_sensor.h"
 #include "bsp_threadx.h"
 #include "bsp_ntc.h"
 
 //wifi
-#include "bsp_usart_wifi.h"
-#include "bsp_mqtt_iot.h"
-#include "bsp_esp8266.h"
-#include "bsp_mqtt_iot.h"
+
 
 #define Enable_EventRecorder  0
 

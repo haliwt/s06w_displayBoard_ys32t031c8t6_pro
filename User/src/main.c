@@ -65,7 +65,7 @@ int main(void)
 	
     UART1_Configuration(9600);    //串口1 用于和外接显示板通信
 	
-	UART2_Configuration(115200);     //串口2 用于和WIFI模组通信
+	
 	
     TIM1_Configuration();          //TIM1-PWM输出配置
 	

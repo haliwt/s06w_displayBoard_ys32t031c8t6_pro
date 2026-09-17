@@ -27,7 +27,7 @@ void SendWifiData_To_PanelWindSpeed(uint8_t dat1);
 void SendWifiData_To_PanelTime(uint8_t hours,uint8_t minutes,uint8_t seconds);
 
 
-//void SendData_Set_Command(uint8_t cmd,uint8_t data);
+
 
 void SendWifiData_To_Cmd(uint8_t cmd,uint8_t data);
 

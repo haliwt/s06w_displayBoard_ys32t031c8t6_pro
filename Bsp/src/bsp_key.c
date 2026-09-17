@@ -67,10 +67,10 @@ void Process_Long_Key(uint16_t key) {
                 if (discharge_f && !key_net_config_f) {
                     key_net_config_f = 1;
 					link_net_step=0;
-				    wifi_connected_success_f =0;
+				   
 					wifi_first_connectoed_cloud_f =0;
                     key_net_config_time = 0;
-					BEEP_ON() ;//Beep(BEEP_ONCE);
+					        SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
                 }
             }
             break;
@@ -82,7 +82,7 @@ void Process_Long_Key(uint16_t key) {
                     Is_time_setting_f = 1;
                    
                     time_set_hours_counter =0;
-                    BEEP_ON() ; //Beep(BEEP_ONCE);
+                    SendData_Set_Command(0x06,0x01) ; //Beep(BEEP_ONCE);
                 }
             }
             break;
@@ -116,18 +116,18 @@ void Process_Short_Key(uint16_t key)
 				
 				time_set_hours_counter =0;
 			}
-             BEEP_ON() ;//Beep(BEEP_ONCE);
+             SendData_Set_Command(0x06,0x01) ;//Beep(BEEP_ONCE);
             break;
 
         case _UP_KEY_DOWN:
 		
             Handle_Value_Adjustment(1);
-            BEEP_ON(); //Beep(BEEP_ONCE);
+            SendData_Set_Command(0x06,0x01); //Beep(BEEP_ONCE);
             break;
 
         case _DOWN_KEY_DOWN:
             Handle_Value_Adjustment(0);
-            BEEP_ON();//Beep(BEEP_ONCE);
+            SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
             break;
     }
 }
@@ -187,7 +187,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 
 		}
        TM1639_Display_Temperature(setting_temperature);
-	   direct_compare_set_temp_value();
+	  // direct_compare_set_temp_value();
     }
 }
 
@@ -200,8 +200,8 @@ void System_Status_PowerOn(void)
 {
     // 1. 开启核心工作标志位
     discharge_f = 1; 
-	fan_start_power_on();
-	fan_full_fun(); //WT.EDIT 2026-06-20
+
+
 	
 
     if(wifi_app_timer_power_on_f==0){ //手机定时开机
@@ -209,7 +209,7 @@ void System_Status_PowerOn(void)
 	    PTC_heat_open_f = 1;        // 默认开启加热
 	    Ultra_Sound_open_f = 1;     // 默认开启超声波
 	    plasma_open_f = 1;          // 默认开启等离子
-	    power_on_peripheral_handler();
+	   // power_on_peripheral_handler();
     }
 	
     fan_open_f = 1;             // 默认开启风扇
@@ -249,9 +249,9 @@ void System_Status_PowerOn(void)
     
     // 6. 执行开机提示音
    
-    BEEP_ON() ;//Beep(BEEP_ONCE);
+    SendData_Set_Command(0x06,0x01) ;//Beep(BEEP_ONCE);
     power_on_led_open_handler();
-	LED_FUN_ON();
+	
 	
 
 }
@@ -303,11 +303,11 @@ void System_Status_PowerOff(void)
     
     // 4. 特殊逻辑处理
     fan_warning_f = 0;
-	power_off_peripheral_handler();
+	//power_off_peripheral_handler();
 
     
     // 5. 提示音
-    BEEP_ON() ;//Beep(BEEP_ONCE);
+    SendData_Set_Command(0x06,0x01) ;//Beep(BEEP_ONCE);
 	all_led_off();
     TM1639_Display_ON_OFF(0);
 }
@@ -337,11 +337,11 @@ void key_power_long_handler(void)
     if (!key_net_config_f) {
         key_net_config_f = 1;
 		link_net_step=0;
-	    wifi_connected_success_f =0;
+	 
 		wifi_first_connectoed_cloud_f =0;
         key_net_config_time = 0;
        
-		BEEP_ON() ;//Beep(BEEP_ONCE);
+		SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
     }
 }
 /**
@@ -363,7 +363,7 @@ void key_mode_short_handler(void)
 		
 		time_set_hours_counter =0;
 	}
-    BEEP_ON() ;//Beep(BEEP_ONCE);
+    SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
 
 }
 
@@ -380,7 +380,7 @@ void key_mode_long_handler(void)
         Is_time_setting_f = 1;
        
         time_set_hours_counter =0;
-        BEEP_ON() ; //Beep(BEEP_ONCE);
+        SendData_Set_Command(0x06,0x01) ; //Beep(BEEP_ONCE);
     }
 
 }
@@ -393,7 +393,7 @@ void key_mode_long_handler(void)
 */
 void key_up_short_handler(void)
 {
-     BEEP_ON(); 
+     SendData_Set_Command(0x06,0x01); 
 	 Handle_Value_Adjustment(1);
     //Beep(BEEP_ONCE);  
 
@@ -407,7 +407,7 @@ void key_up_short_handler(void)
 */
 void key_down_short_handler(void)
 {
-  BEEP_ON(); //Beep(BEEP_ONCE);
+  SendData_Set_Command(0x06,0x01); //Beep(BEEP_ONCE);
   Handle_Value_Adjustment(0);
   
 

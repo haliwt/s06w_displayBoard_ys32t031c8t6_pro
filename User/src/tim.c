@@ -18,8 +18,7 @@ void TIM1_Configuration(void);
 void TIM3_Configuration(void);
 void TIM6_Configuration(void);
 void TIM14_Configuration(void);
-//void BEEP_ON(void);
-//void BEEP_OFF(void);
+
 void fan_on(uint16_t fan_duty);
 void fan_off(void);
 void ultra_sound_on(uint16_t us_duty);
@@ -141,7 +140,7 @@ void TIM14_Configuration(void)
 
 
 //·äÃùÆ÷¿ª
-//void BEEP_ON(void)
+//void SendData_Set_Command(0x06,0x01)(void)
 //{
 //    TIM_SetCompare1(TIM14,374);
 //    TIM_Cmd(TIM14, ENABLE);

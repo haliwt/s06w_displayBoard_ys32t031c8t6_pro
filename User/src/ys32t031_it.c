@@ -243,7 +243,7 @@ void UART1_IRQHandler(void)
 }
 
 
-
+#if 0
 /**
   * @brief  This function handles Uart2 Handler.
   * @param  wifi receive 
@@ -284,7 +284,7 @@ void UART2_IRQHandler(void)
 
 
 
-
+#endif 
 
 
 

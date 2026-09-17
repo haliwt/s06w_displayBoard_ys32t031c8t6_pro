@@ -100,7 +100,7 @@ void Task_beep_called_100ms(void)
 	  {
 		    if(beep_times&0x01)
 		    {
-			      BEEP_ON();
+			      SendData_Set_Command(0x06,0x01);
 			
 			      if(beep_lenght>1)
 			      {
@@ -116,7 +116,7 @@ void Task_beep_called_100ms(void)
 	       }
 		    else 
 		    {
-			      BEEP_OFF();
+			      
 			
 			      if(non_beep_length>1)
 			      {
@@ -143,7 +143,7 @@ void Task_beep_called_100ms(void)
 	  {
 	      non_beep_length=0;
 		    beep_lenght=0;
-		    BEEP_OFF();
+		   
 	  }
 } 
 

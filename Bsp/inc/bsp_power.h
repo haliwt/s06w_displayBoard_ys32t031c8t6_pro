@@ -176,7 +176,7 @@ extern  uint8_t  wifi_cofig_success_f;
 
 extern  uint8_t  time_link_net_counter ;
 extern  uint8_t  wifi_linking_tencent_f;
-extern  uint8_t  wifi_connected_success_f;
+
 extern  uint8_t  wifi_app_timer_power_on_f;
 extern  uint8_t  wifi_run_step ;
 extern  uint8_t  wifi_off_step;
@@ -374,13 +374,13 @@ void beep_power_sound(void);
 void power_on_off_handler(void);
 
 	
-void BEEP_ON(void);
 
 void printf_ptc_adc_numbers(void);
 
 void ptc_adc_detected_voltage(void);
 void ptc_switch_temperature(void);
 	
+void Heat_Process(void);
 
 
 

@@ -335,14 +335,9 @@ void Adc_Channel_Sample(void)
     }
   
     fan_adc_value[0] = ADC_GetConversionValue(ADC);
-       // printf("VSense = %d\n",ptc_adc);
-       // printf_ptc_adc_numbers();
-     
-       // ptc_current = (ptc_adc_numbers * 33000 )/4095;
-		//tx_thread_sleep(10);
+   
         ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-      //  ADC_SoftwareStartConvCmd(ADC);
-      //  tx_thread_sleep(5);//DelayMS(50);
+   
 
 	#endif 
 }
@@ -475,7 +470,7 @@ static void power_on_initial(void)
       
  
 	  dht11_read_temp_humidity_value();
-	  display_digital_3_numbers();
+	 
 	
       gon_t.on_step =1;
 	
@@ -484,7 +479,7 @@ static void power_on_initial(void)
 
    case 1:
     dht11_read_temp_humidity_value();
-    display_digital_3_numbers();
+  
     gon_t.on_step =2;
 
 
@@ -493,7 +488,7 @@ static void power_on_initial(void)
    case 2:
    	 
        dht11_read_temp_humidity_value();
-	   display_digital_3_numbers();
+	 
 	   gon_t.on_step =0xfe;
 
    break;
@@ -529,7 +524,7 @@ void power_on_handler(void)
          if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		    time_10ms_f=0;
            
-		    disp_key_input_handler();
+		
 
 			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
 	        {
@@ -537,7 +532,7 @@ void power_on_handler(void)
 	            
 	            // 强制、立刻执行一次加热控制函数
 	            // 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
-	           compare_set_temp_value(); //set_temperature_value_handler(); 
+	          // compare_set_temp_value(); //set_temperature_value_handler(); 
 	        }
 			    
 
@@ -550,7 +545,7 @@ void power_on_handler(void)
 		     per_counter++;
 		     if(per_counter > 40 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){ //10ms * 100
 			 	per_counter =0;
-		       peripheral_fun_handler();
+		       //peripheral_fun_handler();
 		     }
 
 			
@@ -562,7 +557,7 @@ void power_on_handler(void)
 			 disp_counter ++;
 			 if(disp_counter > 30 && ptc_high_temperature_f == 0 && fan_warning_f ==0 ){
 			 disp_counter=0;	
-			  display_temperature_humidigy_handler();
+			//  display_temperature_humidigy_handler();
 
 			 }
 			  
@@ -572,7 +567,7 @@ void power_on_handler(void)
 		case 2://2*20m = 40
 		  if(gpro_t.time_3s_f > 3 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		    gpro_t.time_3s_f =0;	
-		    Fan_Ctrl_Process();	  // 风扇控制
+		 
 
            }
 
@@ -581,7 +576,7 @@ void power_on_handler(void)
 		case 3:
 		 if(wifi_connected_success_f==1 && gpro_t.time_4s_f > 0 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
 	  	   gpro_t.time_4s_f=0;
-		   wifi_power_on_handler();
+		   //wifi_power_on_handler();
          }
 		
 		break;
@@ -601,7 +596,7 @@ void power_on_handler(void)
 					}
 					else{ //conneting to wifi net 
 				        
-						link_wifi_net_handler();
+					
 					}
 				 } 
 		  }
@@ -665,7 +660,7 @@ void power_on_handler(void)
 		   #if DEBUG_ENABLE
 		     printf("reconnection wifi ! \n\r");
 		   #endif 
-		   Reconnection_Wifi_Order();
+		 
 
 	 		}
 			}
@@ -677,7 +672,7 @@ void power_on_handler(void)
 			wifi_check_counter++; //20ms * 100
 		    if(wifi_check_counter > 300 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
 			  wifi_check_counter =0;
-                wifi_check_ifnot_link_net_handler();
+                
 		    }
 
 		break;
@@ -730,12 +725,9 @@ void power_on_handler(void)
                   LED_PTC_OFF();
 			 
 		           ptc_high_temperature_f = 1;
-		           SMG_Display_Err(01);
-			       beep_high_temperature_sound();
-                   if(wifi_connected_success_f ==1){
-				   	 Publish_Data_Ptc_Temp_Warning(0x01);
-                     
-				     }
+		          // SMG_Display_Err(01);
+			      // beep_high_temperature_sound();
+                  
 		       }
            }
 		   else if(ptc_high_temperature_f == 0){
@@ -761,12 +753,9 @@ void power_on_handler(void)
 		  if(ptc_high_temperature_f == 1){
 		  	  LED_PTC_OFF();
 
-			  SMG_Display_Err(01);
-			  beep_high_temperature_sound();
-			  if(wifi_connected_success_f ==1){
-			  	 Publish_Data_Ptc_Temp_Warning(0x01);
-                    
-			  }
+			  //SMG_Display_Err(01);
+			 // beep_high_temperature_sound();
+			 
 
 		  }
 
@@ -775,11 +764,9 @@ void power_on_handler(void)
 				   fan_error=0;
 			        LED_PTC_OFF();
 			 
-					SMG_Display_Err(02);
-					if(wifi_connected_success_f ==1){
-                        Publish_Data_fan_Warning(0x01);//fan warning
-					}
-					beep_fan_default_sound();
+					//SMG_Display_Err(02);
+				
+					
 					
             }
 
@@ -802,11 +789,9 @@ void power_on_handler(void)
 				  fan_warning_f = 1;
 				       LED_PTC_OFF();
 					
-						SMG_Display_Err(02);
-						if(wifi_connected_success_f ==1){
-                            Publish_Data_fan_Warning(0x01);//fan warning
-						}
-						beep_high_temperature_sound();
+					//	SMG_Display_Err(02);
+						
+						//beep_high_temperature_sound();
 						
 	            }
 				 
@@ -864,7 +849,7 @@ static void power_off_handler(void)
 			fan_one_minute_cuonter =0;
 			wifi_run_step = 0;
 			wifi_off_step =0;
-			power_off_peripheral_handler();
+			//power_off_peripheral_handler();
 			all_led_off();
 	        TM1639_Display_ON_OFF(0);
 			
@@ -874,7 +859,7 @@ static void power_off_handler(void)
 		 break;
 	
 		 case 1:
-             power_off_peripheral_handler();
+             //power_off_peripheral_handler();
 		  
              if(dc_on ==0){
 			 	beep_power_sound();
@@ -886,10 +871,7 @@ static void power_off_handler(void)
 				//FAN_PWM_GPIO_OFF();//WT.EDIT 2026-05-16
 			  }
 
-			if(wifi_connected_success_f ==1 ){
-	
-               MqttData_Publish_PowerOff_Ref(); 
-			}
+			
 
 			gon_t.off_step = 2;
 			 
@@ -897,20 +879,7 @@ static void power_off_handler(void)
 
 
 		case 2:
-        if(wifi_connected_success_f ==1){
-			     gon_t.off_step = 3;
-			
-				fan_warning_f = 0;
-			    ptc_high_temperature_f =0;
-			    Publish_Data_fan_Warning(0); //fan warning .
-
-				Publish_Data_Ptc_Temp_Warning(0);
-				//wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);///delay_ms(200);
-		    }
-            else{
-
-                gon_t.off_step = 3;
-			}
+       
 
 		break;
 
@@ -929,16 +898,7 @@ static void power_off_handler(void)
 
 				 }
 
-				 if(wifi_connected_success_f ==1 && gpro_t.time_2s_f > 5){
-                     gpro_t.time_2s_f=0;
-				     MqttData_Publish_SetOpen(0);  
-				   	
-					
-		
-		    	   wait_timeout = tx_time_get()+20;//tx_thread_sleep(20);//delay_ms(100);
-	    
-			      }
-			
+				
 		
 	       gon_t.off_step = 4;
             	
@@ -978,13 +938,7 @@ static void power_off_handler(void)
 
 		 
 
-			 if(wifi_connected_success_f ==1 &&  gpro_t.time_3s_f> 5 ){//10ms*800 =8000ms =8s
-      
-			       gpro_t.time_3s_f =0;
-				   Subscriber_Data_FromCloud_Handler();
-		    	   wait_timeout = tx_time_get() + 20 ;//tx_thread_sleep(20);//delay_ms(100);
-	    
-			     }
+			
 		
 		  gon_t.off_step = 7;
 		break;
@@ -992,25 +946,13 @@ static void power_off_handler(void)
 		case 7:
 			
 
-		    if(wifi_connected_success_f ==1 &&   gpro_t.time_4s_f> 8){
-				gpro_t.time_4s_f=0;
-				fan_warning_f = 0;
-			    ptc_high_temperature_f =0;
-			    Publish_Data_fan_Warning(0); //fan warning .
-
-				Publish_Data_Ptc_Temp_Warning(0);
-				//wait_timeout=tx_time_get()+20;//tx_thread_sleep(20);///delay_ms(200);
-		    }
+		   
 		    gon_t.off_step = 8;
 
 		break;
 
 		case 8:
-			if(setting_timing_second > 6 && wifi_connected_success_f ==1 ){
-				setting_timing_second =0;
-               MqttData_Publish_PowerOff_Ref(); 
-			   wait_timeout = tx_time_get()+ 20;   
-			}
+			
 		
           gon_t.off_step = 3;
 		break;
@@ -1114,7 +1056,7 @@ void works_nomal_run_time_handler(void)
 
 		if(interval_10m_f == 1 && works_interval_f==0){
              interval_10m_f ++;
-		   fan_full_fun();
+		
 		  if(ptc_prohibit_off_f == 0 &&  PTC_heat_open_f == 1){
 			 // 立即open
 		      LED_PTC_ON();
@@ -1136,9 +1078,9 @@ void works_nomal_run_time_handler(void)
 void beep_power_sound(void)
 {
   
-	BEEP_ON();
+	SendData_Set_Command(0x06,0x01);
 	tx_thread_sleep(20);//delay_ms_dht11(20);//tx_thread_sleep(2);//2*10ms //delay_ms_dht11(20);//DelayMS(20);
-    BEEP_OFF();
+  
 
 }
 
@@ -1169,11 +1111,9 @@ void Heat_Process(void)
 					key_input_temp_f++;
 				if(disp_second_f == 1){
 					SendWifiData_To_Cmd(0x02,0);
-		        //delay_ms(100);//HAL_Delay(5);
+		      
 					}
-		        if(wifi_connected_success_f == 1){
-					MqttData_Publish_SetPtc(0);
-		        }
+		      
 
 				}
 	  
@@ -1194,7 +1134,7 @@ void Heat_Process(void)
 					key_input_temp_f ++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		        //delay_ms(100);//HAL_Delay(5);
-		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0);
+		     
 
 				}
 		}
@@ -1206,8 +1146,7 @@ void Heat_Process(void)
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		        //delay_ms(100);//HAL_Delay(5);
-		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0x01);
-
+		      
 			}
         }
         return;
@@ -1228,7 +1167,7 @@ void Heat_Process(void)
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		       // delay_ms(100);//HAL_Delay(5);
-		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0);
+		      
 
 				}
 			}
@@ -1243,7 +1182,7 @@ void Heat_Process(void)
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		       // delay_ms(100);//HAL_Delay(5);
-		        if(wifi_connected_success_f == 1)MqttData_Publish_SetPtc(0x01);
+		      
 
 				}
 			}
@@ -1276,18 +1215,10 @@ void power_on_off_handler(void)
 	  break;
       }
 
-   if(wifi_linking_tencent_f==1 &&  wifi_read_net_data_f==1){
-	   wifi_read_net_data_f++;
+ 
 
-	   Wifi_Rx_InputInfo_Handler();
-	}
-
-	wifi_parse_tencennt_hadler();//
-    
-	if(key_net_config_f==0 ){
-      wifi_auto_detected_link_state();
-
-   	}
+	
+	
 
 	
 }
