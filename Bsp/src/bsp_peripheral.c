@@ -410,13 +410,13 @@ void Relay_Ctrl(void)
 		    if((PTC_heat_open_f==1)&& ptc_prohibit_off_f == 0 && works_interval_f ==0)
 				{
                     LED_PTC_ON();
-					RELAY_ON();
+				
 					
 				}
 				else if(PTC_heat_open_f ==0)
 				{
 					LED_PTC_OFF();
-					RELAY_OFF();
+				
 					
 				}
 		}
@@ -477,9 +477,9 @@ void workd_interval_time_peripheral_handle(void)
 
 void workd_interval_turn_off_handle(void)
 {
-	RELAY_OFF();
+	
 	ultra_sound_off();
-	PLASMA_OFF();
+
 		
 }
 
@@ -572,7 +572,7 @@ void direct_compare_set_temp_value(void)
 	if(temperature >= setting_temperature){
 	     ptc_prohibit_off_f = 0;
 	     PTC_heat_open_f = 0;   // 立即关闭
-	     RELAY_OFF();
+	
 		 LED_PTC_OFF();
 		
 
@@ -581,7 +581,7 @@ void direct_compare_set_temp_value(void)
 	    ptc_prohibit_off_f = 0;
 		PTC_heat_open_f = 1;   // 立即open
 		LED_PTC_ON();
-		if(works_interval_f == 0)RELAY_ON();
+		
 		 
 	}
 
@@ -646,14 +646,7 @@ void peripheral_fun_handler(void)
 	  Relay_Ctrl();
 
 	 if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
-	  
-      if(AI_led_open_f==1){
-	  	LED_AI_ON();
-	  }
-	  else{
-	     LED_AI_OFF();
 
-	  }
     break;
 
 	case 1: //have a rest 10 minutes 
@@ -663,10 +656,10 @@ void peripheral_fun_handler(void)
 	   
 	   if(disp_set_hours_time_f == 1 || Is_time_setting_f ==1) return ;
 	   if(AI_led_open_f==1){
-	  	LED_AI_ON();
+	  	
 	   }
 	   else{
-	     LED_AI_OFF();
+	    
        }
 
 	break;
@@ -688,9 +681,9 @@ void peripheral_fun_handler(void)
 void power_off_peripheral_handler(void)
 {
 
-	RELAY_OFF();
+
 	ultra_sound_off();
-	PLASMA_OFF();
+
 
 
 }
@@ -706,7 +699,7 @@ void power_off_peripheral_handler(void)
 void power_on_peripheral_handler(void)
 {
 
-	RELAY_ON();
+	
 	ultra_sound_on(20);//(159); 
 	LED_PLASMA_ON();
 

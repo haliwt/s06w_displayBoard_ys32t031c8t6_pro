@@ -112,7 +112,7 @@ void Process_Short_Key(uint16_t key)
 		      
 	            Is_time_setting_f = 0;
 	            disp_set_hours_time_f = 1;
-	            LED_AI_OFF();
+	          
 				
 				time_set_hours_counter =0;
 			}
@@ -180,10 +180,10 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		key_pressed_set_temp_f =1;
 		if(AI_led_open_f == 0){//if(g_pro.set_timing_or_timer_time_flag ==TIMER_TIME){
 			         
-		     LED_AI_OFF(); 
+		    
 		 }
 		  else{
-		     LED_AI_ON(); 
+		    
 
 		}
        TM1639_Display_Temperature(setting_temperature);
@@ -359,7 +359,7 @@ void key_mode_short_handler(void)
 		      
 	    Is_time_setting_f = 0;
 	    disp_set_hours_time_f = 1;
-	    LED_AI_OFF();
+	  
 		
 		time_set_hours_counter =0;
 	}

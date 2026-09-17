@@ -499,7 +499,7 @@ static void evt_ptc_on(void)
         ptc_prohibit_off_f = 0;
 
         LED_PTC_ON();
-        RELAY_ON();
+
 
         key_input_temp_f = 1;
 
@@ -524,7 +524,7 @@ static void evt_ptc_off(void)
         ptc_prohibit_off_f = 1;
 
         LED_PTC_OFF();
-        RELAY_OFF();
+  
 
         key_input_temp_f = 1;
 
@@ -631,7 +631,7 @@ static void evt_timer_mode(void)
         BEEP_ON();
         AI_led_open_f = 0;
 
-        LED_AI_OFF();
+  
         disp_set_hours_time_f = 1;
         time_set_hours_counter = 0;
 

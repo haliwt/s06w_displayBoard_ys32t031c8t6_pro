@@ -728,7 +728,7 @@ void power_on_handler(void)
 		      if(high_tmep_counter > 2){
 
                   LED_PTC_OFF();
-			      RELAY_OFF();  
+			 
 		           ptc_high_temperature_f = 1;
 		           SMG_Display_Err(01);
 			       beep_high_temperature_sound();
@@ -760,7 +760,7 @@ void power_on_handler(void)
 			
 		  if(ptc_high_temperature_f == 1){
 		  	  LED_PTC_OFF();
-			  RELAY_OFF(); 
+
 			  SMG_Display_Err(01);
 			  beep_high_temperature_sound();
 			  if(wifi_connected_success_f ==1){
@@ -774,7 +774,7 @@ void power_on_handler(void)
 			       fan_counter=0;
 				   fan_error=0;
 			        LED_PTC_OFF();
-				    RELAY_OFF(); 
+			 
 					SMG_Display_Err(02);
 					if(wifi_connected_success_f ==1){
                         Publish_Data_fan_Warning(0x01);//fan warning
@@ -801,7 +801,7 @@ void power_on_handler(void)
 			     if(fan_error > 6){
 				  fan_warning_f = 1;
 				       LED_PTC_OFF();
-					    RELAY_OFF(); 
+					
 						SMG_Display_Err(02);
 						if(wifi_connected_success_f ==1){
                             Publish_Data_fan_Warning(0x01);//fan warning
@@ -1118,7 +1118,7 @@ void works_nomal_run_time_handler(void)
 		  if(ptc_prohibit_off_f == 0 &&  PTC_heat_open_f == 1){
 			 // 立即open
 		      LED_PTC_ON();
-		      RELAY_ON();
+		  
 		  
 		  	}
 		 

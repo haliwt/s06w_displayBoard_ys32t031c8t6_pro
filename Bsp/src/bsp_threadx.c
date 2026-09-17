@@ -265,7 +265,7 @@ void tx_application_define(void *first_unused_memory)
             power_cnt = 0;
 
 	}
-	else if(KEY_MODE_VALUE() == KEY_DOWN && discharge_f ==1){// == 1 && discharge_f ==1){ //key mode
+	else if(KEY_MODEL_VALUE() == KEY_DOWN && discharge_f ==1){// == 1 && discharge_f ==1){ //key mode
 
 	   
 		 mode_cnt++;
@@ -275,7 +275,7 @@ void tx_application_define(void *first_unused_memory)
             }
 	   	
     }
-	else  if(mode_cnt > 0 && KEY_MODE_VALUE() == KEY_UP ){
+	else  if(mode_cnt > 0 && KEY_MODEL_VALUE() == KEY_UP ){
 		       if(mode_cnt > 0 && mode_cnt < LONG_PRESS_TIME)
                 tx_event_flags_set(&key_event, KEY_MODE_SHORT, TX_OR);
 		

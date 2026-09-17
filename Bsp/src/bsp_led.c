@@ -3,14 +3,12 @@
 
 void all_led_off(void)
 {
-    LED_AI_OFF();
+
 	LED_PTC_OFF();
 	LED_PLASMA_OFF();
 	LED_MOUSE_OFF();
 	LED_WIFI_OFF();
 
-	LED_TEMP_OFF();
-	LED_HUMI_OFF();	
 
 
 }
@@ -19,15 +17,14 @@ void power_on_led_open_handler(void)
 {
 	if(wifi_app_timer_power_on_f==0){
 
-	     LED_AI_ON();
+	     
 		 LED_PTC_ON();
 		 LED_PLASMA_ON();
 		 LED_MOUSE_ON();
 		 LED_WIFI_ON();
 		 LED_POWER_ON();
 		
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
+	
 		PTC_heat_open_f = 1;        // 默认开启加热
 	    Ultra_Sound_open_f = 1;     // 默认开启超声波
 	    plasma_open_f = 1;          // 默认开启等离子
@@ -36,13 +33,11 @@ void power_on_led_open_handler(void)
 
 	  }
 	  else{
-		 LED_AI_ON();
+	
 		 LED_WIFI_ON();
 		 LED_POWER_ON();
 	
-		 LED_TEMP_ON();
-		 LED_HUMI_ON(); 
-	    
+		
 
 
 	  }
