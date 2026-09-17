@@ -12,7 +12,7 @@
 
 
 
-void LED_Strip_Ctrl(void);
+
 void Plasma_Ctrl(void);
 void Fan_Ctrl_Process(void);
 

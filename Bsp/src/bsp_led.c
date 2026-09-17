@@ -8,8 +8,7 @@ void all_led_off(void)
 	LED_PLASMA_OFF();
 	LED_MOUSE_OFF();
 	LED_WIFI_OFF();
-	//LED_POWER_OFF();
-	LED_TAPE_OFF();
+
 	LED_TEMP_OFF();
 	LED_HUMI_OFF();	
 
@@ -26,7 +25,7 @@ void power_on_led_open_handler(void)
 		 LED_MOUSE_ON();
 		 LED_WIFI_ON();
 		 LED_POWER_ON();
-		 LED_TAPE_ON();
+		
 		 LED_TEMP_ON();
 		 LED_HUMI_ON(); 
 		PTC_heat_open_f = 1;        // 默认开启加热
@@ -40,7 +39,7 @@ void power_on_led_open_handler(void)
 		 LED_AI_ON();
 		 LED_WIFI_ON();
 		 LED_POWER_ON();
-		 LED_TAPE_ON();
+	
 		 LED_TEMP_ON();
 		 LED_HUMI_ON(); 
 	    

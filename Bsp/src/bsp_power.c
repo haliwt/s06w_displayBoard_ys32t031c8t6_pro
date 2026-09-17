@@ -71,7 +71,7 @@ uint8_t  key_pressed_set_temp_f;
 
 uint8_t key_net_config_f;
 uint16_t key_net_config_time;
-uint8_t led_strip_open_f;
+
 
 uint8_t flash_f;
 
@@ -246,7 +246,7 @@ void Clear_Ram(void)
 		first_temp_compare_f=0;
 		Ultra_Sound_open_f = 0;
 		plasma_open_f = 0;
-		led_strip_open_f = 0;
+
 		
 		timing_is_reach_disptime = 0;
 		

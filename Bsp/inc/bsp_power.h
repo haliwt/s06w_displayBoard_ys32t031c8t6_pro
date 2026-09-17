@@ -121,7 +121,7 @@ extern uint8_t read_ntc_temperature_value;
 
 extern uint8_t key_net_config_f;
 extern uint16_t key_net_config_time;
-extern uint8_t led_strip_open_f;
+
 
 extern uint8_t flash_f;
 
@@ -356,7 +356,7 @@ extern void AD_Filter(void);
 void AD_PTC_Filter(void);
 
 
-extern void LED_Strip_Ctrl(void);
+
 
 
 
