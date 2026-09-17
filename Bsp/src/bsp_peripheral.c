@@ -267,12 +267,12 @@ void Plasma_Ctrl(void)
 	  if(discharge_f){
         if(plasma_open_f)
 		    {
-		        PLASMA_ON();
+		        
 				LED_PLASMA_ON();
 		    }
 		    else
 		    {
-		        PLASMA_OFF();
+		       
 				LED_PLASMA_OFF();
 		    }
         }
@@ -708,7 +708,7 @@ void power_on_peripheral_handler(void)
 
 	RELAY_ON();
 	ultra_sound_on(20);//(159); 
-	PLASMA_ON();
+	LED_PLASMA_ON();
 
 
 }

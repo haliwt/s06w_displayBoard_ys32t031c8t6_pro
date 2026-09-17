@@ -2,15 +2,19 @@
 #define __BSP_KEY_H
 #include "main.h"
 
-#define KEY_POWER_VALUE()         ((GPIOB->IDR & GPIO_Pin_6) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_POWER_Pin) //GPIO_1 按键按下，返回�??: 1
-//#define KEY_MODE_VALUE()          ((GPIOB->IDR & GPIO_Pin_5) ? 1 : 0 ) //sys_read_gpio_pin_value(GPIOD, KEY_MODE_Pin)
-#define KEY_DOWN_VALUE()          ((GPIOB->IDR & GPIO_Pin_5) ? 1 : 0 )
+#define KEY_POWER_VALUE()         ((GPIOA->IDR & GPIO_Pin_4) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_POWER_Pin) //GPIO_1 按键按下，返回�??: 1
 
-//#define KEY_DOWN_VALUE()          ((GPIOB->IDR & GPIO_Pin_3) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_DOWN_Pin)
-#define KEY_MODE_VALUE()           ((GPIOB->IDR & GPIO_Pin_3) ? 1 : 0 )
+#define KEY_MODEL_VALUE()         ((GPIOA->IDR & GPIO_Pin_5) ? 1 : 0 ) //sys_read_gpio_pin_value(GPIOD, KEY_MODE_Pin)
 
-#define KEY_UP_VALUE()            ((GPIOB->IDR & GPIO_Pin_4) ? 1 : 0 )
+#define KEY_DOWN_VALUE()          ((GPIOA->IDR & GPIO_Pin_6) ? 1 : 0 )
 
+#define KEY_UP_VALUE()          ((GPIOA->IDR & GPIO_Pin_7) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_DOWN_Pin)
+
+#define KEY_MOUSE_VALUE()        ((GPIOB->IDR & GPIO_Pin_13) ? 1 : 0 )
+
+#define KEY_PLASMA_VALUE()        ((GPIOB->IDR & GPIO_Pin_14) ? 1 : 0 )
+
+#define KEY_DRY_VALUE()            ((GPIOB->IDR & GPIO_Pin_15) ? 1 : 0 )
 
 
 typedef enum{
