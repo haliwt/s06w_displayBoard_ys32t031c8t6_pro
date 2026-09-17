@@ -28,6 +28,7 @@
 #include "tim.h"
 #include "iwdg.h"
 #include "adc.h"
+#include "gpio.h"
 
 
 
