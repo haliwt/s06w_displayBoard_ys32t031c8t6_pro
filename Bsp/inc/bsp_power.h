@@ -76,7 +76,7 @@ extern uint16_t fan_current;
 extern uint16_t ptc_current;
 
 
-extern uint8_t discharge_f;
+
 
 
 

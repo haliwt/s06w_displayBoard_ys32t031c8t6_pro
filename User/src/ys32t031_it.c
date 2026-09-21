@@ -180,6 +180,7 @@ void TIM6_LPTIM_IRQHandler (void)
 				    gpro_t.time_1s_f =1;
 				
 					time_link_net_counter++;
+					gpro_t.gTimer_disp_mode_switch++;
 
 					disp_switch_temp_humi++;
 					time_set_hours_counter++;

@@ -15,8 +15,8 @@
 #define LED_WIFI_OFF()              do{LED_WIFI_GPIO_Port ->BSRR = (uint32_t)LL_LED_WIFI_Pin << 16;}while(0)  
 #define LED_WIFI_TOGGLE()           do{LED_WIFI_GPIO_Port->ODR ^= LL_LED_WIFI_Pin;}while(0)
 
-#define LED_PTC_ON()                do{LED_DRY_GPIO_Port ->BSRR = LL_LED_DRY_Pin;}while(0)
-#define LED_PTC_OFF()               do{LED_DRY_GPIO_Port ->BSRR = (uint32_t)LL_LED_DRY_Pin<<16;}while(0)
+#define LED_DRY_ON()                do{LED_DRY_GPIO_Port ->BSRR = LL_LED_DRY_Pin;}while(0)
+#define LED_DRY_OFF()               do{LED_DRY_GPIO_Port ->BSRR = (uint32_t)LL_LED_DRY_Pin<<16;}while(0)
 
 
 
@@ -37,11 +37,7 @@
 #define LED_TIME_OFF()         do{LED_TIME_GPIO_Port ->BSRR = (uint32_t)LL_LED_TIME_Pin<<16;}while(0) 
 
 
-//#define LED_HUMI_PIN            GPIO_Pin_11
-//#define LED_HUMI_GPIO_PORT      GPIOA
 
-//#define LED_HUMI_ON()           {GPIO_ResetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
-//#define LED_HUMI_OFF()          {GPIO_SetBits(LED_HUMI_GPIO_PORT, LED_HUMI_PIN);}
 
 
 

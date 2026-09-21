@@ -24,7 +24,8 @@ static const uint8_t TM1639_Number_Table[] = {
     0xD7, // 6: 0111 1101  --0x7D 
     0x70, // 7: 0000 0111
     0xF7, // 8: 0111 1111
-    0xF6  // 9: 0110 1111
+    0xF6,  // 9: 0110 1111
+    0X0   //0x0A
 };
 
 // 字母和特殊字符显示码
@@ -469,5 +470,216 @@ void TM1639_All_Off(void)
  * @retval None
  */
 
+void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel)
+{
 
+	
+	 TM1639_STB_SetLow();
+	 TM1639_Write_Byte(0x40);//To write display register 0x40
+	 TM1639_STB_SetHigh();
+
+
+	 TM1639_Start();
+     TM1639_Write_Byte(0x44);//Add fixed reg
+     TM1639_Stop();
+
+	 
+	 //digital 1
+     
+      //TM1639_Write_Byte(0xC0);//0xC4H->GRID7->BIT_1
+     if(sel==0){
+         //TM1639_Write_OneByte(segNumber_Low[onebit]);//display ""
+         TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[onebit]);
+     }
+     else{
+		 //TM1639_Write_Digit_Full(segNumber_Low[0x10]);
+		  TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[0x0A]);
+
+	 }
+    
+
+	 
+
+     //digital 2
+
+    //  TM1639_Write_Byte(AddrC2H);//0xC7H->GRID8->BIT_2
+     if(sel==0){
+     	// TM1639_Write_Byte(segNumber_Low[twobit]);//display ""
+     	TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[twobit]|seg_h);
+     }
+     else{
+	      //TM1639_Write_Byte(segNumber_Low[0x10]);
+	      
+	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[0X0A]);
+
+
+	 }
+     
+
+	
+
+    
+    //open diplay
+    TM1639_Start();
+     TM1639_Write_Byte(OpenDispTM1639|0x8f);//
+    TM1639_Stop();
+    
+}
+
+
+/*******************************************************************************************************
+    *
+    *Function Name:void TM1640_Write_4Bit_Data(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit)
+    *Function :Smg display times hour minute
+    *Input Ref: onebit ,twobit hours ,threebit fourbit minute,sl -select "H" or "numbers"
+    *Return Ref: NO
+    *
+********************************************************************************************************/
+void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8_t fourbit,uint8_t sl)
+{
+
+	
+	 TM1639_STB_SetLow();
+	  TM1639_Write_Byte(0X40);//To Address of fixed reg 0x44
+	 TM1639_STB_SetHigh();
+    
+    TM1639_STB_SetLow();
+      TM1639_Write_Byte(0X44);//To Address of fixed reg 0x44
+     TM1639_STB_SetHigh();
+
+	 
+    //digital 1
+     TM1639_Start();
+     //TM1639_Write_OneByte(0xC8);//0xC0H->GRID_1->BIT_1
+    if(sl ==0){
+         TM1639_Write_Digit_Full(TM1639_ADDR_GRID5_H, TM1639_ADDR_GRID5_L,TM1639_Number_Table[onebit]);//TM1639_Write_OneByte(segNumber_Low_4bit[onebit]);//display "10"
+      }
+     else{
+	 	   
+          TM1639_Write_Digit_Full(TM1639_ADDR_GRID5_H, TM1639_ADDR_GRID5_L,TM1639_Number_Table[0x0A]);   //TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);//display "10"
+	 	  
+	 }
+//     TM1639_Stop();
+//    // ai_ico_fast_blink();
+
+//	 TM1639_Start();
+//     TM1639_Write_OneByte(0XC9);//0xC1H->GRID_1->BIT_1
+//     if(sl ==0){
+//         TM1639_Write_OneByte(segNumber_High_4bit[onebit]);//display "01"
+//     }
+//     else {
+//	 	     TM1639_Write_OneByte(segNumber_High_4bit[0x10]);//display "10"
+//     }
+//     TM1639_Stop();
+    
+     // ai_ico_fast_blink();
+     //dighital 2
+   
+    // TM1639_Start();
+    // TM1639_Write_OneByte(0xCA);//0xC1H->GRID_2->BIT_2
+     if(sl==0){
+	 	if(gpro_t.g_time_disp_colon_flag== true){
+         TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[twobit|seg_h]); //TM1639_Write_OneByte(segNumber_Low_4bit[twobit]);//display "2 :"
+	 	}
+		else{
+		  TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[twobit]);
+
+		}
+	}
+     else {
+	 	  
+     	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[0x0A]);// TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
+     }
+    
+  
+
+//	TM1639_Start();
+
+//    TM1639_Write_OneByte(0xCB);//0xC1H->GRID_2->BIT_2
+//     if(gpro_t.g_time_disp_colon_flag==1){
+//         TM1639_Write_OneByte(segNumber_High_4bit[twobit]|seg_h);//WT.EDIT 2025.03.10
+   
+//     }
+//     else {
+      
+//        TM1639_Write_OneByte(segNumber_High_4bit[twobit]); //WT.EDIT 2025.03.10
+//	 }
+	 
+//    TM1639_Stop();
+	 
+ 
+     //digital 3 
+     //minute 
+   // TM1639_Start();
+    //TM1639_Write_OneByte(0xCC);//0xC2H->GRID_3->BIT_3
+    if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
+	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[threebit]);//TM1639_Write_OneByte(segNumber_Low_4bit[threebit]);//display ""
+
+    }
+    else{
+        TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
+     }
+    //TM1639_Stop();
+  
+    //minute 
+//    TM1639_Start();
+//    TM1639_Write_OneByte(0xCD);//0xC2H->GRID_3->BIT_3
+//    if(gpro_t.g_time_disp_colon_flag==1){
+//	    TM1639_Write_OneByte(segNumber_High_4bit[threebit]|seg_h);//display ""
+
+//	}//TM1639_Write_OneByte(OFFLED);//display "NULL"
+//    else TM1639_Write_OneByte(segNumber_High_4bit[threebit]); //WT.EDIT 2025.03.10
+	
+//    TM1639_Stop();
+	
+   
+    //digital 4
+	//minute 
+   // TM1639_Start();
+   // TM1639_Write_OneByte(0xCE);//0xC2H->GRID_4
+    if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
+	     TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[fourbit]);//TM1639_Write_OneByte(segNumber_Low_4bit[fourbit]);//display ""
+
+    }
+    else{
+		TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
+    }
+    //TM1639_Stop();
+  
+    //minute 
+//    TM1639_Start();
+//    TM1639_Write_OneByte(0xCF);//0xC2H->GRID_4
+//    if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
+//	    TM1639_Write_OneByte(segNumber_High_4bit[fourbit]);//display ""
+
+//    }
+//    else TM1639_Write_OneByte(segNumber_High_4bit[0x10]);
+//    TM1639_Stop();
+     //open diplay
+    TM1639_Start();
+    TM1639_Write_Byte(OpenDispTM1639|0x8f);//0xC2H->GRID3->BIT_3
+    TM1639_Stop();
+ 
+    
+}
+
+/**********************************************************************
+*
+*Functin Name: void Display_Timing(uint8_t hours,uint8_t minutes)
+*Function : Timer of key be pressed handle
+*Input Ref:  key of value
+*Return Ref: NO
+*
+**********************************************************************/
+void Display_Timing(uint8_t hours,uint8_t minutes,uint8_t disp)
+{ 
+    static uint8_t m,q;
+	m = hours /10 ;
+	gpro_t.hours_two_unit_bit =	hours%10; 
+	gpro_t.minutes_one_decade_bit= minutes/10 ;
+	q=  minutes%10;
+	TM1639_Write_4Bit_Time(m,gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,q,disp) ; //timer is default 12 hours "12:00"
+
+
+}
 

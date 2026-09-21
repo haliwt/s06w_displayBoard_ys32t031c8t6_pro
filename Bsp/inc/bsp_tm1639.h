@@ -58,8 +58,21 @@
 
 
 // TM1639 LED显示地址定义（GRID4-GRID8）
+ //Display Address 
+#define TM1639_ADDR_GRID1_H 		0xC0//??00H
+#define TM1639_ADDR_GRID1_L  		0xC1//??01H
+
+#define  TM1639_ADDR_GRID2_H   		0xC2//??02H
+#define  TM1639_ADDR_GRID2_L   		0xC3//??03H
+//digital 3
+#define TM1639_ADDR_GRID3_H  		0xC4//??03H
+#define TM1639_ADDR_GRID3_L 		0xC5//??03H
+
+//digital 4
+
 #define TM1639_ADDR_GRID4_H           0xC6    // GRID4 高4位地址
 #define TM1639_ADDR_GRID4_L           0xC7    // GRID4 低4位地址
+//digital 5
 
 #define TM1639_ADDR_GRID5_H           0xC8    // GRID5 高4位地址
 #define TM1639_ADDR_GRID5_L           0xC9    // GRID5 低4位地址
@@ -72,6 +85,11 @@
 
 #define TM1639_ADDR_GRID8_H           0xCE    // GRID8 高4位地址
 #define TM1639_ADDR_GRID8_L           0xCF    // GRID8 低4位地址
+
+#define   seg_h  0x08      //SEG7 -> ":"
+
+#define OpenDispTM1639          0x88// 
+
 
 
 // 函数声明
@@ -94,7 +112,9 @@ void TM1639_Display_setTimerHours_3_Digit(uint8_t num);
 
 void TM1639_Display_setTimerMinutes_3_Digit(uint8_t num);
 
+void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel);
 
+void Display_Timing(uint8_t hours,uint8_t minutes,uint8_t disp);
 
 
 

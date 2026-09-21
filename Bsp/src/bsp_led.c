@@ -4,7 +4,7 @@
 void all_led_off(void)
 {
 
-	LED_PTC_OFF();
+	LED_DRY_OFF();
 	LED_PLASMA_OFF();
 	LED_MOUSE_OFF();
 	LED_WIFI_OFF();
@@ -18,7 +18,7 @@ void power_on_led_open_handler(void)
 	if(wifi_app_timer_power_on_f==0){
 
 	     
-		 LED_PTC_ON();
+		 LED_DRY_ON();
 		 LED_PLASMA_ON();
 		 LED_MOUSE_ON();
 		 LED_WIFI_ON();
@@ -28,7 +28,7 @@ void power_on_led_open_handler(void)
 		PTC_heat_open_f = 1;        // 默认开启加热
 	    Ultra_Sound_open_f = 1;     // 默认开启超声波
 	    plasma_open_f = 1;          // 默认开启等离子
-	    LED_PTC_ON();
+	    LED_DRY_ON();
 
 
 	  }
@@ -47,11 +47,11 @@ void power_on_led_open_handler(void)
 void wifi_fast_led_state(void)
 {
    static uint8_t slowly_led_counter = 0;//100ms
-   if((discharge_f ==1) && (key_net_config_f ==1)){
+   if((gpro_t.g_power_flag ==1) && (key_net_config_f ==1)){
 	    LED_WIFI_TOGGLE();
 		
    }
-   else if((discharge_f ==1) && (key_net_config_f ==0)){
+   else if((gpro_t.g_power_flag ==1) && (key_net_config_f ==0)){
 
       
 		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
@@ -60,7 +60,7 @@ void wifi_fast_led_state(void)
 		     LED_WIFI_TOGGLE();
 		}
    }
-   else if(discharge_f ==0){
+   else if(gpro_t.g_power_flag ==0){
 	     
 	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
 	     slowly_led_counter=0;

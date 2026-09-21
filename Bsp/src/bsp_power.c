@@ -29,7 +29,7 @@ uint16_t fan_adc_value[1];
 uint16_t ad_ptc_value[1];
 uint16_t fan_current;
 uint16_t ptc_current;
-uint8_t discharge_f;
+
 
 
 uint16_t current_temperature;
@@ -232,7 +232,7 @@ void Clear_Ram(void)
 	  key_data = 0;
 	  key_time = 0;
 	
-	  discharge_f = 0;
+	  gpro_t.g_power_flag = 0;
 		
 		
 		device_rest_time = 0;
@@ -602,7 +602,7 @@ void power_on_handler(void)
 
 		      if(high_tmep_counter > 2){
 
-                  LED_PTC_OFF();
+                  LED_DRY_OFF();
 			 
 		           ptc_high_temperature_f = 1;
 		          // SMG_Display_Err(01);
@@ -631,7 +631,7 @@ void power_on_handler(void)
 		   has_warning_counter=0;
 			
 		  if(ptc_high_temperature_f == 1){
-		  	  LED_PTC_OFF();
+		  	  LED_DRY_OFF();
 
 			  //SMG_Display_Err(01);
 			 // beep_high_temperature_sound();
@@ -642,7 +642,7 @@ void power_on_handler(void)
 		   if(fan_warning_f == 1){
 			       fan_counter=0;
 				   fan_error=0;
-			        LED_PTC_OFF();
+			        LED_DRY_OFF();
 			 
 					//SMG_Display_Err(02);
 				
@@ -667,7 +667,7 @@ void power_on_handler(void)
 			    #endif 
 			     if(fan_error > 6){
 				  fan_warning_f = 1;
-				       LED_PTC_OFF();
+				       LED_DRY_OFF();
 					
 					//	SMG_Display_Err(02);
 						
@@ -861,7 +861,7 @@ void Countdown_timer_Handler(void)
 
         if (setting_timing_hour < 0)
         {
-             discharge_f = 0;
+             gpro_t.g_power_flag = 0;
 			 System_Status_PowerOff() ;
 
         }
@@ -916,7 +916,7 @@ void works_nomal_run_time_handler(void)
 		
 		  if(ptc_prohibit_off_f == 0 &&  PTC_heat_open_f == 1){
 			 // 立即open
-		      LED_PTC_ON();
+		      LED_DRY_ON();
 		  
 		  
 		  	}
@@ -952,7 +952,7 @@ void Heat_Process(void)
 {
      static uint8_t default_init = 0xff;   // 第一次比较标志
      
-     if(discharge_f == 1){
+     if(gpro_t.g_power_flag == 1){
 	   if(ptc_prohibit_off_f == 1 || set_temperature_value_f ==1 ) return ;
 
 	  uint8_t target_temp;
@@ -1058,7 +1058,7 @@ void power_on_off_handler(void)
 {
 
  
-	 switch(discharge_f){
+	 switch(gpro_t.g_power_flag){
 
       case 1:
            power_on_handler();

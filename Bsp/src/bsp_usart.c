@@ -314,7 +314,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	            tx_thread_sleep(10);
 				if(soft_version > 2)soft_version =0;
 				if(soft_version ==0 && wifi_app_timer_power_on_f==0){
-				   discharge_f  = 1;//gpro_t.gpower_on = power_on;
+				   gpro_t.g_power_flag  = 1;//gpro_t.gpower_on = power_on;
 				
 				   LED_PLASMA_ON();//LED_PLASMA_ON();;
                   // ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
@@ -330,7 +330,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		     counter_power_flag ++;
 			 SendData_Set_Command(0x06,0x01);
 		     gon_t.off_step=0;
-             discharge_f  = 0 ;//gpro_t.gpower_on = power_off;
+             gpro_t.g_power_flag  = 0 ;//gpro_t.gpower_on = false;
 		
              
               SendWifiData_Answer_Cmd(0x01,0x0); //power off .
@@ -479,7 +479,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	     if(pdata[3] == 0x01){ //open
            
 		   gon_t.on_step=0;
-	      discharge_f = 1;
+	      gpro_t.g_power_flag = 1;
 		   SendWifiData_Answer_Cmd(0x10,0x01);
 	       tx_thread_sleep(10);
 	
@@ -500,7 +500,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
               tx_thread_sleep(10); 
       
              gon_t.off_step=0;
-              discharge_f = 0;
+              gpro_t.g_power_flag = 0;
 			 
 		     
         }
@@ -516,7 +516,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  	 if(pdata[3]==1){ // recach 2 hours fan stop
 
             // gon_t.off_step=1;
-              discharge_f = 1;
+              gpro_t.g_power_flag = 1;
 			 
                //fan_stop();
 		
@@ -622,7 +622,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  
         if(pdata[3]== 0x01){
 		      ptc_prohibit_off_f =0;
-			   ptc_prohibit_off_f = 1;//gctl_t.gDry = 1;
+			   ptc_prohibit_off_f = 1;//gctl_t.g_dry_flag = 1;
 
 			   if(works_interval_f ==0){
 			       
@@ -635,7 +635,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
       }
       else if(pdata[3]== 0x0){
         
-          ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
+          ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
 
 
         
@@ -666,7 +666,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		   
 		   if(works_interval_f ==0 &&ptc_prohibit_off_f==0){
 			  
-			     ptc_prohibit_off_f = 1;//gctl_t.gDry = 1;
+			     ptc_prohibit_off_f = 1;//gctl_t.g_dry_flag = 1;
 			     ptc_onoff_default++;
               
 		   	
@@ -680,7 +680,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	   	 if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
 		 if(ptc_prohibit_off_f  >1)ptc_prohibit_off_f=0;
 		 
-               ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
+               ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
                ptc_onoff_default++;
 	    
 
@@ -702,7 +702,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	 
 	 case 0x2A: //smart phone or display  board set temperature .receive.
 	 
-		   if(pdata[4]==0x01 && discharge_f == 1){
+		   if(pdata[4]==0x01 && gpro_t.g_power_flag == 1){
 			  
 			   if(pdata[5] >19 && pdata[5] < 41){
 			   	ptc_prohibit_off_f  = 0;
@@ -719,7 +719,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			   }
 			   else{
 			   	   ptc_onoff_default++;
-				   ptc_prohibit_off_f =0 ;//gctl_t.gDry =0;
+				   ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
 
 			
 		       }
@@ -800,13 +800,13 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 	     if(pddata[4] == 0x01){ //open
 
 		    gon_t.on_step=0;
-	       discharge_f = 1;
+	       gpro_t.g_power_flag = 1;
 
 		 }
         else if(pddata[4] == 0x0){ //close 
 
 		   gon_t.off_step=1;
-          discharge_f =0;
+          gpro_t.g_power_flag =0;
 			 
 		}
 	   
