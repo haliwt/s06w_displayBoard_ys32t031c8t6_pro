@@ -31,6 +31,7 @@ void UART1_Configuration(void);
 void UART1_SendByte(uint8_t Data);
 void UART1_Send_Str(uint8_t *String,uint8_t s1);
 
+void UART1_Int_Call(void);
 
 
 #ifdef __cplusplus
