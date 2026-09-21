@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    system_ys32t031.c
-  * @author  YSPRING Application Team
+  * @author  ys Application Team
   * @brief   CMSIS Cortex-M0 Device Peripheral Access Layer System Source File.
   *
   * 1. This file provides two functions and one global variable to be called from
@@ -20,13 +20,23 @@
   *
   *
   ******************************************************************************
- */
+  */
 
 /******************************************************************************/
 /* Include files                                                              */
 /******************************************************************************/
 #include "ys32t031.h"
 #include "system_ys32t031.h"
+
+#ifdef USE_HAL_DRIVER
+#include "ys32t031_hal_conf.h"
+#elif USE_FULL_HAL_DRIVER
+#include "ys32t031_hal_conf.h"
+#elif USE_LL_DRIVER
+#include "ys32t031_ll_rcc.h"
+#elif USE_FULL_LL_DRIVER
+#include "ys32t031_ll_rcc.h"
+#endif
 
 /**
  ******************************************************************************
@@ -50,7 +60,7 @@ void SystemInit(void)
 {
   /* NOTE :SystemInit(): This function is called at startup just after reset and 
                          before branch to main program. This call is made inside
-                         the "startup_ys32f0xx.s" file.
+                         the "startup_ys32t031.s" file.
                          User can setups the default system clock (System clock source, PLL Multiplier
                          and Divider factors, AHB/APBx prescalers and Flash settings).
    */
@@ -58,23 +68,90 @@ void SystemInit(void)
 
   reg = RCC->ICSCR;
   reg &= ~(RCC_ICSCR_HSI_FS | RCC_ICSCR_HSI_TRIM);
-  reg |= RCC_HSI_16M;                  //16M
+  reg |= ((RCC_ICSCR_HSI_FS_16Mhz) | ((*(uint32_t *)(0x1FFF1C0C)) & 0x7FF));                  //16M
   RCC->ICSCR = reg;
   
   reg = RCC->CR;
   reg &= ~(RCC_CR_HSIDIV);
   reg |= RCC_CR_HSIDIV_1;              //DIV1
   RCC->CR = reg;
-
 }
-
-void SystemCoreClockUpdate(void)       // Update SystemCoreClock variable
+     
+void SystemCoreClockUpdate(void)
 {
-  RCC_ClocksTypeDef RCC_CLK;
+  uint32_t hsidiv;
+  uint32_t sysclockfreq;
+  uint32_t hsiIndex;
+  uint32_t pllsource;
   
-  RCC_GetClocksFreq(&RCC_CLK);
-  SystemCoreClock = RCC_CLK.HCLK_Frequency;
+  if ((RCC->CFGR & RCC_CFGR_SWS) == RCC_CFGR_SWS_HSI)
+  {
+    /* HSISYS can be derived for HSI */
+    hsidiv = (1UL << ((READ_BIT(RCC->CR, RCC_CR_HSIDIV)) >> RCC_CR_HSIDIV_Pos));
+
+    /* HSISYS used as system clock source */
+    hsiIndex = (RCC->ICSCR&RCC_ICSCR_HSI_FS_Msk)>>RCC_ICSCR_HSI_FS_Pos;
+    if (hsiIndex > 3)
+    {
+      hsiIndex = 0;
+    }
+    sysclockfreq = (HSIFreqTable[hsiIndex] / hsidiv);
+  }
+  else if ((RCC->CFGR & RCC_CFGR_SWS) == RCC_CFGR_SWS_HSE)
+  {
+    /* HSE used as system clock source */
+    sysclockfreq = HSE_VALUE;
+  }
+
+  else if ((RCC->CFGR & RCC_CFGR_SWS) == RCC_CFGR_SWS_PLL)
+  {
+    pllsource = (RCC->PLLCFGR & RCC_PLLCFGR_PLLSRC);
+
+    switch (pllsource)
+    {
+    case RCC_PLLCFGR_PLLSRC:  /* HSE used as PLL clock source */
+      if(RCC->CFGR & RCC_CFGR_PLLMUL)
+        sysclockfreq =  HSE_VALUE  * 4;
+      else
+        sysclockfreq =  HSE_VALUE  * 2;
+      break;
+
+    case 0U:  /* HSI used as PLL clock source */
+    default:
+      hsiIndex = (RCC->ICSCR&RCC_ICSCR_HSI_FS_Msk)>>RCC_ICSCR_HSI_FS_Pos;
+      if (hsiIndex > 3)
+      {
+        hsiIndex = 0;
+      }
+      if(RCC->CFGR & RCC_CFGR_PLLMUL)
+        sysclockfreq =  HSIFreqTable[hsiIndex]  * 4;
+      else
+        sysclockfreq =  HSIFreqTable[hsiIndex]  * 2;
+      break;
+
+    }
+  }
+
+  else if ((RCC->CFGR & RCC_CFGR_SWS) == RCC_CFGR_SWS_LSE)
+  {
+    /* LSE used as system clock source */
+    sysclockfreq = LSE_VALUE;
+  }
+
+  else if ((RCC->CFGR & RCC_CFGR_SWS) == RCC_CFGR_SWS_LSI)
+  {
+    /* LSI used as system clock source */
+    sysclockfreq = LSI_VALUE;
+  }
+  else
+  {
+    sysclockfreq = 0U;
+  }
+  
+  //AHB
+  SystemCoreClock = sysclockfreq >> (AHBPrescTable[ ((RCC->CFGR >> RCC_CFGR_HPRE_Pos) & 0x0F) ]);
 }
+
 
 #if defined(__CC_ARM)
 

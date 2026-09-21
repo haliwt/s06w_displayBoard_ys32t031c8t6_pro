@@ -122,10 +122,9 @@ void RCC_Configuration(void)
 
 
 
-//NVIC÷–∂œ≈‰÷√
+// NVIC ÂàùÂßãÂåñÈÖçÁΩÆ
 void NVIC_Configuration(void)
 {
-    
   LL_EXTI_InitTypeDef EXTI_InitStruct = {0};
 
   NVIC_SetPriority(TIM6_LPTIM_IRQn, 0);
@@ -137,6 +136,7 @@ void NVIC_Configuration(void)
   NVIC_SetPriority(UART1_IRQn, 1);
   NVIC_EnableIRQ(UART1_IRQn);
 }
+
 
 
 

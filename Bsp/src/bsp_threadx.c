@@ -219,7 +219,7 @@ void tx_application_define(void *first_unused_memory)
 
     power_on_off_handler();
 
-    IWDG_ReloadCounter();
+     LL_IWDG_ReloadCounter(IWDG);//IWDG_ReloadCounter();
     
 	
 #if DEBUG_ENABLE

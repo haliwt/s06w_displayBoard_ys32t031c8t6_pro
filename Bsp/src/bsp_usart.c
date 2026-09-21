@@ -317,7 +317,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				   discharge_f  = 1;//gpro_t.gpower_on = power_on;
 				
 				   LED_PLASMA_ON();//LED_PLASMA_ON();;
-                   ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
+                  // ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
           
 
 				}
@@ -424,7 +424,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			Ultra_Sound_open_f =1;
    
 			if(works_interval_f==0){
-				 ultra_sound_on(20);//(159);
+				 //ultra_sound_on(20);//(159);
    
 			}
 			
@@ -436,7 +436,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
               SendData_Set_Command(0x06,0x01);
 			Ultra_Sound_open_f = 0;
    
-			ultra_sound_off();
+		
 			
 			SendWifiData_Answer_Cmd(0x04,0x0); //
 			tx_thread_sleep(10); 
@@ -485,7 +485,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	
 		    if(wifi_app_timer_power_on_f ==0){
 			    LED_PLASMA_ON();;
-	             ultra_sound_on(20);   //ultrasnoic ON 
+	            // ultra_sound_on(20);   //ultrasnoic ON 
 	          
 
 		    }
@@ -494,8 +494,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
         else if(pdata[3] == 0x0){ //close 
 
 			
-			
-	            ultra_sound_off();
+	
 			
               SendWifiData_Answer_Cmd(0x10,0x0); //power off .
               tx_thread_sleep(10); 
@@ -523,7 +522,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		
 			   tx_thread_sleep(10);
 	
-	           ultra_sound_off();
+	          
          }
 		 else{
             
@@ -571,7 +570,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		       //fan_stop();
 
 
-               ultra_sound_off();
+             
          }
 		 else{
              fan_rx_stop_flag = 0;
@@ -581,7 +580,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				
              }
 			 if(plasma_open_f==1)LED_PLASMA_ON();;
-			 if(Ultra_Sound_open_f==1) ultra_sound_on(20);
+			// if(Ultra_Sound_open_f==1) ultra_sound_on(20);
         }
 
 	 break;
@@ -593,7 +592,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
             works_interval_f=1;
 
 
-            ultra_sound_off();
+        
 			
 		}
 		else if(pdata[3]==0){
@@ -610,7 +609,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 				
               }
 			  if(plasma_open_f==1)LED_PLASMA_ON();;
-			  if(Ultra_Sound_open_f==1) ultra_sound_on(20);
+			 // if(Ultra_Sound_open_f==1) //ultra_sound_on(20);
 			 // Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
 			  
 		}

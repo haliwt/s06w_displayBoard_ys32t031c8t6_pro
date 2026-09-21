@@ -10,102 +10,191 @@
 
 #include "uart.h"   
 #include "ys32t031.h"
+#include "bsp.h"
 
-
-volatile uint8_t UART1_RX_BUF[60];
-volatile uint8_t uart1_rx_cnt;
-
-//volatile uint8_t UART2_RX_BUF[60];
-//volatile uint8_t uart2_rx_cnt;
+/*接收数据中断（RXNE - Receive Data Register Not Empty*/
 
 
 
-void UART1_Configuration(uint32_t BaudRate1);
-//void UART2_Configuration(uint32_t BaudRate2);
-void UART1_SendByte(uint8_t Data);
-void UART1_Send_Str(uint8_t *String,uint8_t s1);
-//void UART2_SendByte(uint8_t Data);
-//void UART2_Send_Str(uint8_t *String,uint8_t s2);
 
-
-
-// UART1 ��ʼ������
-void UART1_Configuration(uint32_t BaudRate1)
-{
-    UART_InitTypeDef UART_InitStructure;
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_UART1, ENABLE);
-    UART_DeInit(UART1);
-    UART_StructInit(&UART_InitStructure);
-
-    UART_InitStructure.UART_BaudRate = BaudRate1;             //����������
-    UART_InitStructure.UART_WordLength = UART_WordLength_8b;  //8λ���ݸ�ʽ   
-    UART_InitStructure.UART_StopBits = UART_StopBits_1;       //1��ֹͣλ
-    UART_InitStructure.UART_Parity = UART_Parity_No;          //�޻�żУ��λ
-    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;   //��Ӳ������������
-    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;   //�շ�ģʽ
-    UART_Init(UART1, &UART_InitStructure);
-
-	  UART_ITConfig(UART1, UART_IT_RXNE, ENABLE);                   //ʹ��UART1�����ж�
-	
-    UART_Cmd(UART1, ENABLE);
-}
 
 
 /**
- * @brief  UART1_SendByte
- * @param  Data: ����
+* @brief  UART1 displayBoard
+ * @param  String: 
  * @retval None
  */
-void UART1_SendByte(uint8_t Data)
+// UART1 初始化配置,Display Board bpd = 9600
+void UART1_Configuration(void)
 {
-    while(UART_GetFlagStatus(UART1, UART_FLAG_TXE) == RESET);
-    UART_SendData(UART1, Data);
+  LL_UART_InitTypeDef UART_InitStructure= {0};
+
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_UART1);
+
+  LL_UART_DeInit(UART1);
+  LL_UART_StructInit(&UART_InitStructure);
+  UART_InitStructure.BaudRate = 9600;
+  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
+  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
+  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
+  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
+  LL_UART_Init(UART1, &UART_InitStructure);
+
+  LL_UART_EnableDMAReq_TX(UART1);
+  
+  LL_UART_EnableIT_RXNE(UART1);
+  LL_UART_EnableIT_TC(UART1);
+  // LL_UART_EnableIT_IDLE(UART1); //Ê¹ÄÜUART1µÄ¿ÕÏÐÖÐ¶Ï
+
+  LL_UART_Enable(UART1);
+
+ 
+}
+// UART2 初始化配置
+void UART2_Configuration(void)
+{
+  LL_UART_InitTypeDef UART_InitStructure= {0};
+
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_UART2);
+
+  LL_UART_DeInit(UART2);
+  LL_UART_StructInit(&UART_InitStructure);
+  UART_InitStructure.BaudRate = 115200;
+  UART_InitStructure.DataWidth = LL_UART_DATAWIDTH_8B;
+  UART_InitStructure.StopBits = LL_UART_STOPBITS_1;
+  UART_InitStructure.Parity = LL_UART_PARITY_NONE;
+  UART_InitStructure.TransferDirection = LL_UART_DIRECTION_TX_RX;
+  LL_UART_Init(UART2, &UART_InitStructure);
+
+  LL_UART_EnableIT_RXNE(UART2);
+  LL_UART_EnableIT_TC(UART2);
+
+  LL_UART_Enable(UART2);
 }
 
 
 
+//Display Board TX and RX 
+void UART1_Int_Call(void)
+{
+  uint8_t res ;
+   //uint8_t ch = 0 ;
+  
+  if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
+  {
+    /* USER CODE BEGIN Code_UART1_Int_Call_UART_FLAG_RXNE */
+     res =  LL_UART_ReceiveData8(UART1);
+	  usart1_isr_callback_handler(res);
+    
+    /* USER CODE END Code_UART1_Int_Call_UART_FLAG_RXNE */
+  }
+
+  /* =====================================================================
+       2. 溢出错误处理 (ORE) —— 彻底防止串口死锁卡死
+       ===================================================================== */
+    // 检查是否触发了溢出错误（上一个数据没读走，新数据又覆盖上来了）
+    if (LL_UART_IsActiveFlag_ORE(UART1))
+    {
+        /* 
+           【核心解锁步骤】
+           必须先强行读取一次数据寄存器（DR）。
+           这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
+           如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
+        */
+        volatile uint32_t dummy_read = UART1->RDR; 
+        
+        // 使用 volatile 防止这行没用的读取代码被编译器优化掉
+        ((void)dummy_read); 
+        
+        /* 
+           可以增加一个错误计数器，方便你在 ThreadX 任务中监控串口健康度
+           g_uart1_error_count.ore_count++; 
+        */
+    }
+
+  if (LL_UART_IsActiveFlag_TC(UART1) && LL_UART_IsEnabledIT_TC(UART1))
+  {
+    /* USER CODE BEGIN Code_UART1_Int_Call_UART_FLAG_TC */
+    
+    /* USER CODE END Code_UART1_Int_Call_UART_FLAG_TC */
+    LL_UART_ClearFlag_TC(UART1);
+  }
+
+  UART1->ICR = 0xFF;//ICR：Interrupt Clear Register 的缩写，即 “中断清除寄存器”。
+  //LL_UART_ClearFlag_ORE(UART1)
+}
+
+
+
+//  #else 
+//	 if(LL_UART_IsActiveFlag_IDLE(UART1) && LL_UART_IsEnabledIT_IDLE(UART1))
+//    {
+//        LL_UART_ClearFlag_IDLE(UART1);
+//        LL_UART_ClearFlag_RTO(UART1);
+
+//        ch =  LL_UART_ReceiveData8(UART1);
+//	    usart1_isr_callback_handler(ch);
+        
+     
+//    }
+
+//  #endif 
+
+
+
+
 /**
-* @brief  UART1�����ַ���
+* @brief  UART2  wifi 
  * @param  String: �ַ���
  * @retval None
  */
-void UART1_Send_Str(uint8_t *String,uint8_t s1)
+
+void UART2_Int_Call(void)
 {
-	  uint8_t i;
-	
-    for(i=0;i<s1;i++)
+  if(LL_UART_IsActiveFlag_RXNE(UART2)&& LL_UART_IsEnabledIT_RXNE(UART2))
+  {
+    /* USER CODE BEGIN Code_UART2_Int_Call_UART_FLAG_RXNE */
+    // LL_UART_ReceiveData8(UART2);
+    
+    /* USER CODE END Code_UART2_Int_Call_UART_FLAG_RXNE */
+  }
+
+    /* =====================================================================
+       2. 溢出错误处理 (ORE) —— 彻底防止串口死锁卡死
+       ===================================================================== */
+    // 检查是否触发了溢出错误（上一个数据没读走，新数据又覆盖上来了）
+    if (LL_UART_IsActiveFlag_ORE(UART2))
     {
-        UART1_SendByte(*String);
-        String++;
+        /* 
+           【核心解锁步骤】
+           必须先强行读取一次数据寄存器（DR）。
+           这一步是为了清空移位寄存器和硬件缓冲区，向外设硬件发出“允许继续接收”信号。
+           如果不读 DR，单纯清除标志位，硬件的接收移位状态机依然处于锁死状态。
+        */
+        volatile uint32_t dummy_read = UART2->RDR; 
+        
+        // 使用 volatile 防止这行没用的读取代码被编译器优化掉
+        ((void)dummy_read); 
+        
+        /* 
+           可以增加一个错误计数器，方便你在 ThreadX 任务中监控串口健康度
+           g_uart1_error_count.ore_count++; 
+        */
     }
+
+  if (LL_UART_IsActiveFlag_TC(UART2) && LL_UART_IsEnabledIT_TC(UART2))
+  {
+    /* USER CODE BEGIN Code_UART2_Int_Call_UART_FLAG_TC */
+    
+    /* USER CODE END Code_UART2_Int_Call_UART_FLAG_TC */
+    LL_UART_ClearFlag_TC(UART2);
+  }
+
+  UART2->ICR = 0xFF;//ICR：Interrupt Clear Register 的缩写，即 “中断清除寄存器”。
 }
 
 
 
-#if 0
-
-// UART2 ��ʼ������
-void UART2_Configuration(uint32_t BaudRate2)
-{
-    UART_InitTypeDef UART_InitStructure;
-
-    RCC_APB1PeriphClockCmd(RCC_APB1Periph_UART2, ENABLE);
-    UART_DeInit(UART2);
-    UART_StructInit(&UART_InitStructure);
-
-    UART_InitStructure.UART_BaudRate = BaudRate2;                //����������
-    UART_InitStructure.UART_WordLength = UART_WordLength_8b;     //8λ���ݸ�ʽ   
-    UART_InitStructure.UART_StopBits = UART_StopBits_1;          //1��ֹͣλ
-    UART_InitStructure.UART_Parity = UART_Parity_No;             //�޻�żУ��λ
-    UART_InitStructure.UART_HardwareFlowControl = UART_HardwareFlowControl_None;    //��Ӳ������������
-    UART_InitStructure.UART_Mode = UART_Mode_Rx | UART_Mode_Tx;  //�շ�ģʽ
-    UART_Init(UART2, &UART_InitStructure);
-	
-	UART_ITConfig(UART2, UART_IT_RXNE, ENABLE);                   //ʹ��UART2�����ж�
-
-    UART_Cmd(UART2, ENABLE);
-}
 
 
 
@@ -113,53 +202,47 @@ void UART2_Configuration(uint32_t BaudRate2)
 
 
 /**
- * @brief  UART2_SendByte
- * @param  Data: ����
- * @retval None
- */
-void UART2_SendByte(uint8_t Data)
+  * @brief  UART2 DMA 发送函数（非阻塞）
+  */
+void UART2_DMA_Wifi_Send(const uint8_t *pData, uint16_t Size)
 {
-    while(UART_GetFlagStatus(UART2, UART_FLAG_TXE) == RESET);
-    UART_SendData(UART2, Data);
+
+  /* 1. 安全边界检查：指针为空或长度为0时直接退出，拒绝非法非法操作 */
+  if (pData == NULL || Size == 0) return ;
+  
+  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_2));
+  LL_DMA_ClearFlag_TC2(DMA);
+
+  LL_DMA_SetMemoryAddress(DMA, LL_DMA_CHANNEL_2, (uint32_t)pData);
+  LL_DMA_SetDataLength(DMA, LL_DMA_CHANNEL_2, Size);
+
+  LL_DMA_EnableChannel(DMA, LL_DMA_CHANNEL_2);
 }
 
 
 
-/**
-* @brief  UART2�����ַ���
- * @param  String: �ַ���
- * @retval None
- */
-void UART2_Send_Str(uint8_t *String,uint8_t s2)
-{
-	  uint8_t i;
-	
-    for(i=0;i<s2;i++)
-    {
-        UART2_SendByte(*String);
-        String++;
-    }
-}
 
 
-#endif 
-
-//��ӡ���
+/* USER CODE BEGIN fputc */
+//#if defined ( __CC_ARM )
 int fputc(int ch, FILE *f)
 {
-    UART1_SendByte(ch);
-    return ch;
+
+  LL_UART_TransmitData8(UART2, ch);
+  while (!LL_UART_IsActiveFlag_TXE(UART2));
+
+  return ch;
 }
 
 
 
-
-
-
-
-
-
-
+// 自己写一个安全的、绝对不依赖 C 库的字符发送函数
+void My_UART_SendChar(uint8_t ch) 
+{
+    // 只有时钟开启且寄存器有效时，这样写才安全
+    // 如果怕卡死，这里甚至不需要等
+    UART1->TDR = ch; 
+}
 
 
 

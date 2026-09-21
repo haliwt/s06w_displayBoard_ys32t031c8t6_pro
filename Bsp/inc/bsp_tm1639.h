@@ -3,9 +3,9 @@
 #include "main.h"
 
 // TM1639 引脚定义
-#define TM1639_STB_PIN                GPIO_Pin_14       
-#define TM1639_DIO_PIN                GPIO_Pin_13
-#define TM1639_CLK_PIN                GPIO_Pin_15
+#define TM1639_STB_PIN                LL_GPIO_PIN_14       
+#define TM1639_DIO_PIN                LL_GPIO_PIN_13
+#define TM1639_CLK_PIN                LL_GPIO_PIN_15
 #define TM1639_GPIO                   GPIOC
 
 // TM1639 引脚擝作宝定�?

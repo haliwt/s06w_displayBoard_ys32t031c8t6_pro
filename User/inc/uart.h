@@ -17,24 +17,20 @@
 extern "C" {
 #endif
     
-#include "ys32t031.h"		
+#include "ys32t031.h"	
+#include "main.h"
 #include <stdint.h>  
 
 
-extern volatile uint8_t UART1_RX_BUF[60];
-extern volatile uint8_t uart1_rx_cnt;
-
-//extern volatile uint8_t UART2_RX_BUF[60];
-//extern volatile uint8_t uart2_rx_cnt;
 
 
 
-extern void UART1_Configuration(uint32_t BaudRate1);
-//extern void UART2_Configuration(uint32_t BaudRate2);
-extern void UART1_SendByte(uint8_t Data);
-extern void UART1_Send_Str(uint8_t *String,uint8_t s1);
-//extern void UART2_SendByte(uint8_t Data);
-//extern void UART2_Send_Str(uint8_t *String,uint8_t s2);
+
+void UART1_Configuration(void);
+
+void UART1_SendByte(uint8_t Data);
+void UART1_Send_Str(uint8_t *String,uint8_t s1);
+
 
 
 #ifdef __cplusplus

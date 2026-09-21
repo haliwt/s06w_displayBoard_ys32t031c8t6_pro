@@ -25,9 +25,11 @@ extern "C" {
 
 
 
-extern void RCC_Configuration(void);
+void RCC_Configuration(void);
 
-extern void NVIC_Configuration(void);
+void NVIC_Configuration(void);
+
+
 
 
 

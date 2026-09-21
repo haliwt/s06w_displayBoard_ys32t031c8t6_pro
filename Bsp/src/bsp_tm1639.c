@@ -45,6 +45,53 @@ static const uint8_t TM1639_Char_Table[] = {
 
 #define TM1639_DOT  0x08 // 小数点段�?,from low position start
 
+
+static void TIM17_Init_1MHz(void)
+{
+    /* 使能 TIM17 时钟 (APB2总线) */
+     LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM17);
+    /* 设置预分频器：48MHz / 48 = 1MHz */
+    LL_TIM_SetPrescaler(TIM17, 64 - 1);
+
+    /* 设置自动重载值（周期） */
+    LL_TIM_SetAutoReload(TIM17, 0xFFFF);
+
+    /* 设置计数器模式为向上计数 */
+    LL_TIM_SetCounterMode(TIM17, LL_TIM_COUNTERMODE_UP);
+
+    /* 使能 TIM17 定时器计数器 */
+    LL_TIM_EnableCounter(TIM17);
+}
+
+void Delay_US_dht11(uint16_t us)
+{
+   #if 1
+
+	uint16_t start = TIM17->CNT;
+
+    while ((uint16_t)(TIM17->CNT - start) < us)
+    {
+        /* busy wait */
+    }
+	#else 
+	  while (us--)
+    {
+        // 48MHz ?,1us ?? 48 ???
+        // ?? while ?????????????(? 6~9 ???)
+        // ??? 40 ?????? NOP ??
+        __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
+        __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
+        __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
+        __NOP(); __NOP(); __NOP(); __NOP(); __NOP(); __NOP();
+    }
+
+
+	#endif 
+}
+
+
+
+
 /**
  * @brief  TM1639写入�?个字�?
  * @param  byte: 要写入的字节

@@ -310,77 +310,8 @@ void Clear_Ram(void)
   *
 **/
 
-//ADC  FAN BE Detected 
-void Adc_Channel_Sample(void)
-{
-    #if 0
-	volatile uint16_t ad_temp;
-    ad_temp = ADC_GetValue(_FCUR_CH,VREFBUF_ADC_VCC);
-	
-    fan_adc_value[_AD_FCUR] = ad_temp;
-	#else
-    uint16_t time_out ;
-   ADC_Channel_Init(2);
-   ADC_SoftwareStartConvCmd(ADC);
-
-    time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
-
-	    time_out ++;
-		if(time_out > 10000){
-            return ;
-
-		}
-
-    }
-  
-    fan_adc_value[0] = ADC_GetConversionValue(ADC);
-   
-        ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-   
-
-	#endif 
-}
-
-//AD����һ�׻����˲�
-void AD_Filter(void)
-{
-    //FAN_CURRENT
-	fan_current=(fan_adc_value[0] *3300)/4095;
-	//printf("fan_v = %d \n\r",fan_current);
-}
 
 
-
-
-//ADC  PTC 
-void Adc_PTC_Channel_Sample(void)
-{
-    uint16_t time_out ;
-	#if 0
-	volatile uint16_t ad_ptc_temp;
-	
-    ad_ptc_temp = ADC_GetValue(_PTCCUR_CH,VREFBUF_ADC_VCC);
-	
-    ad_ptc_value[_AD_PTCCUR] = ad_ptc_temp;
-   #else
-     time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
-
-	    time_out ++;
-		if(time_out > 5000){
-            return ;
-
-		}
-
-    }
-	  
-      ad_ptc_value[0] = ADC_GetConversionValue(ADC);
-
-   #endif 
-   
-	
-}
 
 
 /**
@@ -392,59 +323,9 @@ void Adc_PTC_Channel_Sample(void)
 
 
 
-void AD_PTC_Filter(void)
-{
-   // uint16_t tem_ptc;
-	//ptc_adc=(ad_ptc_value[_AD_PTCCUR]*2+ptc_current*18)/20;
 
-	//ptc_current = (ptc_adc * 3300 )/4095;
 
-	ptc_current = (ad_ptc_value[0] * 3300 )/4095;
 
-}
-/****************************************************/
-void printf_ptc_adc_numbers(void)
-{
-  printf("ptc_adc_numbers = %d \n\r",ptc_adc_numbers);
-
-}
-
-void ptc_adc_detected_voltage(void)
-{
-   uint16_t time_out ;
-   ADC_Channel_Init(3);
-   ADC_SoftwareStartConvCmd(ADC);
-
-    time_out =0  ;
-     while(!ADC_GetFlagStatus(ADC,ADC_FLAG_EOC)){  //等待转换完成
-
-	    time_out ++;
-		if(time_out > 10000){
-            return ;
-
-		}
-
-    }
-  
-    ad_ptc_value[0] = ADC_GetConversionValue(ADC);
-       // printf("VSense = %d\n",ptc_adc);
-       // printf_ptc_adc_numbers();
-       ptc_adc_numbers =  ad_ptc_value[0];
-       // ptc_current = (ptc_adc_numbers * 33000 )/4095;
-		//tx_thread_sleep(10);
-        ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-      //  ADC_SoftwareStartConvCmd(ADC);
-      //  tx_thread_sleep(5);//DelayMS(50);
-
-}
-
-void ptc_switch_temperature(void)
-{
-   ptc_current = (ad_ptc_value[0] * 3300 )/4095;
-   // ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-  //  ADC_SoftwareStartConvCmd(ADC);
-
-}
 /**
   * @brief  fan run is ok
   * @note  
@@ -469,7 +350,7 @@ static void power_on_initial(void)
       wifi_off_step =0; //WT.EDT 2026.05.15
       
  
-	  dht11_read_temp_humidity_value();
+
 	 
 	
       gon_t.on_step =1;
@@ -478,7 +359,6 @@ static void power_on_initial(void)
    break;
 
    case 1:
-    dht11_read_temp_humidity_value();
   
     gon_t.on_step =2;
 
@@ -487,7 +367,7 @@ static void power_on_initial(void)
 
    case 2:
    	 
-       dht11_read_temp_humidity_value();
+     
 	 
 	   gon_t.on_step =0xfe;
 
@@ -617,7 +497,7 @@ void power_on_handler(void)
 
 		 if(gpro_t.time_6s_f > 2 && ptc_high_temperature_f == 0 && fan_warning_f ==0){
 		   gpro_t.time_6s_f =0;
-      	   dht11_read_temp_humidity_value();
+      	  
    	      }
 
 		break;
@@ -646,8 +526,8 @@ void power_on_handler(void)
 		    gpro_t.time_7s_f =0 ;
 			fan_counter =1;
 		
-		    Adc_Channel_Sample();
-		    AD_Filter();
+
+
 		 
 	       }
 
@@ -684,7 +564,7 @@ void power_on_handler(void)
 		   	   ptc_counter =0;
 			   switch_done=1;
 		    
-		      ptc_adc_detected_voltage();
+		   
              #if 0
 			  printf_ptc_adc_numbers();
 			 #endif 
@@ -698,8 +578,8 @@ void power_on_handler(void)
 		    if(switch_done==1){
 				switch_done ++;
 			
-				ptc_switch_temperature();
-				Get_Ntc_Resistance_Temperature_Handler(ptc_current);
+			
+			
 				 #if 0
 						  printf("ntc_temp_v = %d \n\r",ptc_current);
 						  printf("temperature = %d \n\r",read_ntc_temperature_value);
@@ -861,16 +741,7 @@ static void power_off_handler(void)
 		 case 1:
              //power_off_peripheral_handler();
 		  
-             if(dc_on ==0){
-			 	beep_power_sound();
-			 	dc_on++;
-				fan_one_f =0;
-			    //FAN_RUN_OFF();
-				//fan_on(40);
-				fan_on(0);
-				//FAN_PWM_GPIO_OFF();//WT.EDIT 2026-05-16
-			  }
-
+           
 			
 
 			gon_t.off_step = 2;
@@ -887,16 +758,7 @@ static void power_off_handler(void)
 
 		  
 			
-			   if(fan_one_f == 1  && fan_one_minute_cuonter>59){
-				     fan_one_f ++;
-	                // FAN_RUN_OFF();
-                     //fan_on(40); 
-					fan_on(0);
-					//#if DEBUG_ENABLE
-                     // printf("power_off_fan_stop !!!\n\r");
-					//#endif 
-
-				 }
+			
 
 				
 		
@@ -909,10 +771,8 @@ static void power_off_handler(void)
 		    
 		   if(time_1s_counter > 1){
 				 	time_1s_counter =0;
-				    dht11_read_temp_humidity_value();
-				    //#if DEBUG_ENABLE
-                     /// printf(" gon_t.off_step = %d \n\r", gon_t.off_step );
-				    ///#endif 
+			
+				  
 			}
 
         
@@ -924,10 +784,7 @@ static void power_off_handler(void)
 
 		     if(time_1s_counter > 2){
 				 	time_1s_counter =0;
-				    dht11_read_temp_humidity_value();
-				   // #if DEBUG_ENABLE
-                     /// printf(" gon_t.off_step = %d \n\r", gon_t.off_step );
-				    //#endif 
+				 
 			}
 		
 		    gon_t.off_step =6;

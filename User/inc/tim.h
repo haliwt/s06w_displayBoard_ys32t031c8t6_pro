@@ -17,19 +17,15 @@
 #endif
 
 #include "ys32t031.h"
+#include "main.h"
+
+
+void TIM6_Configuration(void);
+
+	void TIM17_Configuration(void);
 
 
 
-extern void TIM1_Configuration(void);
-extern void TIM3_Configuration(void);
-extern void TIM6_Configuration(void);
-extern void TIM14_Configuration(void);
-
-
-extern void fan_on(uint16_t fan_duty);
-extern void fan_off(void);
-extern void ultra_sound_on(uint16_t us_duty);
-extern void ultra_sound_off(void);
 
 
 

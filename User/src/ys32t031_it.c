@@ -150,9 +150,10 @@ void TIM6_LPTIM_IRQHandler (void)
 
 	volatile static uint8_t c100ms;
 	
-	if(TIM_GetITStatus(TIM6,TIM_IT_Update) != RESET ) 
+	if(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1 ) 
 	{
-		TIM_ClearITPendingBit(TIM6,TIM_IT_Update);
+	 // 2. ???????????????,????????
+	  LL_TIM_ClearFlag_UPDATE(TIM6);
 
 		time_5ms_f = 1;
 		cnt10++;  
@@ -222,24 +223,7 @@ void TIM6_LPTIM_IRQHandler (void)
   */
 void UART1_IRQHandler(void)
 {
-    uint8_t res;
-	
-    if(UART_GetFlagStatus(UART1, UART_FLAG_RXNE) == SET)
-    {
-		    UART_ClearFlag(UART1, UART_FLAG_RXNE);
-			
-			  res = UART1->RDR;
-			  usart1_isr_callback_handler(res);
-			 
-	}	
-
-    if(UART_GetFlagStatus(UART1, UART_FLAG_TC) == SET)
-    {
-        UART_ClearFlag(UART1, UART_FLAG_TC);
-    }
-    
-    UART1->ICR = 0xFF;  //清除所有中断请求标志
-    UART_ClearFlag(UART1, UART_FLAG_ORE);
+   UART1_Int_Call(); 
 }
 
 

@@ -19,9 +19,9 @@ extern "C" {
   
 #include "ys32t031.h"
 #include "system_ys32t031.h"	
-#include <stdint.h>  
-#include "ys32t031_tsc.h"
-#include "ys32t031_tsc_lib.h"
+#include <stdint.h> 
+#include "main.h"
+
 	
 	
 #define K0_BIT				0x0001	// CCH0

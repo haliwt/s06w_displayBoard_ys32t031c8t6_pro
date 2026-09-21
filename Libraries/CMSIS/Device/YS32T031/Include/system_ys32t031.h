@@ -1,10 +1,10 @@
 /**
   ******************************************************************************
   * @file    system_ys32t031.h
-  * @author  YSPRING Application Team
-  * @brief   CMSIS Cortex-M0 Device System Source File for YS32T031 devices.  
+  * @author  ys Application Team
+  * @brief   CMSIS Cortex-M0 Device System Source File for ys32t031 devices.  
   ******************************************************************************
- */
+  */
 
 #ifndef __SYSTEM_YS32T031_H__
 #define __SYSTEM_YS32T031_H__
@@ -26,8 +26,6 @@ extern "C"
 /* Global function prototypes ('extern', definition in C source)              */
 /******************************************************************************/
 extern uint32_t SystemCoreClock;          /*!< System Clock Frequency (Core Clock) */
-
-
 extern const uint8_t AHBPrescTable[16];   /*!< AHB prescalers table values */
 extern const uint8_t APBPrescTable[8];    /*!< APB prescalers table values */
 

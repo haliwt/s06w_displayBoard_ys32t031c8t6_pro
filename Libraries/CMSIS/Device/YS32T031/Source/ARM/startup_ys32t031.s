@@ -109,10 +109,6 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 ; Reset handler routine
 Reset_Handler    PROC
                  EXPORT  Reset_Handler                 [WEAK]
-		     ; --- ??????????? ---
-        IMPORT  _tx_timer_interrupt          ; ?? ThreadX ????
-        IMPORT  __tx_PendSVHandler           ; ?? ThreadX ???????			 
-					 
         IMPORT  __main
         IMPORT  SystemInit  
                  LDR     R0, =SystemInit
@@ -136,14 +132,12 @@ SVC_Handler     PROC
                 B       .
                 ENDP
 PendSV_Handler  PROC
-                IMPORT __tx_PendSVHandler 
-                LDR R0,= __tx_PendSVHandler    
-				BX R0
+                EXPORT  PendSV_Handler                 [WEAK]
+                B       .
                 ENDP
 SysTick_Handler PROC
-                IMPORT _tx_timer_interrupt
-                LDR R0,= _tx_timer_interrupt
-				BX R0
+                EXPORT  SysTick_Handler                [WEAK]
+                B       .
                 ENDP
 
 Default_Handler PROC
@@ -224,13 +218,17 @@ RESERVED3                            ;	31	RESERVED
 ;*******************************************************************************
 ; User Stack and Heap initialization
 ;*******************************************************************************
-              EXPORT   __initial_sp
+                IF       :LNOT::DEF:__MICROLIB
+                IMPORT   __use_two_region_memory
+                ENDIF
 
-                IF       Heap_Size != 0
+                EXPORT   __stack_limit
+                EXPORT   __initial_sp
+                IF       Heap_Size != 0                      ; Heap is provided
                 EXPORT   __heap_base
                 EXPORT   __heap_limit
                 ENDIF
 
-                END
+                 END
 
 ;*****************************END OF FILE***************************************

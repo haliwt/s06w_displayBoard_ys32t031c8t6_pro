@@ -347,13 +347,13 @@ extern power_state gon_t;
 
 void Clear_Ram(void);
 
-extern void Adc_Channel_Sample(void);
 
-void Adc_PTC_Channel_Sample(void);
 
-extern void AD_Filter(void);
 
-void AD_PTC_Filter(void);
+
+
+
+
 
 
 
@@ -365,7 +365,7 @@ void Countdown_timer_Handler(void);
 
 
 
-void Task_Beep_Simple_10ms(void);
+
 
 void works_nomal_run_time_handler(void);
 
@@ -375,10 +375,10 @@ void power_on_off_handler(void);
 
 	
 
-void printf_ptc_adc_numbers(void);
 
-void ptc_adc_detected_voltage(void);
-void ptc_switch_temperature(void);
+
+
+
 	
 void Heat_Process(void);
 

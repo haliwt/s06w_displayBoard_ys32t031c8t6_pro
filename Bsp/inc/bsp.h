@@ -12,7 +12,7 @@
 
 #include "ys32t031.h"
 #include "main.h"
-#include "delay.h"
+//#include "delay.h"
 #include "system_init.h"
 #include "uart.h"  
 #include "tim.h"
@@ -20,6 +20,7 @@
 #include "key.h"
 #include "adc.h"
 #include "gpio.h"
+#include "dma.h"
 
 
 
@@ -41,9 +42,9 @@
 #include "bsp_usart.h"
 #include "bsp_tm1639.h"
 
-#include "bsp_sensor.h"
+
 #include "bsp_threadx.h"
-#include "bsp_ntc.h"
+
 
 //wifi
 
