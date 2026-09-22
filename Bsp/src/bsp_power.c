@@ -313,15 +313,7 @@ void Clear_Ram(void)
 		//wifi 
 		wifi_linking_tencent_f=0;
 		
-		
-	
-		
-
-		
-		
-	  //TM1639_Write_Display_Data(com_data_buf,16);
-		
-}
+	}
 
 /**
   * @brief  fan run is ok
@@ -466,17 +458,14 @@ static void task_ui_key(void)
 
    }
 
-   if (gpro_t.set_timer_timing_doing_value == 1 &&	gpro_t.ptc_warning == 0 &&  fan_warning_f == 0) {
+   if (gpro_t.set_timer_timing_doing_value == 1 &&	ptc_high_temperature_f == 0 &&  fan_warning_f == 0) {
 
 		Set_TimerTiming_Number_Value();
 
 		return ;
 	}
 	
-	 disp_smg_blink_set_tempeature_value();
-
-
-
+	// disp_smg_blink_set_tempeature_value();
 
 }
 
@@ -490,8 +479,8 @@ static void task_keys_and_refresh(void)
 {
 	
 	// 1. 有告警时优先显示告警
-		if (gpro_t.ptc_warning || fan_warning_f) {
-			Warning_Error_Numbers_Fun();
+		if (ptc_high_temperature_f || fan_warning_f) {
+			
 			return;
 		}
 	
@@ -523,7 +512,7 @@ static void task_dht11_display(void)
 **/
 static void task_two_hours_timing(void)
 {
-	 twoHours_works_timing();
+	 
 
 }
 /**
@@ -533,7 +522,8 @@ static void task_two_hours_timing(void)
 **/
 static void task_send_version(void)
 {
-	 SendData_Set_Command_Safe(0xF0,0x02);//SendData_Set_Command(0xF0,0x02);
+	 //SendData_Set_Command_Safe(0xF0,0x02);//
+	 SendData_Set_Command(0xF0,0x02);
 	 
 }
 /**
@@ -577,7 +567,7 @@ static void set_temperature_compare_value_fun(void)
    // static uint8_t counter;
 	uint8_t target_temp,real_temp;
 
-	if(fan_warning_f ==1 || gpro_t.ptc_warning ==1 || gpro_t.g_manual_shutoff_dry_flag == 1\
+	if(fan_warning_f ==1 || ptc_high_temperature_f ==1 || gpro_t.g_manual_shutoff_dry_flag == 1\
 		|| gpro_t.set_temperature_special_flag ==1)return ;
 
 
@@ -706,7 +696,8 @@ void Set_TimerTiming_Number_Value(void)
 		gpro_t.set_timer_timing_doing_value =0;
 
 
-		SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		//SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		SendData_Set_Command(0x2B, gpro_t.timer_dispTime_hours);
 		tx_thread_sleep(2);
 
 
@@ -724,7 +715,8 @@ void Set_TimerTiming_Number_Value(void)
 		gpro_t.set_timer_timing_doing_value =0;
 
 
-		SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		//SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		SendData_Set_Command(0x2B, gpro_t.timer_dispTime_hours);
 		tx_thread_sleep(2);
 
 

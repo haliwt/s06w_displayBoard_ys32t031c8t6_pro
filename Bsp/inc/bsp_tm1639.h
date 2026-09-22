@@ -116,6 +116,9 @@ void SMG_Display_Err(uint8_t idata);
 void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel);
 
 
+void disp_dht11_value(void);
+
+
 
 #endif /* __BSP_TM1639_H_ */
 

@@ -421,8 +421,8 @@ void tx_application_define(void *first_unused_memory)
 	
 		} 
 		else if(flags & KEY_UP_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-			 //key_up_short_handler();
-			 SendData_Set_Command(0x06,0x01);//SendData_Set_Command_Safe(0x06,0x01);//SendData_Set_Command(0x06,0x01);
+			
+			SendData_Set_Command(0x06,0x01);
              tx_thread_sleep(1);
 		     key_add_fun();
 		}

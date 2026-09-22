@@ -252,12 +252,12 @@ void Display_TimeColon_Blink_Fun(void)
 
 	if(gpro_t.set_timer_timing_doing_value==1){
 
-	if(timer_f ==0){
-	timer_f ++;
+		if(timer_f ==0){
+			timer_f ++;
 
-		SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,1);
-	}
-	return ;
+			SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,1);
+		}
+		return ;
 
 	}
 

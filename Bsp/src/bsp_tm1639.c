@@ -60,7 +60,20 @@ static const uint8_t TM1639_Char_Err_Table[] = {
 
 #define TM1639_DOT  0x08 // 小数点段�?,from low position start
 
+static void TM1639_Write_2bit_TempData(uint8_t onebit,uint8_t twobit);
+static void TM1639_Write_2bit_HumData(uint8_t onebit,uint8_t twobit);
 
+
+
+
+/*******************************************************************************************************
+    *
+*Function Name:static void TIM17_Init_1MHz(void)
+*Function :
+*Input Ref: 
+*Return Ref: NO
+    *
+********************************************************************************************************/
 static void TIM17_Init_1MHz(void)
 {
     /* 使能 TIM17 时钟 (APB2总线) */
@@ -801,5 +814,157 @@ void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 	#endif 
 
 }
+/*************************************************************************
+*
+*Function Name:
+*Function :
+*Input Ref:
+*
+*
+*************************************************************************/
+void disp_dht11_value(void)
+{
+    static uint8_t hum1,hum2; 
+    static uint8_t temp1,temp2;
 
+	hum1 =  gpro_t.dht11_humidity_value/10;  //Humidity 
+	hum2 =  gpro_t.dht11_humidity_value%10;
+
+	temp1 = gpro_t.dht11_temperature_value /10;//run_t.gReal_humtemp[1]/10 ;  // temperature
+	temp2 = gpro_t.dht11_temperature_value % 10;//run_t.gReal_humtemp[1]%10;
+
+ 
+	TM1639_Write_2bit_TempData(temp1,temp2);
+    
+	TM1639_Write_2bit_HumData(hum1,hum2);
+
+}
+/*******************************************************************************************************
+    *
+*Function Name:void TM1640_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
+*Function :Smg display temprature of value GRID1,GRID2->DP2
+*Input Ref: onebit,twobit  value
+*Return Ref: NO
+    *
+********************************************************************************************************/
+static void TM1639_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
+{
+	 TM1639_STB_SetLow();
+	 TM1639_Write_Byte(0X40);//To Address of fixed reg 0x44
+	 TM1639_STB_SetHigh();
+    
+    TM1639_STB_SetLow();
+     TM1639_Write_Byte(0X44);//To Address of fixed reg 0x44
+     TM1639_STB_SetHigh();
+
+	 
+    //digital 1
+    // TM1639_Start();
+     //TM1639_Write_Byte(0xC0);//0xC0H->GRID_1->BIT_1
+
+     //TM1639_Write_OneByte(segNumber_Low[onebit]);//display "10"
+     TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[onebit]);
+   
+    // TM1639_Stop();
+
+//	 TM1639_Start();
+//     TM1639_Write_OneByte(0XC1);//0xC1H->GRID_1->BIT_1
+  
+//      TM1639_Write_OneByte(segNumber_High[onebit]);//display "01"
+    
+//     TM1639_Stop();
+    
+      
+     //dighital 2
+   
+    // TM1639_Start();
+     //TM1639_Write_OneByte(AddrC2H);//0xC1H->GRID_2->BIT_2
+    
+     //TM1639_Write_OneByte(segNumber_Low[twobit]);//display "2 :"
+     TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[twobit]);
+     
+     //TM1639_Stop();
+   
+
+//	TM1639_Start();
+
+//     TM1639_Write_OneByte(AddrC3H);//0xC1H->GRID_2->BIT_2
+   
+//     TM1639_Write_OneByte(segNumber_High[twobit]|seg_h);//TM1639_Write_OneByte(segNumber_High[twobit]|0x80|seg_h);//display "2 :"
+   
+  
+//     TM1639_Stop();
+
+
+	  //open diplay
+    TM1639_Start();
+    TM1639_Write_Byte(OpenDispTM1639|0x8f);//
+    TM1639_Stop();
+
+
+}
+
+/*******************************************************************************************************
+    *
+*Function Name:void TM1639rite_2bit_HumData(uint8_t onebit,uint8_t twobit)
+*Function :Smg display humidity of value digital 3 ->digital 4 ->dp4 %
+*Input Ref: onebit,twobit  value
+*Return Ref: NO
+    *
+********************************************************************************************************/
+static void TM1639_Write_2bit_HumData(uint8_t onebit,uint8_t twobit)
+{
+
+
+     TM1639_STB_SetLow();
+	 TM1639_Write_Byte(0X40);//To Address of fixed reg 0x44
+	 TM1639_STB_SetHigh();
+    
+    TM1639_STB_SetLow();
+     TM1639_Write_Byte(0X44);//To Address of fixed reg 0x44
+     TM1639_STB_SetHigh();
+
+
+//digital 3 
+     //minute 
+    //TM1639_Start();
+    //TM1639_Write_OneByte(AddrC4H);//0xC2H->GRID_3->BIT_3
+    // TM1639_Write_OneByte(segNumber_Low[onebit]);//display ""
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_Number_Table[onebit]);
+     //TM1639_Stop();
+    
+//    //minute 
+//    TM1639_Start();
+//    TM1639_Write_OneByte(AddrC5H);//0xC2H->GRID_3->BIT_3
+  
+//	 TM1639_Write_OneByte(segNumber_High[onebit]);//display ""
+
+	
+//    TM1639_Stop();
+	
+    //digital 4
+	//minute 
+    //TM1639_Start();
+    //TM1639_Write_OneByte(AddrC6H);//0xC2H->GRID_4
+   
+	//TM1639_Write_OneByte(segNumber_Low[twobit]);//display ""
+	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L,TM1639_Number_Table[twobit]);
+    //TM1639_Stop();
+    
+    //minute 
+//    TM1639_Start();
+//    TM1639_Write_OneByte(AddrC7H);//0xC2H->GRID_4
+
+//	TM1639_Write_OneByte(segNumber_High[twobit]|seg_h);//display ""
+//     TM1639_Stop();
+
+	
+
+
+    //open diplay
+    TM1639_Start();
+    TM1639_Write_Byte(OpenDispTM1639|0x8f);//0xC2H->GRID3->BIT_3
+    TM1639_Stop();
+
+}
 

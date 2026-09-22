@@ -225,7 +225,7 @@ void mouse_key_handler(void)
 *****************************************************************/
 void key_add_fun(void)
 {
-    if(gpro_t.ptc_warning == 1) return;
+    if(ptc_high_temperature_f == 1) return;
 
    
    
@@ -261,7 +261,7 @@ void key_add_fun(void)
 *****************************************************************/
 void key_dec_fun(void)
 {
-    if(gpro_t.ptc_warning == 1) return;
+    if(ptc_high_temperature_f == 1) return;
 
 
     switch(gpro_t.set_timer_timing_doing_value)

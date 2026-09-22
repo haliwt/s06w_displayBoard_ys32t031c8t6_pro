@@ -88,7 +88,7 @@ typedef struct _main_ref{
  bool g_plasma_flag;
  bool g_dry_flag;
  bool g_mouse_flag;
- bool ptc_warning;
+
  bool g_time_disp_colon_flag;
 
  bool key_add_dec_pressed_flag;
@@ -100,6 +100,7 @@ typedef struct _main_ref{
 
  uint8_t set_timer_timing_doing_value;
  uint8_t dht11_temperature_value;
+ uint8_t dht11_humidity_value;
 
  
  bool key_model_short_flag ;
