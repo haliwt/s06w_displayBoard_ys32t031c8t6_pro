@@ -10,7 +10,65 @@
 
 #include "bsp.h"
 
+
+#define THREADX_TICK_MS 10
+
+
+#define MS_TO_TICKS(ms)  ((ms) / THREADX_TICK_MS)
+
+#define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
+
 power_state gon_t;
+
+
+
+typedef void (*task_handler_t)(void);
+
+typedef struct {
+    task_handler_t task_handler; // 任务回调函数
+    uint32_t period;              // 运行周期 (Ticks)
+    uint32_t last_tick;           // 上次运行时间 (Ticks)
+} task_t;
+
+
+
+// 任务函数前置声明
+static void task_ui_key(void);
+static void task_keys_and_refresh(void);
+static void task_dht11_display(void);
+static void task_two_hours_timing(void);
+static void task_send_version(void);
+static void task_blink_colon(void);
+static void task_compare_temp(void);
+
+// 任务配置表 (Table-Driven)
+static task_t g_ui_tasks[] = {
+    { task_ui_key,             1,   0 }, // 1*10m  
+    { task_keys_and_refresh,   5,   0 }, // 5*10ms 刷新UI和按键
+    { task_blink_colon,        50,  0 }, // 50*10ms 冒号闪烁
+    { task_dht11_display,      30,  0 }, // 300ms DHT11刷新
+    { task_compare_temp,       300, 0 }, // 3s 控温比较
+    { task_two_hours_timing,   120, 0 }, // 1.2s 运行计时
+    { task_send_version,       3000, 0 }, // 3s  发送版本号
+};
+
+
+
+typedef enum{
+
+  PTC_STATE_OFF = 0,
+  PTC_STATE_ON  = 1
+}PTC_State;
+
+static PTC_State ptc_state = PTC_STATE_OFF;
+
+
+
+static void Set_TimerTiming_Number_Value(void);
+
+
+
+
 
 
 
@@ -164,23 +222,10 @@ uint8_t ptc_high_temperature_f ;
 
 
 
-uint8_t com_data_temp[8];
-uint8_t com_data_buf[16];
 
 
-const uint8_t LED_TAB[11]={ 
-    _SMA|_SMB|_SMC|_SMD|_SME|_SMF,        //0
-    _SMB|_SMC,                            //1
-    _SMA|_SMB|_SMD|_SME|_SMG,             //2
-    _SMA|_SMB|_SMC|_SMD|_SMG,             //3
-    _SMB|_SMC|_SMF|_SMG,                  //4
-    _SMA|_SMC|_SMD|_SMF|_SMG,             //5
-    _SMA|_SMC|_SMD|_SME|_SMF|_SMG,        //6
-    _SMA|_SMB|_SMC,                       //7
-    _SMA|_SMB|_SMC|_SMD|_SME|_SMF|_SMG,   //8
-    _SMA|_SMB|_SMC|_SMD|_SMF|_SMG,        //9
-    0,                                    //����
-};
+
+
 
 
 
@@ -200,7 +245,7 @@ volatile uint8_t static beep_sound_f =0;
 static void power_on_handler(void);
 static void power_off_handler(void);
 static void power_on_initial(void);
-
+static void set_temperature_compare_value_fun(void);
 
 /**
   * @brief  fan run is error
@@ -271,60 +316,12 @@ void Clear_Ram(void)
 		
 	
 		
-		com_data_temp[0]=0;
-	  com_data_temp[1]=0;
-	  com_data_temp[2]=0;
-	  com_data_temp[3]=0;
-		com_data_temp[4]=0;
-	  com_data_temp[5]=0;
-	  com_data_temp[6]=0;
-	  com_data_temp[7]=0;
+
 		
-		com_data_buf[0]=0;
-	  com_data_buf[1]=0;
-	  com_data_buf[2]=0;
-	  com_data_buf[3]=0;
-		com_data_buf[4]=0;
-	  com_data_buf[5]=0;
-	  com_data_buf[6]=0;
-	  com_data_buf[7]=0;
-	  com_data_buf[8]=0;
-	  com_data_buf[9]=0;
-	  com_data_buf[10]=0;
-	  com_data_buf[11]=0;
-		com_data_buf[12]=0;
-	  com_data_buf[13]=0;
-	  com_data_buf[14]=0;
-	  com_data_buf[15]=0;
+		
 	  //TM1639_Write_Display_Data(com_data_buf,16);
 		
 }
-
-
-
-
-/**
-  * @brief  fan run is error
-  * @note  
-  * @param: 
-  *
-**/
-
-
-
-
-
-/**
-  * @brief  fan run is error
-  * @note  
-  * @param: 
-  *
-**/
-
-
-
-
-
 
 /**
   * @brief  fan run is ok
@@ -342,6 +339,9 @@ void Clear_Ram(void)
 static void power_on_initial(void)
 {
 
+   uint32_t current_tick = tx_time_get();
+   uint8_t i ;
+   uint32_t init_tick;
    
    switch(gon_t.on_step){
 
@@ -367,7 +367,11 @@ static void power_on_initial(void)
 
    case 2:
    	 
-     
+		// 2. 初始化所有任务的 last_tick 镜像
+	    init_tick = tx_time_get();
+	    for (i = 0; i < TASK_NUM; i++) {
+	        g_ui_tasks[i].last_tick = init_tick;
+	    }
 	 
 	   gon_t.on_step =0xfe;
 
@@ -388,35 +392,366 @@ uint16_t disp_counter;
 void power_on_handler(void)
 {
 
-  volatile  static uint8_t time_slot = 0,ptc_counter=0,fan_counter=0,fan_error=0;
-  volatile static uint8_t per_counter=0,switch_done =0,disp_counter=0;
-  volatile static uint8_t high_tmep_counter = 0,warning_counter=0,has_warning_counter=0;
-
-  volatile static uint16_t wifi_check_counter=0;
+    uint32_t current_tick = tx_time_get();
+	uint8_t i ;
+	uint32_t init_tick;
 
 	
         if(gon_t.on_step  < 8){
 		  power_on_initial();
         }
+		else{
 	 // ✨【新增：紧急事件拦截响应】✨
         // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
        
-         if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
-		    time_10ms_f=0;
+//         if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
+//		    time_10ms_f=0;
            
 		
 
-			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
-	        {
-	           heat_open_close_f = 0; // 立即清除触发标志，防止重复执行
+//			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
+//	        {
+//	           heat_open_close_f = 0; // 立即清除触发标志，防止重复执行
 	            
-	            // 强制、立刻执行一次加热控制函数
-	            // 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
-	          // compare_set_temp_value(); //set_temperature_value_handler(); 
-	        }
+//	            // 强制、立刻执行一次加热控制函数
+//	            // 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
+//	          // compare_set_temp_value(); //set_temperature_value_handler(); 
+//	        }
 			    
 
-         }
+//         }
+//		 else{
+
+	        for (i = 0; i < TASK_NUM; i++) {
+			if ((current_tick - g_ui_tasks[i].last_tick) >= g_ui_tasks[i].period){
+				// 防饱和截断：若卡顿超过 2 个周期，直接重置到当前 tick，放弃追赶
+				if ((current_tick - g_ui_tasks[i].last_tick) > (g_ui_tasks[i].period * 2)) 
+				{
+					g_ui_tasks[i].last_tick = current_tick;
+				} 
+				else 
+				{
+					// 锁相滚动累加，消除长期运行漂移
+					g_ui_tasks[i].last_tick += g_ui_tasks[i].period;
+				}
+
+				// 执行任务回调
+				if (g_ui_tasks[i].task_handler != NULL) 
+				{
+					g_ui_tasks[i].task_handler();
+				}
+			}
+
+		 }
+
+     }
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_ui_key(void)
+{
+
+  if(gpro_t.key_model_short_flag == 1 &&  gpro_t.gTimer_disp_mode_switch < 3){
+
+		 mode_key_short_fun();
+		 return ;
+   }
+
+   if(gpro_t.key_model_short_flag == 1 &&  gpro_t.gTimer_disp_mode_switch > 2){
+
+	  gpro_t.key_model_short_flag  =0;
+
+   }
+
+   if (gpro_t.set_timer_timing_doing_value == 1 &&	gpro_t.ptc_warning == 0 &&  fan_warning_f == 0) {
+
+		Set_TimerTiming_Number_Value();
+
+		return ;
+	}
+	
+	 disp_smg_blink_set_tempeature_value();
+
+
+
+
+}
+
+
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_keys_and_refresh(void)
+{
+	
+	// 1. 有告警时优先显示告警
+		if (gpro_t.ptc_warning || fan_warning_f) {
+			Warning_Error_Numbers_Fun();
+			return;
+		}
+	
+	
+		// 4. 正常显示工作时间（你原来的 Display_SmgTiming_Value）
+		if (gpro_t.set_timer_timing_doing_value == 0){
+				 
+			if(gpro_t.key_model_short_flag == 1) return;
+			
+			Display_SmgTiming_Value();
+			return;
+		}
+
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_dht11_display(void)
+{
+	disp_dht11_value();
+
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_two_hours_timing(void)
+{
+	 twoHours_works_timing();
+
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_send_version(void)
+{
+	 SendData_Set_Command_Safe(0xF0,0x02);//SendData_Set_Command(0xF0,0x02);
+	 
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_blink_colon(void)
+{
+	Display_TimeColon_Blink_Fun();
+	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == false && gpro_t.gTimer_wifi_connect_counter > 125 ){
+		gpro_t.wifi_led_fast_blink=0;
+
+	}
+	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == true){
+
+		gpro_t.wifi_led_fast_blink=0;
+
+	}
+}
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_compare_temp(void)
+{
+	set_temperature_compare_value_fun();
+
+}
+/************************************************************************************************
+*
+*Function Name:void set_temperature_compare_value_fun(void)
+*Function:
+*Input Ref:
+*Return Ref:
+*
+*************************************************************************************************/
+static void set_temperature_compare_value_fun(void)
+{
+   // static uint8_t counter;
+	uint8_t target_temp,real_temp;
+
+	if(fan_warning_f ==1 || gpro_t.ptc_warning ==1 || gpro_t.g_manual_shutoff_dry_flag == 1\
+		|| gpro_t.set_temperature_special_flag ==1)return ;
+
+
+	real_temp = gpro_t.dht11_temperature_value;//gpro_t.temp_real_value;
+	target_temp = gpro_t.set_up_temperature_value;//gpro_t.key_set_temperature;
+   
+
+	
+
+	if(real_temp >= target_temp){
+
+		   gpro_t.g_dry_flag = 0;
+		   LED_DRY_OFF();
+		   
+		  ptc_state = PTC_STATE_OFF ;
+		  gpro_t.first_set_ptc_on  = 1;
+		  SendData_Set_Command(0x22,0);
+		  tx_thread_sleep(2);
+  
+		  return ;
+	}
+
+	if(ptc_state == PTC_STATE_OFF){
+
+		if(gpro_t.first_ptc_on==0 || gpro_t.first_ptc_on==1){
+
+			if(real_temp < target_temp){
+
+			   if(gpro_t.g_manual_shutoff_dry_flag==0){
+				   gpro_t.g_dry_flag = 1;
+					LED_DRY_ON();
+				   ptc_state = PTC_STATE_ON ;
+				   if(gpro_t.first_ptc_on==1)gpro_t.first_set_ptc_on  = 2;
+				   
+				   SendData_Set_Command(0x22,1);
+				   tx_thread_sleep(2);
+				}
+			}
+		}
+		else{
+			if(real_temp < (target_temp -2)){
+
+			  if(gpro_t.g_manual_shutoff_dry_flag==0){
+
+				gpro_t.g_dry_flag = 1;
+				LED_DRY_ON();
+		   
+				ptc_state = PTC_STATE_ON ;
+			   SendData_Set_Command(0x22,1);
+			   tx_thread_sleep(2);
+				}
+
+			}
+
+
+		}
+
+	}
+	else{
+		if(real_temp >= target_temp){
+			gpro_t.g_dry_flag = 0;
+			 LED_DRY_OFF();
+			ptc_state = PTC_STATE_OFF ;
+		   SendData_Set_Command(0x22,0);
+		   tx_thread_sleep(2);
+		}
+
+	}
+
+
+	
+}
+
+/****************************************************************
+*
+*Function Name :void Set_Timing_Temperature_Number_Value(void)
+*Function : set timer timing how many ?
+*Input Parameters :NO
+*Retrurn Parameter :NO
+*
+*****************************************************************/
+void Set_TimerTiming_Number_Value(void)
+{
+
+	// switch(gpro_t.set_timer_first_smg_blink_flag)
+	if(gpro_t.set_timer_first_smg_blink_flag ==1){
+	gpro_t.set_timer_first_smg_blink_flag++;
+
+	//以前已经设置过定时模式,现在显示之前的定时时间
+	if(gpro_t.set_timer_timing_value_success  == TIME_MODE_TIMER && gpro_t.key_add_dec_pressed_flag ==0){
+		gpro_t.hours_two_decade_bit = gpro_t.timer_dispTime_hours/10,
+		gpro_t.hours_two_unit_bit  = gpro_t.timer_dispTime_hours %10;
+
+
+		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
+
+	}
+	else{
+
+		gpro_t.hours_two_decade_bit = 0;//gpro_t.timer_dispTime_hours/10,
+		gpro_t.hours_two_unit_bit  = 0;//gpro_t.timer_dispTime_hours %10;
+
+		gpro_t.timer_dispTime_hours =0;
+		gpro_t.timer_dispTime_minutes =0;
+
+		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
+	}
+
+
+	}
+	else if(gpro_t.set_timer_first_smg_blink_flag==2 && gpro_t.gTimer_key_timing > 2){
+
+
+		if( gpro_t.timer_dispTime_hours >0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
+		gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER;//disp_timer_times;
+		//key_t.disp_smg_mode_flag = disp_timer_times;
+		gpro_t.gTimer_timer_seconds_counter = 0;
+
+
+
+
+		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+
+
+		gpro_t.set_timer_first_smg_blink_flag ++;
+		gpro_t.set_timer_timing_doing_value =0;
+
+
+		SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		tx_thread_sleep(2);
+
+
+	}
+	else if(gpro_t.timer_dispTime_hours	== 0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
+		gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER; //disp_works_times;
+		gpro_t.ui_time_mode = TIME_MODE_TIMER;//key_t.disp_smg_mode_flag = disp_works_times;
+		gpro_t.gTimer_timer_seconds_counter = 0;
+
+
+
+		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+
+		gpro_t.set_timer_first_smg_blink_flag ++;
+		gpro_t.set_timer_timing_doing_value =0;
+
+
+		SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+		tx_thread_sleep(2);
+
+
+	}
+	else{
+
+		gpro_t.timer_dispTime_hours = 0 ;
+		gpro_t.timer_dispTime_minutes = 0;
+
+		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+
+		gpro_t.set_timer_first_smg_blink_flag ++;
+		gpro_t.set_timer_timing_doing_value =0;
+
+
+		gpro_t.set_timer_timing_value_success  = 0;
+		key_t.disp_smg_mode_flag = TIME_MODE_TIMER; //disp_works_times;
+
+
+	}
+
+	}
+}
+
+#if 0
+
+		 
 	     
 
 		switch(time_slot){
@@ -702,6 +1037,7 @@ void power_on_handler(void)
 
         
 }
+#endif 
 /************************************************************************
  *
  * Function Name: LED_Power_Breathing(void)

@@ -323,7 +323,7 @@ void direct_temperature_compraison_handler(void)
 {
 	if(gpro_t.set_up_temperature_value > gpro_t.dht11_temperature_value){
  
-	   gpro_t.g_dry_flag = 1; //gpro_t.gPtc=1;
+	   gpro_t.g_dry_flag = true; //gpro_t.gPtc=1;
 	   LED_DRY_ON();
 	   SendData_Set_Command(0x23,1);
 	   tx_thread_sleep(1);
@@ -353,6 +353,60 @@ void direct_temperature_compraison_handler(void)
 	*Retrurn Parameter :NO
 	*
 *****************************************************************/
+/******************************************************************************
+	*
+	*Function Name:
+	*Funcion: 
+	*Input Ref: NO
+	*Return Ref:NO
+	*
+******************************************************************************/
+void mode_key_short_fun(void)
+{
+
+     switch(gpro_t.ui_time_mode){
+
+
+	 case 1:
+
+        if(gpro_t.set_timer_timing_value_success==true){
+
+			Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+
+			gpro_t.ui_time_mode = TIME_MODE_NORMAL; 
+			//gpro_t.key_disp_mode_flag =0xff;
+			SendData_Set_Command(0x07,0x01); // ai model
+			tx_thread_sleep(1);
+
+          }
+
+		
+   
+	  break;
+
+	  case 0:
+		   if(gpro_t.set_timer_timing_value_success== true){ 
+			    // gpro_t.ai_flag = no_ai_mode; //don't AI
+
+				Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+			    gpro_t.ui_time_mode = TIME_MODE_TIMER; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
+			   // gpro_t.key_disp_mode_flag =0xff;
+				SendData_Set_Command(0x07,0x02); //reverse switch don't displayb "AI"
+				tx_thread_sleep(1);
+
+		   }
+		   else if(gpro_t.set_timer_timing_value_success== false){
+
+                   Display_Timing(0,0,0);
+				   gpro_t.ui_time_mode = TIME_MODE_NORMAL; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
+				  // gpro_t.key_disp_mode_flag =0xff;
+				   SendData_Set_Command(0x07,0x01); //ai model
+				   tx_thread_sleep(1);
+		  }
+
+         break;
+     	}
+}
 
 
 /*

@@ -42,6 +42,8 @@
 #include "bsp_usart.h"
 #include "bsp_tm1639.h"
 #include "bsp_key_app.h"
+#include "bsp_tim.h"
+#include "bsp_smg_app.h"
 
 
 #include "bsp_threadx.h"
@@ -73,8 +75,11 @@ typedef struct _main_ref{
  bool  set_temperature_special_flag;
  bool g_manual_shutoff_dry_flag ;
 
- uint8_t timer_dispTime_minutes;
+ int8_t timer_dispTime_minutes;
  uint8_t timer_dispTime_hours ;
+
+ uint8_t works_dispTime_hours;
+ int8_t works_dispTime_minutes;
 
  uint8_t hours_two_decade_bit    ;
  uint8_t hours_two_unit_bit  ;
@@ -87,13 +92,21 @@ typedef struct _main_ref{
  bool g_time_disp_colon_flag;
 
  bool key_add_dec_pressed_flag;
- uint8_t ui_time_mode;
+ bool set_timer_timing_value_success;
+ bool ui_time_mode;
+ uint8_t first_set_ptc_on;
+ uint8_t  first_ptc_on;
+ uint8_t  set_timer_first_smg_blink_flag;
 
  uint8_t set_timer_timing_doing_value;
  uint8_t dht11_temperature_value;
 
  
  bool key_model_short_flag ;
+
+ //wifi
+ bool wifi_led_fast_blink; 
+ bool  connect_wifi_state;
 
 
  volatile uint8_t time_10ms_f;
@@ -125,7 +138,10 @@ typedef struct _main_ref{
   volatile uint8_t gTimer_key_temp_timing  ;
   volatile uint8_t gTimer_key_timing ;
   volatile uint8_t gTimer_disp_mode_switch;
-   
+  volatile uint8_t gTimer_wifi_connect_counter;
+  volatile uint8_t gTimer_timer_seconds_counter;
+  volatile uint8_t gTimer_timing_seconds_counter;
+  volatile uint8_t  gTimer_time_colon ;
 
 
 

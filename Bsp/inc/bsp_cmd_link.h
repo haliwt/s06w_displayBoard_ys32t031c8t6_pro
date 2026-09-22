@@ -41,5 +41,8 @@ void SendData_Set_Command(uint8_t cmd,uint8_t data);
 
 void SendWifiData_olderCmd(uint8_t cmd,uint8_t data);//only send ox1F
 
+void sendData_to_threeData(uint8_t cmd ,uint8_t h,uint8_t m,uint8_t s);
+
+
 
 #endif 

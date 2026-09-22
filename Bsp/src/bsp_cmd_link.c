@@ -1,16 +1,21 @@
 #include "bsp.h"
 
 #define MAX_BUFFER_SIZE  12
+// 定义宏，提高代码可读性
+#define FRAME_HEADER        0xA5
+#define DEVICE_NUMBER       0x01
+#define FRAME_END           0xFE
+#define NO_DATA             0x00
+#define HAS_DATA            0x0F
 
 
 uint8_t  inputCmd[30];
 uint8_t  wifiInputBuf[1];
-//uint8_t test_counter;
-//uint8_t test_counter_usat1;
+
 
 uint8_t rx_wifi_data[7];
 
-//uint8_t wifi_rx_temp_data[25];
+
 
 
 static uint8_t transferSize;
@@ -156,6 +161,32 @@ void SendWifiData_To_PanelWindSpeed(uint8_t dat1)
 //            transOngoingFlag=1;
 //            HAL_UART_Transmit_IT(&huart1,outputBuf,transferSize);
 //        }
+
+}
+/********************************************************************************
+    **
+    *Function Name:void SendWifiData_To_PanelWindSpeed(uint8_t dat1)
+    *Function :
+    *Input Ref: dat1- fan of grade value 
+    *Return Ref:NO
+    *
+*******************************************************************************/
+void sendData_to_threeData(uint8_t cmd ,uint8_t h,uint8_t m,uint8_t s)
+{
+
+    outputBuf[0]=0xA5; //display board head = 0xA5
+	outputBuf[1]= DEVICE_NUMBER; //display device Number:is 0x01
+	outputBuf[2]=cmd; // command type = 0x1A -> temperature of value 
+	outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
+	outputBuf[4]=0x03; // data is length: 00 ->don't data 
+	outputBuf[5]=h;// frame of end code -> 0xFE.
+	outputBuf[6]=m;
+	outputBuf[7]=s;
+	outputBuf[8]=0xFE; // frame of end code -> 0xFE.
+    outputBuf[9]= bcc_check(outputBuf,9);
+		
+	transferSize=10 ;
+	send_usart1_data(outputBuf,transferSize);
 
 }
 

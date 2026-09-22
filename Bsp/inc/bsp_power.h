@@ -207,8 +207,8 @@ extern uint8_t  soft_version ;
 
 //wifi end 
 
-extern uint8_t com_data_temp[8];
-extern uint8_t com_data_buf[16];
+
+
 
 #define _SMA            (1<<0)
 #define _SMB            (1<<1)

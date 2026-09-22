@@ -16,7 +16,8 @@ void TIM6_Configuration(void)
 
   LL_TIM_EnableIT_UPDATE(TIM6);
   LL_TIM_EnableCounter(TIM6);
-}
+}
+
 
 
 // TIM17 初始化配置

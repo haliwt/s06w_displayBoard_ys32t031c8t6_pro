@@ -21,16 +21,6 @@
 #define TM1639_CMD_DISPLAY            0x88    // 显示控制命令
 #define TM1639_DONOT_DISPLAY          0x80    //  关闭显示
 
-// TM1639 显示地址定义（毝个数字需覝高4佝和�?4佝两个地�?�?
-// �?1佝数砝管（最左）
-#define TM1639_ADDR_DIG1_H           0xC0    // �?4佝地�?
-#define TM1639_ADDR_DIG1_L           0xC1    // �?4佝地�?
-// �?2佝数砝管（中间）
-#define TM1639_ADDR_DIG2_H           0xC2    // �?4佝地�?
-#define TM1639_ADDR_DIG2_L           0xC3    // �?4佝地�?
-// �?3佝数砝管（最坳）
-#define TM1639_ADDR_DIG3_H           0xC4    //  �?4佝地�?
-#define TM1639_ADDR_DIG3_L           0xC5    // �?4佝地�?
 
 // TM1639 显示模弝
 #define TM1639_DISPLAY_ON            0x08    // 显示�?
@@ -59,8 +49,10 @@
 
 // TM1639 LED显示地址定义（GRID4-GRID8）
  //Display Address 
+//digital 1
 #define TM1639_ADDR_GRID1_H 		0xC0//??00H
 #define TM1639_ADDR_GRID1_L  		0xC1//??01H
+//digital 2
 
 #define  TM1639_ADDR_GRID2_H   		0xC2//??02H
 #define  TM1639_ADDR_GRID2_L   		0xC3//??03H
@@ -72,17 +64,20 @@
 
 #define TM1639_ADDR_GRID4_H           0xC6    // GRID4 高4位地址
 #define TM1639_ADDR_GRID4_L           0xC7    // GRID4 低4位地址
-//digital 5
 
+//digital 5
 #define TM1639_ADDR_GRID5_H           0xC8    // GRID5 高4位地址
 #define TM1639_ADDR_GRID5_L           0xC9    // GRID5 低4位地址
 
+//digital 6
 #define TM1639_ADDR_GRID6_H           0xCA    // GRID6 高4位地址
 #define TM1639_ADDR_GRID6_L           0xCB    // GRID6 低4位地址
 
+//digital 7
 #define TM1639_ADDR_GRID7_H           0xCC    // GRID7 高4位地址
 #define TM1639_ADDR_GRID7_L           0xCD    // GRID7 低4位地址
 
+//digital 8
 #define TM1639_ADDR_GRID8_H           0xCE    // GRID8 高4位地址
 #define TM1639_ADDR_GRID8_L           0xCF    // GRID8 低4位地址
 
@@ -115,6 +110,10 @@ void TM1639_Display_setTimerMinutes_3_Digit(uint8_t num);
 void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel);
 
 void Display_Timing(uint8_t hours,uint8_t minutes,uint8_t disp);
+
+void SMG_Display_Err(uint8_t idata);
+
+void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel);
 
 
 
