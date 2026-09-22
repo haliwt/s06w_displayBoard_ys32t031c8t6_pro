@@ -69,6 +69,8 @@ typedef struct _main_ref{
 
  
  bool g_power_flag ;
+ uint8_t on_step;
+ uint8_t off_step;
  uint8_t set_up_temperature_value;
  uint8_t set_temperature_decade_value;
  uint8_t set_temperature_unit_value;
@@ -111,6 +113,7 @@ typedef struct _main_ref{
  //wifi
  bool wifi_led_fast_blink; 
  bool  connect_wifi_state;
+
 
 
  volatile uint8_t time_10ms_f;

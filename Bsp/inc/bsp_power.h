@@ -87,13 +87,12 @@ extern uint16_t disp_timing_time;
 extern uint16_t disp_humidity;
 
 extern uint8_t AI_led_open_f;
-extern uint8_t gpro_t.g_dry_flag;
+
 extern uint8_t first_temp_compare_f;
 
-extern uint8_t ptc_prohibit_off_f;
+extern bool ptc_prohibit_off_f;
 
-extern uint8_t gpro_t.g_mouse_flag;
-extern uint8_t gpro_t.g_plasma_flag;
+
 
 extern uint16_t timing_is_reach_disptime;
 /*countdown timer  */
@@ -148,7 +147,7 @@ extern uint16_t beep_interval_time;
 extern uint8_t soft_version;
 
 
-extern uint8_t temperature;
+
 extern uint8_t humidity;
 
 
@@ -199,7 +198,7 @@ extern  uint8_t  key_pressed_set_temp_f; //WT.EDIT 2026-05-16
 //time couter 
 
 
-extern uint8_t  works_interval_f;
+extern bool  works_interval_f;
 
 extern uint8_t  soft_version ;
 
@@ -333,15 +332,7 @@ extern const uint8_t LED_TAB[11];
 #define _LED_UP          ((1<<2)|(1<<3))  
 #define _LED_DOWN        ((1<<6)|(1<<7))
 
-typedef struct  _power_state{
 
-    uint8_t on_step;
-	uint8_t  off_step;
-
-
-}power_state;
-
-extern power_state gon_t;
 
 
 void Clear_Ram(void);

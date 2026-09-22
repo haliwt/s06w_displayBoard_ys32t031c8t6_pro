@@ -37,7 +37,7 @@ void send_usart1_data(const uint8_t *pdata,uint8_t length)
 	**
 	*Function Name:sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
 	*Function :
-	*Input Ref: humidity value and temperature value
+	*Input Ref: humidity value and gpro_t.dht11_temperature_value value
 	*Return Ref:NO
 	*
 *******************************************************************************/
@@ -47,7 +47,7 @@ void sendData_Real_TimeHum(uint8_t hum,uint8_t temp)
 	//crc=0x55;
 	outputBuf[0]=0x5A; //head : mainboard Board = 0x5A
 	outputBuf[1]=0x10; //main board device No: 0x10
-	outputBuf[2]=0x1A; //command : temperature of value 
+	outputBuf[2]=0x1A; //command : gpro_t.dht11_temperature_value of value 
 	outputBuf[3]=0x0F; // 0x0F : is data ,don't command data.
 	outputBuf[4]= 0x02; //data of length: 0x01 - 2 byte.
 	outputBuf[5] =hum;
@@ -106,7 +106,7 @@ void SendWifiData_To_PanelTime(uint8_t hours,uint8_t minutes,uint8_t seconds)
 /*********************************************************
  * 
  * Function Name:void SendData_Temp_Data(uint8_t tdata)
- * Function:send temperature value 
+ * Function:send gpro_t.dht11_temperature_value value 
  * 
 *********************************************************/
 void SendData_Set_Command(uint8_t cmd,uint8_t data)
@@ -176,7 +176,7 @@ void sendData_to_threeData(uint8_t cmd ,uint8_t h,uint8_t m,uint8_t s)
 
     outputBuf[0]=0xA5; //display board head = 0xA5
 	outputBuf[1]= DEVICE_NUMBER; //display device Number:is 0x01
-	outputBuf[2]=cmd; // command type = 0x1A -> temperature of value 
+	outputBuf[2]=cmd; // command type = 0x1A -> gpro_t.dht11_temperature_value of value 
 	outputBuf[3]=0x0f; // command order -> 0x0f -> is data , don't order.
 	outputBuf[4]=0x03; // data is length: 00 ->don't data 
 	outputBuf[5]=h;// frame of end code -> 0xFE.

@@ -830,7 +830,7 @@ void disp_dht11_value(void)
 	hum1 =  gpro_t.dht11_humidity_value/10;  //Humidity 
 	hum2 =  gpro_t.dht11_humidity_value%10;
 
-	temp1 = gpro_t.dht11_temperature_value /10;//run_t.gReal_humtemp[1]/10 ;  // temperature
+	temp1 = gpro_t.dht11_temperature_value /10;//run_t.gReal_humtemp[1]/10 ;  // gpro_t.dht11_temperature_value
 	temp2 = gpro_t.dht11_temperature_value % 10;//run_t.gReal_humtemp[1]%10;
 
  

@@ -18,7 +18,7 @@
 
 #define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
 
-power_state gon_t;
+
 
 
 
@@ -97,13 +97,11 @@ uint16_t disp_timing_time;
 uint16_t disp_humidity;
 
 uint8_t AI_led_open_f;
-uint8_t gpro_t.g_dry_flag;
+
 uint8_t first_temp_compare_f;
 
-uint8_t ptc_prohibit_off_f;
+bool ptc_prohibit_off_f;
 
-uint8_t gpro_t.g_mouse_flag;
-uint8_t gpro_t.g_plasma_flag;
 
 uint16_t timing_is_reach_disptime;
 
@@ -149,7 +147,7 @@ int8_t setting_timing_hour;
 
 //wroks time two hours
 
-uint8_t  works_interval_f;
+bool  works_interval_f;
 
 
 
@@ -163,7 +161,7 @@ volatile uint8_t non_beep_length;		//���ʱ��
 uint16_t beep_interval_time;
 
 //temp ref
-uint8_t temperature;
+
 uint8_t humidity;
 
 uint8_t  soft_version ;
@@ -248,15 +246,7 @@ void works_two_hours_handler(void);
 void Clear_Ram(void)
 {
     
-	
-
-	  gpro_t.time_400ms_f =0;
-	  gpro_t.time_500ms_f =0;
-	  gpro_t.time_1s_f = 0;
-
-	
-
-	  Times10msCnt = 0;
+	 Times10msCnt = 0;
 
 	  Times1minute = 0;
 	  Times1minCnt = 0;
@@ -327,10 +317,10 @@ static void power_on_initial(void)
    uint8_t i ;
    uint32_t init_tick;
    
-   switch(gon_t.on_step){
+   switch(gpro_t.on_step){
 
    case 0:
-   	  gon_t.off_step = 0;
+   	  gpro_t.off_step = 0;
       wifi_off_step =0; //WT.EDT 2026.05.15
       gpro_t.works_two_minutes_value =0;
 	  gpro_t.gTimer_timing_seconds_counter=0;
@@ -338,17 +328,17 @@ static void power_on_initial(void)
       gpro_t.works_dispTime_hours =0;
 	  //
 	  gpro_t.timer_dispTime_hours =0;
-	  gpro_t.timer_dispTime_minutes = 0；
+	  gpro_t.timer_dispTime_minutes = 0;
 	  gpro_t.gTimer_timer_seconds_counter =0;
 						    
-      gon_t.on_step =1;
+      gpro_t.on_step =1;
 	
 
    break;
 
    case 1:
   
-    gon_t.on_step =2;
+    gpro_t.on_step =2;
 
 
    break;
@@ -361,7 +351,7 @@ static void power_on_initial(void)
 	        g_ui_tasks[i].last_tick = init_tick;
 	    }
 	 
-	   gon_t.on_step =0xfe;
+	   gpro_t.on_step =0xfe;
 
    break;
 
@@ -383,11 +373,11 @@ void power_on_handler(void)
 	uint32_t current_tick = tx_time_get();
 	uint8_t i ;
 
-	if(gon_t.on_step  < 8){
+	if(gpro_t.off_step < 8){
 		power_on_initial();
 	}
 	else{
-		✨   //【新增：紧急事件拦截响应】✨
+		//✨   //【新增：紧急事件拦截响应】✨
 		//如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
 
 		if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
@@ -897,7 +887,7 @@ void Set_TimerTiming_Number_Value(void)
 			
 				 #if 0
 						  printf("ntc_temp_v = %d \n\r",ptc_current);
-						  printf("temperature = %d \n\r",read_ntc_temperature_value);
+						  printf("gpro_t.dht11_temperature_value = %d \n\r",read_ntc_temperature_value);
 				 #endif 
 						
 			}
@@ -971,7 +961,7 @@ void Set_TimerTiming_Number_Value(void)
 		   	  fan_counter ++; 
 			  #if 0
 				  printf("fan_current  = %d \n\r",fan_current );
-				  printf("temperature = %d \n\r",read_ntc_temperature_value);
+				  printf("gpro_t.dht11_temperature_value = %d \n\r",read_ntc_temperature_value);
 			  #endif 
            if(fan_current < 20  &&  fan_warning_f == 0 && works_interval_f==0){
 		  	    
@@ -1035,10 +1025,10 @@ static void power_off_handler(void)
    if(tx_time_get() < wait_timeout){
        return ;
    }
-	switch(gon_t.off_step){
+	switch(gpro_t.off_step){
 	
 		 case 0:
-			gon_t.on_step =0;
+			gpro_t.on_step =0;
 	       
 		    fan_one_f =1;
 			time_1s_counter=0;
@@ -1050,87 +1040,24 @@ static void power_off_handler(void)
 	        TM1639_Display_ON_OFF(0);
 			
 			
-			gon_t.off_step = 1;
+			gpro_t.off_step = 1;
 	
 		 break;
 	
 		 case 1:
-             //power_off_peripheral_handler();
+            
 		  
-           
-			
-
-			gon_t.off_step = 2;
+               gpro_t.off_step = 2;
 			 
         break;
 
 
 		case 2:
        
+		   gpro_t.off_step = 2;
 
 		break;
-
-		case 3:
-
-		  
-			
-			
-
-				
-		
-	       gon_t.off_step = 4;
-            	
-		break;
-
-		 case 4 :
-
-		    
-		   if(time_1s_counter > 1){
-				 	time_1s_counter =0;
-			
-				  
-			}
-
-        
-		    gon_t.off_step = 5;
-
-		  break;
-
-		  case 5:
-
-		     if(time_1s_counter > 2){
-				 	time_1s_counter =0;
-				 
-			}
-		
-		    gon_t.off_step =6;
-
-		  break;
-
-		  case 6:
-
-		 
-
-			
-		
-		  gon_t.off_step = 7;
-		break;
-
-		case 7:
-			
-
-		   
-		    gon_t.off_step = 8;
-
-		break;
-
-		case 8:
-			
-		
-          gon_t.off_step = 3;
-		break;
-
-   }
+	}
 }
 
 /**
@@ -1228,7 +1155,7 @@ void beep_power_sound(void)
 
 /**
 	*
-	*@brief environment temperature value compare set temperater value
+	*@brief environment gpro_t.dht11_temperature_value value compare set temperater value
 	*@notice
 	*@param
 	*
@@ -1244,7 +1171,7 @@ void Heat_Process(void)
 
 	  target_temp = setting_temperature;
 
-	  if(temperature > 39){
+	  if(gpro_t.dht11_temperature_value > 39){
 
         gpro_t.g_dry_flag = 0;   // 立即关闭
 	    first_temp_compare_f = 1; 
@@ -1268,7 +1195,7 @@ void Heat_Process(void)
     // -----------------------------
 	  if(first_temp_compare_f == 0){
 
-		if(temperature >= target_temp){
+		if(gpro_t.dht11_temperature_value >= target_temp){
             gpro_t.g_dry_flag = 0;   // 立即关闭
 
 		       if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
@@ -1302,7 +1229,7 @@ void Heat_Process(void)
 		if(first_temp_compare_f == 1)
 		{
 			// 当前是开启状态 → 高于设定温度则关闭
-			if(temperature >= target_temp){
+			if(gpro_t.dht11_temperature_value >= target_temp){
 					gpro_t.g_dry_flag = 0;
 				if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
 					default_init = gpro_t.g_dry_flag;
@@ -1316,7 +1243,7 @@ void Heat_Process(void)
 			else
 			{
 				// 当前是关闭状态 → 低于设定温度 - 2 才重新打开
-				if(temperature <  (target_temp - 2))
+				if(gpro_t.dht11_temperature_value <  (target_temp - 2))
 				gpro_t.g_dry_flag = 1;
 				
 				if(default_init!= gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){

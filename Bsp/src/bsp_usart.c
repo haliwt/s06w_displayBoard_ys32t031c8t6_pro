@@ -307,78 +307,100 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
          
         if(pdata[3] == 0x01){ //open
                 
-		        gon_t.on_step=0;
+		        
+				SendWifiData_Answer_Cmd(0x01,0x01);
+	            tx_thread_sleep(2);
 				
-		        SendData_Set_Command(0x06,0x01);//buzzer_sound_fun();
-	            SendWifiData_Answer_Cmd(0x01,0x01);
-	            tx_thread_sleep(10);
-				if(soft_version > 2)soft_version =0;
-				if(soft_version ==0 && wifi_app_timer_power_on_f==0){
-				   gpro_t.g_power_flag  = 1;//gpro_t.gpower_on = power_on;
+				gpro_t.g_power_flag  = true;
+				gpro_t.on_step=0;
 				
-				   LED_PLASMA_ON();//LED_PLASMA_ON();;
-                  // ultra_sound_on(20);//(159); //ultra_sound_on(uint16_t us_duty);   //ultra_sound_on(40);   //ultrasnoic ON 
-          
+		}
+	    else if(pdata[3] == 0x0){ //close 
 
-				}
-	         
-	           
-
-		 }
-        else if(pdata[3] == 0x0){ //close 
-
-		     counter_power_flag ++;
-			 SendData_Set_Command(0x06,0x01);
-		     gon_t.off_step=0;
-             gpro_t.g_power_flag  = 0 ;//gpro_t.gpower_on = false;
+		  
 		
-             
-              SendWifiData_Answer_Cmd(0x01,0x0); //power off .
-              tx_thread_sleep(10); 
-			  SendWifiData_Answer_Cmd(0x01,0x02); //compatible older version 
-	           tx_thread_sleep(10);
-           
-			  	
-			
-			     
-              }
+             SendWifiData_Answer_Cmd(0x01,0); //compatible older version 
+	          tx_thread_sleep(2);
+		      gpro_t.off_step=0;
+              gpro_t.g_power_flag  = false ;//gpro_t.gpower_on = false;
+        }
       
        
 
      break;
 
-	  case ptc_on_off: //PTC key of command .
+	  case 0x10: // 确认设备是否开机和关机，没有蜂鸣器声响
 
-       if(pdata[3] == 0x01 ){//phone_cmd_power
-
-	     SendData_Set_Command(0x06,0x01);
+         if(pdata[3] == 0x01){ //open
+	        if(gpro_t.g_power_flag  == true) return ;
+		 
+	       gpro_t.on_step=0;
+	       gpro_t.g_power_flag = true;
+		   SendWifiData_Answer_Cmd(0x10,0x01);
+	       tx_thread_sleep(1);
 	
-			ptc_prohibit_off_f =1; //ptc_prohibit_off_f = 1;
-			 
-			 if(works_interval_f==0){//two hours have a rest ten minutes .
-	         if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
-	            
-            }
-             
-           SendWifiData_Answer_Cmd(0x02,0x01); //
-           tx_thread_sleep(10); 
+	     } 
+	     else if(pdata[3] == 0x0){ //close 
+
+		    if(gpro_t.g_power_flag == false) return ;
 		
-           }
+			 gpro_t.off_step=0;
+              gpro_t.g_power_flag = 0;
+			 
+              SendWifiData_Answer_Cmd(0x10,0x0); //power off .
+              tx_thread_sleep(1); 
+     }
+
+     break;
+
+	 case 0x21: //smart phone power on or off that App timer .
+           if(pdata[3]==0x01){
 
 		 
+			gpro_t.connect_wifi_state = true;
+		    LED_WIFI_ON();
+		   	wifi_app_timer_power_on_f =1;
+    
+		   	SendWifiData_Answer_Cmd(0x21,0x01);
+	        tx_thread_sleep(2);
+		   	gpro_t.g_power_flag  = true;
+			gpro_t.on_step=0;
+			 
+		   	}
+		    else{
+                 gpro_t.connect_wifi_state = true;
+				
+				SendWifiData_Answer_Cmd(0x21,0);
+	            tx_thread_sleep(2);
+				gpro_t.off_step=0;
+                 gpro_t.g_power_flag  = false ;//gpro_t.gpower_on = false;
+
+			}
+           
+     break; 
+
+	  case ptc_on_off: //PTC key of command .
+
+        if(pdata[3] == 0x01 ){//phone_cmd_power
+               ptc_prohibit_off_f =0; 
+			 
+			 if(works_interval_f==0){//two hours have a rest ten minutes .
+	            if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
+                    gpro_t.g_dry_flag = true;
+					LED_DRY_ON();
+               }
+			 }
+           SendWifiData_Answer_Cmd(0x02,0x01); //
+           tx_thread_sleep(1); 
 	   }
        else if(pdata[3]== 0x0 ){
 	   
-		 
-          SendData_Set_Command(0x06,0x01);
-		
-	          ptc_prohibit_off_f = 0;
+		    ptc_prohibit_off_f = 1;
+            SendWifiData_Answer_Cmd(0x02,0x0); //
+             tx_thread_sleep(1); 
 
-			 ptc_prohibit_off_f =1;
-		  
-          SendWifiData_Answer_Cmd(0x02,0x0); //
-          tx_thread_sleep(10); 
-     
+		     gpro_t.g_dry_flag = false;
+			 LED_DRY_OFF();
        }
       break;
 
@@ -387,30 +409,23 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    
 		  if(pdata[3]== 0x01){
 			 
-			SendData_Set_Command(0x06,0x01);
-			
-			 gpro_t.g_plasma_flag = 1;
-			 if(works_interval_f==0){
-				 LED_PLASMA_ON(); ;
-   
-			}
-
-
+		     if(works_interval_f==0){//two hours have a rest ten minutes .
+	            if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
+                    gpro_t.g_plasma_flag = true;
+					LED_PLASMA_ON();
+               }
+			 }
 			SendWifiData_Answer_Cmd(0x03,0x01); //
-			tx_thread_sleep(10); 
+			tx_thread_sleep(1); 
 			 
 		  }
 		  else if(pdata[3]  == 0x0){
-			 SendData_Set_Command(0x06,0x01);
 			
-			 
-			 gpro_t.g_plasma_flag = 0;
-			
-
-			SendWifiData_Answer_Cmd(0x03,0x0); //
-			tx_thread_sleep(10); 
+		    SendWifiData_Answer_Cmd(0x03,0x0); //
+			tx_thread_sleep(1); 
 			  
-		  
+		    gpro_t.g_plasma_flag = false;
+			LED_PLASMA_OFF();
 		  }
    
    
@@ -420,26 +435,29 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
    	case 0x04: //ultrasonic	ACTIVE OPEN OR CLOSE
           
 		  if(pdata[3]  == 0x01){  //open 
-			 SendData_Set_Command(0x06,0x01);
-			gpro_t.g_mouse_flag =1;
+		
+			
    
-			if(works_interval_f==0){
-				 //ultra_sound_on(20);//(159);
-   
+			if(works_interval_f==0 && fan_warning_f  ==0 && ptc_high_temperature_f ==0){
+				
+               gpro_t.g_mouse_flag = true;
+			   LED_MOUSE_ON();
 			}
 			
 			SendWifiData_Answer_Cmd(0x04,0x01); //
-			tx_thread_sleep(10); 
+			tx_thread_sleep(1); 
    
 		  }
 		  else if(pdata[3] == 0x0){ //close 
-              SendData_Set_Command(0x06,0x01);
-			gpro_t.g_mouse_flag = 0;
-   
-		
+          
+		   if(works_interval_f==0 && fan_warning_f  ==0 && ptc_high_temperature_f ==0){
+				
+               gpro_t.g_mouse_flag = false;
+			   LED_MOUSE_OFF();
+			}
 			
 			SendWifiData_Answer_Cmd(0x04,0x0); //
-			tx_thread_sleep(10); 
+			tx_thread_sleep(1); 
    
 		  }
    
@@ -451,15 +469,14 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
        if(pdata[3] == 0x01){  // link wifi 
         
-          SendData_Set_Command(0x06,0x01);
+      
           link_net_step =0;
-
           key_net_config_f =1;
 		  key_net_config_time =0;
          
 		
           SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28
-          tx_thread_sleep(10);
+          tx_thread_sleep(1);
          
       
         }
@@ -467,150 +484,82 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
      break;
 
-	  case buzzer_sound_s: //buzzer sound command 
-          if(pdata[3] == 0x01)
-            SendData_Set_Command(0x06,0x01);
-		 
+	 case buzzer_sound_s: //buzzer sound command 
+         
      break;
 
-	 case 0x10: //power on or off don't sound .
-
-	     if(wifi_app_timer_power_on_f ==1) return ;
-	     if(pdata[3] == 0x01){ //open
-           
-		   gon_t.on_step=0;
-	      gpro_t.g_power_flag = 1;
-		   SendWifiData_Answer_Cmd(0x10,0x01);
-	       tx_thread_sleep(10);
-	
-		    if(wifi_app_timer_power_on_f ==0){
-			    LED_PLASMA_ON();;
-	            // ultra_sound_on(20);   //ultrasnoic ON 
-	          
-
-		    }
-	         
-	    }
-        else if(pdata[3] == 0x0){ //close 
-
-			
-	
-			
-              SendWifiData_Answer_Cmd(0x10,0x0); //power off .
-              tx_thread_sleep(10); 
-      
-             gon_t.off_step=0;
-              gpro_t.g_power_flag = 0;
-			 
-		     
-        }
-
-
-	 break;
-
-      case 0x11:
-		    disp_second_f = pdata[3];
-	  break; 
-
-	  case 0x12: //powe off fan run one minute stop .
-	  	 if(pdata[3]==1){ // recach 2 hours fan stop
-
-            // gon_t.off_step=1;
-              gpro_t.g_power_flag = 1;
-			 
-               //fan_stop();
+     case 0x27:
+	 case 0x07: //
 		
-			   tx_thread_sleep(10);
-	
-	          
-         }
-		 else{
-            
-		   
-        }
-
-
-	  break;
-	  
-	  case 0x16 : //buzzer sound command with answer .
-
-        SendData_Set_Command(0x06,0x01);
-        
-         //SendWifiData_Answer_Cmd(0x16,0x01); //WT.EDIT 2025.07.28
-
-	
+	  if(pdata[4]== 0x01){
+           gpro_t.ui_time_mode = TIME_MODE_TIMER;
+	       gpro_t.key_model_short_flag  =1;
+		   gpro_t.gTimer_disp_mode_switch=0;
 		  
-       break;
-	  
-      case 0x27: //AI command without buzzer sound
-	  case 0x17: //AI notice
-	  
-	  if(pdata[3] == 0x02){
+
+		}
+		else{
+		       
+		    gpro_t.ui_time_mode = TIME_MODE_NORMAL;
+
+		}
+	 break;
+
 	 
-		
-          AI_led_open_f =0;
-         
-        
-          
-       }
-       else if(pdata[3] == 0x01){ //AI mode 
-       
-	      AI_led_open_f=1;
+	 case 0x08 ://gpro_t.dht11_temperature_value of high warning.
+	 
+			 if(pdata[3] == 0x01){
+				 
+				 ptc_high_temperature_f  = 1;
+				 gpro_t.g_dry_flag = false;
+				 LED_DRY_OFF();
+			 }
+			 else if(pdata[3] == 0x0){ //close
+	 
+				 ptc_high_temperature_f  = 0;
+				// gpro_t.g_dry_flag = true;
+				// LED_DRY_ON();   
+	 
+	 
+		    }
+	 
+		   break;
+	 
+	case 0x09: //fan of default of warning.
+	 
+			  if(pdata[3] == 0x01){  //warning
+	 
+				fan_warning_f = 1;
+	         }
+			 else if(pdata[3] == 0x0){ //close
+	 
+				fan_warning_f = 0;
+	 
+			 }
+	 
+	 
+		   break;
 
-      
-       }
 
-
-	 break;
-
-	 case 0x18: //WT.EDIT 2026.03.02
-         if(pdata[3]==1){ // recach 2 hours fan stop
-               fan_rx_stop_flag =1 ;
-			   works_interval_f=1;
-		       //fan_stop();
-
-
-             
-         }
-		 else{
-             fan_rx_stop_flag = 0;
-
-			if(ptc_prohibit_off_f ==1 &&ptc_prohibit_off_f==0){
-			
-				
-             }
-			 if(gpro_t.g_plasma_flag==1)LED_PLASMA_ON();;
-			// if(gpro_t.g_mouse_flag==1) ultra_sound_on(20);
-        }
-
-	 break;
-
-	  case 0x19: //works 2 hours ,then have a rest 10 minutes ->notice 
+      case 0x19: //works 2 hours ,then have a rest 10 minutes ->notice 
 
 	    if(pdata[3]==1){ // recach 2 hours 
 
             works_interval_f=1;
-
-
-        
-			
-		}
+        }
 		else if(pdata[3]==0){
 			  works_interval_f=0;//WT.EDIT 2026.01.26
 			  fan_rx_stop_flag =0 ;
 		  
         
               if(ptc_prohibit_off_f >1)ptc_prohibit_off_f=1;//2026.02.27 WT.EDIT
-              if(gpro_t.g_plasma_flag > 1) gpro_t.g_plasma_flag =1;
-			  if(gpro_t.g_mouse_flag > 1) gpro_t.g_mouse_flag =1;
-              
+            
+		
               if(ptc_prohibit_off_f ==1 &&ptc_prohibit_off_f==0){
 			  
 				
               }
-			  if(gpro_t.g_plasma_flag==1)LED_PLASMA_ON();;
-			 // if(gpro_t.g_mouse_flag==1) //ultra_sound_on(20);
-			 // Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
+			  if(gpro_t.g_plasma_flag==true)LED_PLASMA_ON();
 			  
 		}
 	   
@@ -618,120 +567,137 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 	  break;
 
   
-	  case 0x1B: //write set temperature value .data.2026.01.06
-	  
-        if(pdata[3]== 0x01){
-		      ptc_prohibit_off_f =0;
-			   ptc_prohibit_off_f = 1;//gctl_t.g_dry_flag = 1;
+	 case 0x1c ://表示时间：小时，分，秒,beijing timing
 
-			   if(works_interval_f ==0){
-			       
-		        
-				 SendWifiData_Answer_Cmd(0x22,0x01); //WT.EDIT 2025.07.28
-		         tx_thread_sleep(10);
-				
-			   	
-		       } 
-      }
-      else if(pdata[3]== 0x0){
-        
-          ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+        if(pdata[4] == 0x03){ //数据,has three data
+
+            if(pdata[5] < 24){ //WT.EDIT 2024.11.23
+      
+		    gpro_t.connect_wifi_state = true;
+            LED_WIFI_ON();
+             gpro_t.works_dispTime_hours= pdata[5];// run_t.dispTime_hours  =  pdata[5];
+             gpro_t.works_dispTime_minutes =pdata[6];//run_t.dispTime_minutes = pdata[6];
+             gpro_t.gTimer_timing_seconds_counter =  pdata[7];//run_t.gTimer_disp_time_seconds =  pdata[7];
+           }
 
 
-        
-		   SendWifiData_Answer_Cmd(0x22,0x0); //WT.EDIT 2025.07.28
-           tx_thread_sleep(10);
+        }
+     break;
 
-		
-         
+
+	 case 0x1F:
+	   if(pdata[3]==1){ // recach 2 hours 
+	     gpro_t.connect_wifi_state = true;
+		 LED_WIFI_ON();
 	   }
-			 
-      break;
-     
- 
-	  
-    case 0x1C: // is time data: hours,minutes,sencodes.
-		   
-	break;
+	   else if(pdata[3]==0){
+         gpro_t.connect_wifi_state = false;
+
+	   }
 
 
-	case 0x22: //PTC ON OR OFF by compare temperature value .
+	 break;
+
+
+	case 0x22: //PTC ON OR OFF by compare gpro_t.dht11_temperature_value value .
 
 	    if(ptc_prohibit_off_f  == 1)return ;
 		
         if(pdata[3]== 0x01){
-		  
-		   if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
-		   if(ptc_prohibit_off_f  >1)ptc_prohibit_off_f=0;
-		   
-		   if(works_interval_f ==0 &&ptc_prohibit_off_f==0){
-			  
-			     ptc_prohibit_off_f = 1;//gctl_t.g_dry_flag = 1;
-			     ptc_onoff_default++;
-              
-		   	
-				 if(ptc_set_wifi !=ptc_prohibit_off_f){
-				 	ptc_set_wifi =ptc_prohibit_off_f;
-					
-				 }
-		   	}   	
+		     if(works_interval_f ==0 &&ptc_prohibit_off_f==0){
+			     gpro_t.g_dry_flag = true;
+				 LED_DRY_ON();
+			 
+			  }   	
 	   }
        else if(pdata[3]== 0x0){
-	   	 if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
-		 if(ptc_prohibit_off_f  >1)ptc_prohibit_off_f=0;
-		 
-               ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
-               ptc_onoff_default++;
-	    
+	   
+           ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+           gpro_t.g_dry_flag = false;
+		   LED_DRY_ON();
+	    }
+	
+   
+     break;
 
-         if(soft_version == 0x02){
-//		   SendWifiData_Answer_Cmd(0x22,0x0); //WT.EDIT 2025.07.28
+	 case 0x23: //PTC ON OR OFF by compare gpro_t.dht11_temperature_value value .
 
-         	}
-		  if(ptc_set_wifi !=ptc_prohibit_off_f){
-				 	ptc_set_wifi =ptc_prohibit_off_f;
-		 
-		  }
-         
-	  }
+	    if(pdata[3]== 0x01){
+
+		    ptc_prohibit_off_f =0;
+		     if(works_interval_f ==0){
+			     gpro_t.g_dry_flag = true;
+				 LED_DRY_ON();
+			 
+			  }   	
+	   }
+       else if(pdata[3]== 0x0){
+	   
+           ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+           gpro_t.g_dry_flag = false;
+		   LED_DRY_ON();
+	    }
 	
    
      break;
 
 
 	 
-	 case 0x2A: //smart phone or display  board set temperature .receive.
+	 case 0x2A: //smart phone or display  board set gpro_t.dht11_temperature_value .receive.
 	 
-		   if(pdata[4]==0x01 && gpro_t.g_power_flag == 1){
+		   if(pdata[4]==0x01 && gpro_t.g_power_flag == true){
 			  
 			   if(pdata[5] >19 && pdata[5] < 41){
 			   	ptc_prohibit_off_f  = 0;
-				//gpro_t.set_temp_value_success=1;
-			   	if(works_interval_f >1 )works_interval_f=0; //This is be solved bug.
-			   setting_temperature = pdata[5] ;
-			    ptc_prohibit_off_f =0;
-			   if(setting_temperature > temperature && works_interval_f ==0){
+				gpro_t.connect_wifi_state = true;
 			
-			         ptc_onoff_default++;
-          
-			
-					  
-			   }
-			   else{
-			   	   ptc_onoff_default++;
-				   ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+			    setting_temperature = pdata[5] ;
+			    if(setting_temperature > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
 
-			
-		       }
+				   gpro_t.g_dry_flag = true;
+			       if(works_interval_f ==0){
 
-		
-				 
+                       LED_DRY_ON();
+				   }
+				  
+                }
 			  }
 		   
-			}
-		
-		
-	 break;
+		   }
+	break;
+
+
+	case 0x2B :// timer timing value .
+          if(pdata[4]== 0x01){ // one only data 
+			 
+             if(pdata[5] > 0){
+	
+			  gpro_t.set_timer_timing_value_success= true;
+			  key_t.disp_smg_mode_flag= TIME_MODE_TIMER;
+			  gpro_t.ui_time_mode = TIME_MODE_TIMER;
+ 
+			   gpro_t.timer_dispTime_hours=pdata[5];
+			   gpro_t.timer_dispTime_minutes=0;
+	  
+			   gpro_t.gTimer_timer_seconds_counter=0;
+             }
+			 else if(pdata[5]== 0){
+
+	             gpro_t.set_timer_timing_value_success= false;
+				 key_t.disp_smg_mode_flag=TIME_MODE_NORMAL;
+				  gpro_t.ui_time_mode = TIME_MODE_NORMAL;
+	 
+				   gpro_t.timer_dispTime_hours=0;
+			       gpro_t.timer_dispTime_minutes=0;
+	  
+
+			 }
+				
+      	  }
+		  	
+			
+
+	break;
 
 	 
 
@@ -741,12 +707,12 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 
 		     if(pdata[5] < 24 && pdata[6] < 61 && pdata[7] < 61){
          
-		      //gpro_t.disp_works_hours= pdata[5];
+		      gpro_t.works_dispTime_hours= pdata[5];
 			 
-			  //gpro_t.disp_works_minutes =pdata[6];
+			  gpro_t.works_dispTime_minutes =pdata[6];
 			
 
-			  ///gpro_t.gTimer_works_time_seconds=pdata[7];
+			 gpro_t.gTimer_timing_seconds_counter=pdata[7];
 			
 		     }
 		 }
@@ -799,19 +765,41 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	     if(pddata[4] == 0x01){ //open
 
-		    gon_t.on_step=0;
-	       gpro_t.g_power_flag = 1;
+           if(gpro_t.g_power_flag == true) return;
+		   gpro_t.on_step=0;
+	       gpro_t.g_power_flag = true;
 
 		 }
         else if(pddata[4] == 0x0){ //close 
+		  if(gpro_t.g_power_flag == false) return;
 
-		   gon_t.off_step=1;
-          gpro_t.g_power_flag =0;
+		   gpro_t.off_step=0;
+           gpro_t.g_power_flag =false;
 			 
 		}
 	   
 
 	   break;
+
+	  case 0x02:
+   
+    if(pddata[4]==1){
+
+         if(gpro_t.g_dry_flag== true) return ;
+		 gpro_t.g_dry_flag= true ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
+         ptc_prohibit_off_f =0;
+		 LED_DRY_ON();
+    }
+    else if(pddata[4]==0){
+      if(gpro_t.g_dry_flag== false) return ;
+	  gpro_t.g_dry_flag= false ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
+      ptc_prohibit_off_f =0;
+		
+	  LED_DRY_OFF();
+
+    }
+
+    break;
 
 	   
     }
