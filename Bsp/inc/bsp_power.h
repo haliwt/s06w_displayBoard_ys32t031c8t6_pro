@@ -59,7 +59,7 @@ extern uint8_t Times1minute;
 extern uint16_t Times1minCnt;
 extern uint8_t Cacl_time_sec;
 
-extern volatile uint8_t time_5ms_f;
+
 
 extern uint8_t disp_second_f ;
 extern uint8_t ptc_high_temperature_f;
@@ -87,18 +87,18 @@ extern uint16_t disp_timing_time;
 extern uint16_t disp_humidity;
 
 extern uint8_t AI_led_open_f;
-extern uint8_t PTC_heat_open_f;
+extern uint8_t gpro_t.g_dry_flag;
 extern uint8_t first_temp_compare_f;
 
 extern uint8_t ptc_prohibit_off_f;
 
-extern uint8_t Ultra_Sound_open_f;
-extern uint8_t plasma_open_f;
+extern uint8_t gpro_t.g_mouse_flag;
+extern uint8_t gpro_t.g_plasma_flag;
 
 extern uint16_t timing_is_reach_disptime;
 /*countdown timer  */
 extern int8_t setting_timing_hour;
-extern int8_t setting_timing_second;
+
 extern int8_t timing_min_cnt;
 extern uint8_t real_hours_counter;
 extern int8_t temporary_timer_hours;
@@ -158,7 +158,7 @@ extern uint8_t fan_warning_f;
 extern uint16_t fan_current_det_time;
 #define _NO_FAN_LOAD_CURRENT       50      //0.06A*0.67*4096/3.3   
 
-extern uint8_t disp_switch_temp_humi;
+
 //peripheral 
 extern uint8_t key_be_pressed_f;
 extern uint8_t disp_set_hours_time_f;
@@ -188,17 +188,16 @@ extern  uint8_t dc_connect_net_step	;
 volatile extern  uint8_t  rx_wifi_data_success;
 volatile extern  uint8_t   rx_wifi_data_counter;
 extern  uint8_t  mqtt_status;
-extern  uint8_t  time_autolink_counter;
+
 extern  uint8_t  key_pressed_set_temp_f; //WT.EDIT 2026-05-16
 
 
 /*end*/
 
 //fan
-extern uint8_t  fan_one_minute_cuonter;
 
 //time couter 
-extern uint8_t  time_set_hours_counter;
+
 
 extern uint8_t  works_interval_f;
 
@@ -367,7 +366,7 @@ void Countdown_timer_Handler(void);
 
 
 
-void works_nomal_run_time_handler(void);
+void works_two_hours_handler(void);
 
 void beep_power_sound(void);
 

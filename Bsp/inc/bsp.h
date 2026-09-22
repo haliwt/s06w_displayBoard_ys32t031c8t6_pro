@@ -81,6 +81,9 @@ typedef struct _main_ref{
  uint8_t works_dispTime_hours;
  int8_t works_dispTime_minutes;
 
+
+ uint8_t works_two_minutes_value;
+
  uint8_t hours_two_decade_bit    ;
  uint8_t hours_two_unit_bit  ;
  uint8_t minutes_one_decade_bit ;
@@ -122,7 +125,7 @@ typedef struct _main_ref{
  volatile uint8_t time_600ms_f;
  volatile uint8_t time_900ms_f;
 
- volatile uint8_t time_base_1s_counter;
+
  volatile uint8_t time_2s_f;
  volatile uint8_t time_1s_f;
  volatile uint8_t time_3s_f;
@@ -132,9 +135,9 @@ typedef struct _main_ref{
  volatile uint8_t time_7s_f;
  volatile uint8_t time_10s_f;
 
- volatile uint8_t time_1m_f;
- volatile uint8_t time_1m_wifi_f;
- volatile uint8_t time_2m_f;
+
+
+
 
   volatile uint8_t gTimer_key_temp_timing  ;
   volatile uint8_t gTimer_key_timing ;

@@ -79,7 +79,7 @@ uint8_t Times1minute;
 uint16_t Times1minCnt;
 uint8_t Cacl_time_sec;
 
-volatile uint8_t time_5ms_f;
+
 
 uint8_t time_wifi_10ms_f;
 
@@ -97,13 +97,13 @@ uint16_t disp_timing_time;
 uint16_t disp_humidity;
 
 uint8_t AI_led_open_f;
-uint8_t PTC_heat_open_f;
+uint8_t gpro_t.g_dry_flag;
 uint8_t first_temp_compare_f;
 
 uint8_t ptc_prohibit_off_f;
 
-uint8_t Ultra_Sound_open_f;
-uint8_t plasma_open_f;
+uint8_t gpro_t.g_mouse_flag;
+uint8_t gpro_t.g_plasma_flag;
 
 uint16_t timing_is_reach_disptime;
 
@@ -138,14 +138,14 @@ uint16_t device_rest_time;
 
 //countdown timer 
 int8_t timing_min_cnt;
-int8_t setting_timing_second;
+
 uint8_t real_hours_counter;
 int8_t temporary_timer_hours;
 int8_t setting_timing_hour;
 
 //end
 //timer 
-uint8_t  time_set_hours_counter;
+
 
 //wroks time two hours
 
@@ -176,7 +176,6 @@ uint8_t  soft_version ;
 uint16_t fan_current_det_time;
 uint8_t fan_warning_f;
 
-uint8_t disp_switch_temp_humi;
 //
 uint8_t soft_version;
 
@@ -195,7 +194,7 @@ uint8_t  wifi_off_step;
 uint8_t  wifi_first_connectoed_cloud_f;
 uint8_t  wifi_read_net_data_f;
 
-uint8_t  time_autolink_counter;
+
 uint8_t  wifi_check_net_f;
 uint8_t dc_connect_net_step	;
 
@@ -205,7 +204,7 @@ uint8_t  mqtt_status;
 
 
 //fan
-uint8_t  fan_one_minute_cuonter;
+
 uint8_t  time_10ms_f;
 uint16_t ptc_adc_numbers;
 
@@ -218,16 +217,6 @@ uint8_t disp_set_hours_time_f;
 uint8_t key_input_temp_f;
 
 uint8_t ptc_high_temperature_f ;
-
-
-
-
-
-
-
-
-
-
 
 uint8_t counter;
 uint8_t power_Led_switch;	
@@ -246,6 +235,9 @@ static void power_on_handler(void);
 static void power_off_handler(void);
 static void power_on_initial(void);
 static void set_temperature_compare_value_fun(void);
+void works_two_hours_handler(void);
+
+
 
 /**
   * @brief  fan run is error
@@ -255,13 +247,13 @@ static void set_temperature_compare_value_fun(void);
 **/
 void Clear_Ram(void)
 {
-    time_5ms_f = 0;
+    
 	
 
 	  gpro_t.time_400ms_f =0;
 	  gpro_t.time_500ms_f =0;
 	  gpro_t.time_1s_f = 0;
-	  gpro_t.time_1m_f=0;
+
 	
 
 	  Times10msCnt = 0;
@@ -287,10 +279,10 @@ void Clear_Ram(void)
 	
 		
 		AI_led_open_f = 0;
-		PTC_heat_open_f = 0;
+		gpro_t.g_dry_flag = 0;
 		first_temp_compare_f=0;
-		Ultra_Sound_open_f = 0;
-		plasma_open_f = 0;
+		gpro_t.g_mouse_flag = 0;
+		gpro_t.g_plasma_flag = 0;
 
 		
 		timing_is_reach_disptime = 0;
@@ -308,7 +300,7 @@ void Clear_Ram(void)
 		fan_warning_f = 0;
 		fan_current_det_time = 0;
 		
-		disp_switch_temp_humi = 0;
+		
 		beep_interval_time = 0;
 		//wifi 
 		wifi_linking_tencent_f=0;
@@ -340,11 +332,15 @@ static void power_on_initial(void)
    case 0:
    	  gon_t.off_step = 0;
       wifi_off_step =0; //WT.EDT 2026.05.15
-      
- 
-
-	 
-	
+      gpro_t.works_two_minutes_value =0;
+	  gpro_t.gTimer_timing_seconds_counter=0;
+	  gpro_t.works_dispTime_minutes =0;
+      gpro_t.works_dispTime_hours =0;
+	  //
+	  gpro_t.timer_dispTime_hours =0;
+	  gpro_t.timer_dispTime_minutes = 0；
+	  gpro_t.gTimer_timer_seconds_counter =0;
+						    
       gon_t.on_step =1;
 	
 
@@ -384,37 +380,30 @@ uint16_t disp_counter;
 void power_on_handler(void)
 {
 
-    uint32_t current_tick = tx_time_get();
+	uint32_t current_tick = tx_time_get();
 	uint8_t i ;
-	uint32_t init_tick;
 
-	
-        if(gon_t.on_step  < 8){
-		  power_on_initial();
-        }
-		else{
-	 // ✨【新增：紧急事件拦截响应】✨
-        // 如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
-       
-//         if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
-//		    time_10ms_f=0;
-           
-		
+	if(gon_t.on_step  < 8){
+		power_on_initial();
+	}
+	else{
+		✨   //【新增：紧急事件拦截响应】✨
+		//如果按键任务设置完温度，将 g_pro.g_immediate_heat_f 置为 1
 
-//			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
-//	        {
-//	           heat_open_close_f = 0; // 立即清除触发标志，防止重复执行
-	            
-//	            // 强制、立刻执行一次加热控制函数
-//	            // 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
-//	          // compare_set_temp_value(); //set_temperature_value_handler(); 
-//	        }
-			    
+		if(time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
+			time_10ms_f=0;
+			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
+			{
+			heat_open_close_f = 0; // 立即清除触发标志，防止重复执行
 
-//         }
-//		 else{
+			// 强制、立刻执行一次加热控制函数
+			// 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
+			// compare_set_temp_value(); //set_temperature_value_handler(); 
+			}
+		}
 
-	        for (i = 0; i < TASK_NUM; i++) {
+		// 2. 独立的 UI 周期任务轮询调度器（无论 10ms 标志位如何，时间到了就执行）
+		for (i = 0; i < TASK_NUM; i++) {
 			if ((current_tick - g_ui_tasks[i].last_tick) >= g_ui_tasks[i].period){
 				// 防饱和截断：若卡顿超过 2 个周期，直接重置到当前 tick，放弃追赶
 				if ((current_tick - g_ui_tasks[i].last_tick) > (g_ui_tasks[i].period * 2)) 
@@ -434,9 +423,8 @@ void power_on_handler(void)
 				}
 			}
 
-		 }
-
-     }
+		}
+	}
 }
 /**
 *@brief 
@@ -512,7 +500,7 @@ static void task_dht11_display(void)
 **/
 static void task_two_hours_timing(void)
 {
-	 
+	  works_two_hours_handler();
 
 }
 /**
@@ -841,7 +829,7 @@ void Set_TimerTiming_Number_Value(void)
 
 		case 8:
 			 if( ptc_high_temperature_f == 0 && fan_warning_f ==0){
-			      works_nomal_run_time_handler();
+			      works_two_hours_handler();
 			 }
 
 		break;
@@ -1054,7 +1042,7 @@ static void power_off_handler(void)
 	       
 		    fan_one_f =1;
 			time_1s_counter=0;
-			fan_one_minute_cuonter =0;
+	
 			wifi_run_step = 0;
 			wifi_off_step =0;
 			//power_off_peripheral_handler();
@@ -1153,47 +1141,14 @@ static void power_off_handler(void)
 **/
 void Countdown_timer_Handler(void)
 {
-   static int8_t dsip_timer_value ;
+   
  
-   if(setting_timing_second >=60) //60s
-    {
-	   setting_timing_second=0;
-
-	   #if DEBUG_ENABLE
-
-		timing_min_cnt = timing_min_cnt - 40;
-	   #else 
-		 timing_min_cnt --;
-
-	   #endif 
-
-        if(timing_min_cnt <  0)
-        {
-           timing_min_cnt =59;
-		   real_hours_counter++;
-		   if((setting_timing_hour > 1) && setting_timing_hour !=1){
-		   	
-		          dsip_timer_value = temporary_timer_hours - real_hours_counter +1;
-				  setting_timing_hour = dsip_timer_value;
-
-
-		   }
-
-		   if(setting_timing_hour ==1 || setting_timing_hour==0){
-               
-				   setting_timing_hour--;
-				   
-            }
-
-        }
-
-        if (setting_timing_hour < 0)
-        {
+   
              gpro_t.g_power_flag = 0;
 			 System_Status_PowerOff() ;
 
-        }
-    }
+        
+    
 }
 /**
   * @brief  
@@ -1201,21 +1156,21 @@ void Countdown_timer_Handler(void)
   * @param: 
   *
 **/
-void works_nomal_run_time_handler(void)
+void works_two_hours_handler(void)
 {
      static uint8_t interval_10m_f = 0;
 	 
 		#if  0 //DEBUG_ENABLE 
-			if(gpro_t.time_1m_f >11 && works_interval_f==0){
+			if( gpro_t.works_two_minutes_value >3 && works_interval_f==0){
 		#else 
-			if(gpro_t.time_1m_f > 119 && works_interval_f==0){
+			if(gpro_t.works_two_minutes_value > 119 && works_interval_f==0){
 
-		#endif 
-
-			gpro_t.time_1m_f = 0;
-		    gpro_t.time_base_1s_counter=0;
-			works_interval_f=1;
-			fan_one_minute_cuonter =0;
+		#endif
+		    gpro_t.works_two_minutes_value =0;
+            works_interval_f=1;
+	
+			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
+	        tx_thread_sleep(2);
 			
 		#if DEBUG_ENABLE 
 			printf("works_interval_f = %d \n\r",works_interval_f);
@@ -1223,15 +1178,17 @@ void works_nomal_run_time_handler(void)
 		}
 
 		#if 0
-		  else if(works_interval_f==1 && gpro_t.time_1m_f >9){
+		  else if(works_interval_f==1 &&  gpro_t.works_two_minutes_value>2){
 		#else 
-		  else if(works_interval_f==1 && gpro_t.time_1m_f >10){
+		  else if(works_interval_f==1 && gpro_t.works_two_minutes_value >10){
 
 		#endif 
-				gpro_t.time_1m_f = 0;  
+			   gpro_t.works_two_minutes_value=0;
 				works_interval_f =0;
-		        gpro_t.time_base_1s_counter=0;
+		    
 				interval_10m_f = 1;
+				 SendData_Set_Command(0x19,0x0);
+	             tx_thread_sleep(2);
 				
 		#if DEBUG_ENABLE 
 			printf("works_interval_f = %d \n\r",works_interval_f);
@@ -1242,7 +1199,7 @@ void works_nomal_run_time_handler(void)
 		if(interval_10m_f == 1 && works_interval_f==0){
              interval_10m_f ++;
 		
-		  if(ptc_prohibit_off_f == 0 &&  PTC_heat_open_f == 1){
+		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
 			 // 立即open
 		      LED_DRY_ON();
 		  
@@ -1289,10 +1246,10 @@ void Heat_Process(void)
 
 	  if(temperature > 39){
 
-        PTC_heat_open_f = 0;   // 立即关闭
+        gpro_t.g_dry_flag = 0;   // 立即关闭
 	    first_temp_compare_f = 1; 
-	    if(default_init != PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init= PTC_heat_open_f;
+	    if(default_init != gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init= gpro_t.g_dry_flag;
 					key_input_temp_f++;
 				if(disp_second_f == 1){
 					SendWifiData_To_Cmd(0x02,0);
@@ -1312,10 +1269,10 @@ void Heat_Process(void)
 	  if(first_temp_compare_f == 0){
 
 		if(temperature >= target_temp){
-            PTC_heat_open_f = 0;   // 立即关闭
+            gpro_t.g_dry_flag = 0;   // 立即关闭
 
-		       if(default_init != PTC_heat_open_f  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+		       if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = gpro_t.g_dry_flag;
 					key_input_temp_f ++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		        //delay_ms(100);//HAL_Delay(5);
@@ -1324,10 +1281,10 @@ void Heat_Process(void)
 				}
 		}
         else{
-            PTC_heat_open_f = 1;   // 立即打开
+            gpro_t.g_dry_flag = 1;   // 立即打开
             first_temp_compare_f = 1;         // 以后进入滞后控制
-            if(default_init!= PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+            if(default_init!= gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = gpro_t.g_dry_flag;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		        //delay_ms(100);//HAL_Delay(5);
@@ -1346,9 +1303,9 @@ void Heat_Process(void)
 		{
 			// 当前是开启状态 → 高于设定温度则关闭
 			if(temperature >= target_temp){
-					PTC_heat_open_f = 0;
-				if(default_init != PTC_heat_open_f  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+					gpro_t.g_dry_flag = 0;
+				if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = gpro_t.g_dry_flag;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0);
 		       // delay_ms(100);//HAL_Delay(5);
@@ -1360,10 +1317,10 @@ void Heat_Process(void)
 			{
 				// 当前是关闭状态 → 低于设定温度 - 2 才重新打开
 				if(temperature <  (target_temp - 2))
-				PTC_heat_open_f = 1;
+				gpro_t.g_dry_flag = 1;
 				
-				if(default_init!= PTC_heat_open_f || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = PTC_heat_open_f;
+				if(default_init!= gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
+					default_init = gpro_t.g_dry_flag;
 					key_input_temp_f++;
 				if(disp_second_f == 1)SendWifiData_To_Cmd(0x02,0x01);
 		       // delay_ms(100);//HAL_Delay(5);
@@ -1400,11 +1357,5 @@ void power_on_off_handler(void)
 	  break;
       }
 
- 
-
-	
-	
-
-	
-}
+ }
 

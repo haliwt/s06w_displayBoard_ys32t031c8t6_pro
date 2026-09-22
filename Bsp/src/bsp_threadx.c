@@ -408,7 +408,7 @@ void tx_application_define(void *first_unused_memory)
 	          mode_key_handler();
 		} 
 		else if(flags & KEY_MODE_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
-             //key_mode_long_handler();
+           
                SendData_Set_Command(0x06,0x01);//SendData_Set_Command(0x06,0x01);
 		       tx_thread_sleep(1);
 
@@ -422,7 +422,7 @@ void tx_application_define(void *first_unused_memory)
 		} 
 		else if(flags & KEY_UP_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 			
-			SendData_Set_Command(0x06,0x01);
+			 SendData_Set_Command(0x06,0x01);
              tx_thread_sleep(1);
 		     key_add_fun();
 		}
@@ -460,17 +460,14 @@ void tx_application_define(void *first_unused_memory)
 	       
 		     // 处理WiFi键
 		       SendData_Set_Command(0x06,0x01);
-	             tx_thread_sleep(1);
+	           tx_thread_sleep(1);
 	       
 		     
 	         // gpro_t.connect_wifi_state = wifi_connect_null;
 	          // gpro_t.gTimer_wifi_connect_counter =0; //120s counte start
-	         
-
-	    }
+	     }
 		
-		
-		}   
+	}   
        
 	   
 	 
@@ -481,25 +478,6 @@ void tx_application_define(void *first_unused_memory)
 	
 }
       
- 
- /********************************************************************************
-	 **
-	 *Function Name:
-	 *Function : threadx software timer is callback function.
-	 *Input Ref: 
-	 *Return Ref:NO
-	 *
- *******************************************************************************/
-//void my_timer_callback(ULONG input)
-// {
-//    (void) input;
-//	BEEP_OFF();
-
-// }
-// void open_beep_sound(void)
-// {
-//   tx_timer_activate(&beep_timer);
-// }
 /********************************************************************************
 	**
 	*Function Name:

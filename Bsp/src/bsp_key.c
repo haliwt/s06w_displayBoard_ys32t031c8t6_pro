@@ -160,7 +160,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
         Cacl_time_sec = 0;
 		key_be_pressed_f =1;
 		
-		time_set_hours_counter =0;
+	
     } 
     else{  // 情况 B: 正在设置温度
 		
@@ -173,7 +173,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		set_temperature_value_f = 1;
 		first_temp_compare_f = 0; 
 		time_1s_counter =0;
-	    time_set_hours_counter =0;
+	
 		key_be_pressed_f =0;
 		key_input_temp_f= 1;
 		heat_open_close_f= 1;//WT.EDIT 2026.05-15
@@ -206,9 +206,9 @@ void System_Status_PowerOn(void)
 
     if(wifi_app_timer_power_on_f==0){ //手机定时开机
 	    gpro_t.g_power_flag = 1;            // 总输出使能
-	    PTC_heat_open_f = 1;        // 默认开启加热
-	    Ultra_Sound_open_f = 1;     // 默认开启超声波
-	    plasma_open_f = 1;          // 默认开启等离子
+	    gpro_t.g_dry_flag = 1;        // 默认开启加热
+	    gpro_t.g_mouse_flag = 1;     // 默认开启超声波
+	    gpro_t.g_plasma_flag = 1;          // 默认开启等离子
 	   // power_on_peripheral_handler();
     }
 	
@@ -227,8 +227,8 @@ void System_Status_PowerOn(void)
     // 2. 设定启动默认参数
     setting_temperature = 40;   // 默认设定温度 40°C
     setting_timing_hour = 0;    // 默认不设置定时（常开模式）
-    gpro_t.time_base_1s_counter=0;  // 重置工作时间累计
-    gpro_t.time_1m_f = 0;           // 重置工作时间累计
+  
+
     // 3. 状态显示切换
     Is_time_setting_f = 0;
     Is_countdown_timer_f = 0;
@@ -267,16 +267,16 @@ void System_Status_PowerOff(void)
 	wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
    
 	first_temp_compare_f=0;
-    Ultra_Sound_open_f = 0;
+    gpro_t.g_mouse_flag = 0;
    
-    plasma_open_f = 0;
+    gpro_t.g_plasma_flag = 0;
     fan_open_f = 0;
 	key_net_config_f =0;
 
 
-	 PTC_heat_open_f = 0;        // 默认--from smart phone define.
-	 Ultra_Sound_open_f = 0;     // 默
-	 plasma_open_f = 0;          // 默
+	 gpro_t.g_dry_flag = 0;        // 默认--from smart phone define.
+	 gpro_t.g_mouse_flag = 0;     // 默
+	 gpro_t.g_plasma_flag = 0;          // 默
      set_temperature_value_f =0; 
     // 2. 重置所有功能模式标志
     AI_led_open_f = 0;
@@ -284,8 +284,8 @@ void System_Status_PowerOff(void)
  
     Is_countdown_timer_f = 0;
 	works_interval_f =0;
-	gpro_t.time_base_1s_counter=0;// 重置工作时间累计
-	gpro_t.time_1m_f = 0;// 重置工作时间累计
+
+
 	
 	//wifi
 	wifi_run_step=0;
@@ -361,7 +361,7 @@ void key_mode_short_handler(void)
 	    disp_set_hours_time_f = 1;
 	  
 		
-		time_set_hours_counter =0;
+		
 	}
     SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
 
@@ -379,7 +379,7 @@ void key_mode_long_handler(void)
     if (gpro_t.g_power_flag && !fan_warning_f) {
         Is_time_setting_f = 1;
        
-        time_set_hours_counter =0;
+     
         SendData_Set_Command(0x06,0x01) ; //Beep(BEEP_ONCE);
     }
 

@@ -389,7 +389,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			 
 			SendData_Set_Command(0x06,0x01);
 			
-			 plasma_open_f = 1;
+			 gpro_t.g_plasma_flag = 1;
 			 if(works_interval_f==0){
 				 LED_PLASMA_ON(); ;
    
@@ -404,7 +404,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			 SendData_Set_Command(0x06,0x01);
 			
 			 
-			 plasma_open_f = 0;
+			 gpro_t.g_plasma_flag = 0;
 			
 
 			SendWifiData_Answer_Cmd(0x03,0x0); //
@@ -421,7 +421,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
           
 		  if(pdata[3]  == 0x01){  //open 
 			 SendData_Set_Command(0x06,0x01);
-			Ultra_Sound_open_f =1;
+			gpro_t.g_mouse_flag =1;
    
 			if(works_interval_f==0){
 				 //ultra_sound_on(20);//(159);
@@ -434,7 +434,7 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		  }
 		  else if(pdata[3] == 0x0){ //close 
               SendData_Set_Command(0x06,0x01);
-			Ultra_Sound_open_f = 0;
+			gpro_t.g_mouse_flag = 0;
    
 		
 			
@@ -579,8 +579,8 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 			
 				
              }
-			 if(plasma_open_f==1)LED_PLASMA_ON();;
-			// if(Ultra_Sound_open_f==1) ultra_sound_on(20);
+			 if(gpro_t.g_plasma_flag==1)LED_PLASMA_ON();;
+			// if(gpro_t.g_mouse_flag==1) ultra_sound_on(20);
         }
 
 	 break;
@@ -601,15 +601,15 @@ static void usart1_protocol_state_machine(uint8_t *pdata)
 		  
         
               if(ptc_prohibit_off_f >1)ptc_prohibit_off_f=1;//2026.02.27 WT.EDIT
-              if(plasma_open_f > 1) plasma_open_f =1;
-			  if(Ultra_Sound_open_f > 1) Ultra_Sound_open_f =1;
+              if(gpro_t.g_plasma_flag > 1) gpro_t.g_plasma_flag =1;
+			  if(gpro_t.g_mouse_flag > 1) gpro_t.g_mouse_flag =1;
               
               if(ptc_prohibit_off_f ==1 &&ptc_prohibit_off_f==0){
 			  
 				
               }
-			  if(plasma_open_f==1)LED_PLASMA_ON();;
-			 // if(Ultra_Sound_open_f==1) //ultra_sound_on(20);
+			  if(gpro_t.g_plasma_flag==1)LED_PLASMA_ON();;
+			 // if(gpro_t.g_mouse_flag==1) //ultra_sound_on(20);
 			 // Fan_RunSpeed_Fun();//WT.EDIT 2026.01.26
 			  
 		}

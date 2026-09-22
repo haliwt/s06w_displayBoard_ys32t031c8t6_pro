@@ -25,9 +25,9 @@ void power_on_led_open_handler(void)
 		 LED_POWER_ON();
 		
 	
-		PTC_heat_open_f = 1;        // 默认开启加热
-	    Ultra_Sound_open_f = 1;     // 默认开启超声波
-	    plasma_open_f = 1;          // 默认开启等离子
+		gpro_t.g_dry_flag = 1;        // 默认开启加热
+	    gpro_t.g_mouse_flag = 1;     // 默认开启超声波
+	    gpro_t.g_plasma_flag = 1;          // 默认开启等离子
 	    LED_DRY_ON();
 
 
