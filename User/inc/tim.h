@@ -20,6 +20,7 @@
 
 
 void TIM6_Configuration(void);
+void TIM17_Configuration(void);
 
 
 

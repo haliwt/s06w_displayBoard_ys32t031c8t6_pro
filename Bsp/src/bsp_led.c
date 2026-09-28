@@ -45,12 +45,13 @@ void power_on_led_open_handler(void)
 	  }
 
 	  if(gpro_t.connect_wifi_state == false){
-	  gpro_t.hours_two_decade_bit=0;
-	  gpro_t.hours_two_unit_bit =0;
-	  gpro_t.minutes_one_decade_bit = 0;
+	  gpro_t.hours_two_decade_bit=9;
+	  gpro_t.hours_two_unit_bit =9;
+	  gpro_t.minutes_one_decade_bit = 7;
 
 	 
-	  TM1639_Write_4Bit_Time(gpro_t.hours_two_decade_bit,gpro_t.hours_two_unit_bit,0,0,0);
+	 // TM1639_Write_4Bit_Time(gpro_t.hours_two_decade_bit,gpro_t.hours_two_unit_bit,9,6,0);
+	  Display_Timing(13,36,0);
      //Display_DHT11_Value(); //WT.EIDT 2025.05.10
      }
 	 else{

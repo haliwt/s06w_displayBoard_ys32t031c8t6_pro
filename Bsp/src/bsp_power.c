@@ -504,6 +504,7 @@ static void task_blink_colon(void)
 		gpro_t.wifi_led_fast_blink=0;
 
 	}
+	 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
 }
 /**
 *@brief 
@@ -1062,6 +1063,11 @@ void Countdown_timer_Handler(void)
 void works_two_hours_handler(void)
 {
      static uint8_t interval_10m_f = 0;
+
+	 switch( works_interval_f){
+
+
+	   case 0:
 	 
 		#if  0 //DEBUG_ENABLE 
 			if( gpro_t.works_two_minutes_value >3 && works_interval_f==0){
@@ -1080,10 +1086,26 @@ void works_two_hours_handler(void)
 		#endif 
 		}
 
+		if(interval_10m_f == 1 && works_interval_f==0){
+             interval_10m_f ++;
+		
+		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
+			 // 立即open
+		      LED_DRY_ON();
+		  
+		  
+		  	}
+		 
+		}
+
+	   break;
+
+	   case 1:
+
 		#if 0
-		  else if(works_interval_f==1 &&  gpro_t.works_two_minutes_value>2){
+		   if(works_interval_f==1 &&  gpro_t.works_two_minutes_value>2){
 		#else 
-		  else if(works_interval_f==1 && gpro_t.works_two_minutes_value >10){
+		   if(works_interval_f==1 && gpro_t.works_two_minutes_value >10){
 
 		#endif 
 			   gpro_t.works_two_minutes_value=0;
@@ -1099,17 +1121,10 @@ void works_two_hours_handler(void)
 		}
 
 
-		if(interval_10m_f == 1 && works_interval_f==0){
-             interval_10m_f ++;
-		
-		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
-			 // 立即open
-		      LED_DRY_ON();
-		  
-		  
-		  	}
-		 
-		}
+	
+		break;
+
+	}
 		
  }
   

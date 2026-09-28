@@ -410,6 +410,15 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
 	  break;
 
+	 case 0x1A:
+	 if(pdata[4] == 0x02){ //数据,has three data
+
+	    gpro_t.dht11_humidity_value = pdata[5];
+		gpro_t.dht11_temperature_value = pdata[6];
+
+	 }
+	 break;
+
   
 	 case 0x1c ://表示时间：小时，分，秒,beijing timing
 
