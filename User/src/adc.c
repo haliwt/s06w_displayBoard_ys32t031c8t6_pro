@@ -9,149 +9,103 @@
 */
 
 #include "adc.h"   
-#include "ys32t031.h"
+#include "bsp.h"
 
-
-
-void ADC_Configuration(void);
-void ADC_Channel_Init(uint8_t CH);
-void ADC_Vrefbuf_Select(uint32_t Mode);
-void ADC_Channel_Select(uint8_t CH);
-uint16_t ADC_GetValue(uint8_t CHx,uint32_t Vrefx);
-
-
-
-// ADC ≥ı ºªØ≈‰÷√
+// ADC ÂàùÂßãÂåñÈÖçÁΩÆ
 void ADC_Configuration(void)
 {
-    ADC_InitTypeDef ADC_InitStruct;    	
-	  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC, ENABLE);
-	
-	  ADC_Cmd(ADC, DISABLE);
-	  ADC_DeInit(ADC);
-	  ADC_StructInit(&ADC_InitStruct);
-	
-	  ADC_BiasCurrentConfig(ADC, ADC_Current_24uA);
-	
-	  ADC_InitStruct.ClockMode = ADC_ClockMode_HSI_Div8;                       /* ADC ±÷”Œ™HSI 8∑÷∆µ */    
-	  ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;                      /*  ˝æ›”“∂‘∆Î */    
-	  ADC_InitStruct.ADC_ContinuousConvMode = ADC_ContinuousConvMode_OFF;      /* ¡¨–¯◊™ªªπÿ±’ */    
-	  ADC_InitStruct.ADC_ScanMode = ADC_ScanMode_OFF;                          /* …®√Ëƒ£ Ωπÿ±’ */     
-	  ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_SWSTART;      /* »Ìº˛∆Ù∂Ø◊™ªª */    
-	  ADC_InitStruct.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_EN;   /* Õ‚≤ø¥•∑¢ø™∆Ù */    
-	  ADC_Init(ADC, &ADC_InitStruct);
-}
 
-
-
-/**
-  * @brief  ADC ≥ı ºªØ
-  * @param  None
-  * @retval None
-  */
-void ADC_Channel_Init(uint8_t CH)
-{
-    ADC_InitTypeDef ADC_InitStruct;
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC, ENABLE);
-    ADC_DeInit(ADC);
-    ADC_StructInit(&ADC_InitStruct);
-    ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
-    ADC_InitStruct.ADC_ContinuousConvMode = ADC_ContinuousConvMode_OFF;
-    ADC_InitStruct.ADC_ScanMode = ADC_ScanMode_OFF;
-    ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_SWSTART;
-    ADC_InitStruct.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_EN;
-    ADC_Init(ADC, &ADC_InitStruct);
-    
-    ADC_ClockModeConfig(ADC, ADC_ClockMode_HSI_Div2);  
-    ADC_RegularSequencerLengthConfig(ADC, 1);
-    
-    switch(CH)  //—°‘Ò≤‚ ‘Õ®µ¿
-    {
-        case 1:    ADC_RegularChannelConfig(ADC, ADC_Channel_1, 1, ADC_SampleTime_31_5Cycles);   break;          //CH1  PF4  
-		case 2:    ADC_RegularChannelConfig(ADC, ADC_Channel_2, 1, ADC_SampleTime_31_5Cycles);   break;          //CH2  PA0
-		case 3:    ADC_RegularChannelConfig(ADC, ADC_Channel_3, 1, ADC_SampleTime_31_5Cycles);   break;          //CH3  PA1
-        case 5:    ADC_RegularChannelConfig(ADC, ADC_Channel_5, 1, ADC_SampleTime_31_5Cycles);   break;          //CH5  PA3      
-        case 6:    ADC_RegularChannelConfig(ADC, ADC_Channel_6, 1, ADC_SampleTime_31_5Cycles);   break;          //CH6  PA4      
-        case 7:    ADC_RegularChannelConfig(ADC, ADC_Channel_7, 1, ADC_SampleTime_31_5Cycles);   break;          //CH7  PA5      
-        case 8:    ADC_RegularChannelConfig(ADC, ADC_Channel_8, 1, ADC_SampleTime_31_5Cycles);   break;          //CH8  PA6      
-        case 9:    ADC_RegularChannelConfig(ADC, ADC_Channel_9, 1, ADC_SampleTime_31_5Cycles);   break;          //CH9  PA7    
-        default :  break;
-    }
+ #if 0
+ LL_ADC_InitTypeDef ADC_InitStruct;
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
+  LL_ADC_DeInit();
+  LL_ADC_StructInit(&ADC_InitStruct);
   
-	 // case 1:    ADC_RegularChannelConfig(ADC, ADC_Channel_1, 1, ADC_SampleTime_31_5Cycles);   break;          //CH1  PF4  
-	//ADC_RegularChannelConfig(ADC, ADC_Channel_2, 1, ADC_SampleTime_31_5Cycles);             //CH2  PA0
-	//ADC_RegularChannelConfig(ADC, ADC_Channel_3, 1, ADC_SampleTime_31_5Cycles);             //CH3  PA1
-        
-    ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-    ADC_Cmd(ADC, ENABLE);
-}
+  ADC_InitStruct.ClockMode = LL_ADC_CLOCK_MODE_PCLK;
+  ADC_InitStruct.DataAlign = LL_ADC_DATA_ALIGN_RIGHT;
+  ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN;   //LL_ADC_SCAN_MODE_DIS;
+  ADC_InitStruct.ContinuousMode = LL_ADC_REG_CONTINUOUS_DIS;
+  ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_EN;
+  ADC_InitStruct.REG_ExternalEvent = LL_ADC_REG_EXTERNAL_TRIG_SWSTART;
+  ADC_InitStruct.INJ_ExternalTrig = LL_ADC_INJ_EXT_TRIG_DIS;
+  ADC_InitStruct.INJ_ExternalEvent = LL_ADC_INJ_EXTERNAL_TRIG_SWSTART;
+  LL_ADC_Init(ADC, &ADC_InitStruct);
+  
+  LL_ADC_SetOverrunMode(LL_ADC_OVERRUN_MODE_OLD);
+  LL_ADC_SetWaitConversion(LL_ADC_WAIT_CONVERSION_DIS);
+  LL_ADC_SetBiasCurrent(LL_ADC_BIAS_CURRENT_10_20UA);
+  LL_ADC_DisableTempSensor();
+  
+  LL_ADC_REG_SetSequencerDiscont(0);
+  LL_ADC_INJ_SetSequencerDiscont(LL_ADC_INJ_DISCONTINUOUS_DIS);
+  LL_ADC_REG_SetSequencerDiscont(DISABLE);
+  
+  LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_127_5_CYCLES);
+  LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);
+  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
+  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
+  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);
+  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);
+  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12);
+  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13);
+  
+  LL_ADC_INJ_SetTrigAuto(LL_ADC_INJ_TRIG_INDEPENDENT);
+  LL_ADC_INJ_SetSequencerLength(LL_ADC_INJ_SEQ_SCAN_RANKS_1);
 
 
+  LL_ADC_DisableIT_EOS();
+  LL_ADC_DisableIT_JEOSEQ();
+  LL_ADC_DisableIT_EOSEQ();
+  LL_ADC_DisableIT_JEOC();
+  LL_ADC_DisableIT_EOC();
 
-/************************************************
-∫Ø ˝√˚≥∆ £∫ ADC_Vrefbuf_Select
-π¶    ƒ‹ £∫ ADC≤ŒøºµÁ—π≈‰÷√
-≤Œ     ˝ £∫ Mode:ADC≤ŒøºµÁ—π—°‘Ò
-                 ‘⁄“‘œ¬÷µ÷–—°‘Ò£∫VREFBUF_ADC_VREFBUF
-                                 VREFBUF_ADC_VREF
-                                 VREFBUF_ADC_VCC
-∑µ ªÿ ÷µ £∫ Œﬁ
-*************************************************/
-void ADC_Vrefbuf_Select(uint32_t Mode)
-{
-    GPIO_InitTypeDef GPIO_InitStructure;
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+  LL_ADC_ClearFlag_EOC();
+  LL_ADC_Enable();
 
-    if(Mode == VREFBUF_ADC_VREFBUF){
-        VREFBUF_ADC_Config(VREFBUF_ADC_VREFBUF);               /* ADC≤ŒøºµÁ—πŒ™VREFBUF1.2V */		
-        VREFBUF_Cmd(ENABLE);				
-    }else if(Mode == VREFBUF_ADC_VREF){
-        GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-        GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-        GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;   
-        GPIO_Init(GPIOA, &GPIO_InitStructure);                 /* ≈‰÷√PA4Œ™VREF */
-        VREFBUF_ADC_Config(Mode);                              /* ADC≤ŒøºµÁ—πŒ™VREF pin */
-    }else{
-        VREFBUF_ADC_Config(Mode);                              /* ADC≤ŒøºµÁ—πŒ™VCC */
-    }
-}
-
-
-
-/************************************************
-∫Ø ˝√˚≥∆ £∫ ADC_Channel_Select
-π¶    ƒ‹ £∫ ADC≥ı ºªØ∫Ø ˝
-≤Œ     ˝ £∫ CH:ADCÕ®µ¿
-∑µ ªÿ ÷µ £∫ Œﬁ
-*************************************************/
-void ADC_Channel_Select(uint8_t CH)
-{
-    if(CH == 0) return;
+  #else
+  LL_ADC_InitTypeDef ADC_InitStruct;
+    uint32_t i;
+  
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC);
+    LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
+    LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA);
+  
+    LL_ADC_StructInit(&ADC_InitStruct);
+  
+    ADC_InitStruct.ClockMode = LL_ADC_CLOCK_MODE_PCLK;             
+    ADC_InitStruct.ScanMode = LL_ADC_SCAN_MODE_EN;              
+    ADC_InitStruct.ContinuousMode = LL_ADC_REG_CONTINUOUS_DIS;        
+    ADC_InitStruct.DataAlign = LL_ADC_DATA_ALIGN_RIGHT;             
+    ADC_InitStruct.REG_ExternalTrig = LL_ADC_REG_EXT_TRIG_EN;  
+    ADC_InitStruct.REG_ExternalEvent = LL_ADC_REG_EXTERNAL_TRIG_SWSTART; 
+    LL_ADC_Init(ADC, &ADC_InitStruct);
+  
+		LL_VREFBUF_Enable(VREFBUF);
+		//LL_ADC_EnableTempSensor();
 	
-    ADC_RegularSequencerLengthConfig(ADC, 1);
+    LL_ADC_SetSampleTime(LL_ADC_SAMPLE_TIME_255_5_CYCLES);
+    LL_ADC_REG_SetSequencerLength(LL_ADC_REG_SEQ_SCAN_RANKS_6);  
+//    for(i=0; i<ADC_CH_COUNT; i++)
+//    {
+//        LL_ADC_REG_SetSequencerRanks(i+1, i+1);
+//    }
+
+	  LL_ADC_REG_SetSequencerRanks(1, LL_ADC_CHANNEL_2);
+	  LL_ADC_REG_SetSequencerRanks(2, LL_ADC_CHANNEL_3);
+	  LL_ADC_REG_SetSequencerRanks(3, LL_ADC_CHANNEL_6);  //Á¨¨‰∏âÁ∫ßÊ∞¥‰Ωç[2]
+	  LL_ADC_REG_SetSequencerRanks(4, LL_ADC_CHANNEL_9);  //Á¨¨‰∫åÁ∫ßÊ∞¥‰Ωç[3]
+	  LL_ADC_REG_SetSequencerRanks(5, LL_ADC_CHANNEL_12); //Á¨¨‰∏ÄÁ∫ßÊï∞‰Ωç[4]
+	  LL_ADC_REG_SetSequencerRanks(6, LL_ADC_CHANNEL_13); // Ë≠¶ÂëäÊ∞¥‰Ωç[5]
+    
+    LL_ADC_REG_SetDMATransfer(LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+    LL_ADC_ClearFlag_EOC();
+    LL_ADC_Enable();
 	
-    if(CH != 20){
-        ADC_RegularChannelConfig(ADC, CH, 1, ADC_SampleTime_15_5Cycles);                        // ∏˜∏ˆ“˝Ω≈µƒ≤…—˘
-    }else{
-        ADC_RegularChannelConfig(ADC, ADC_Channel_Vrefint, 1, ADC_SampleTime_15_5Cycles);       // VrefbufŒ™≤ŒøºµÁ—π≤…—˘
-    }
-		
-    ADC_ClearFlag(ADC, ADC_FLAG_EOC);
-    ADC_Cmd(ADC, ENABLE);	
+
+
+  #endif 
 }
 
-
-
-//ªÒ»°Õ®µ¿◊™ªª ˝æ›
-uint16_t ADC_GetValue(uint8_t CHx,uint32_t Vrefx)
-{    
-    ADC_Vrefbuf_Select(Vrefx);  
-    ADC_Channel_Select(CHx);    
-    ADC_SoftwareStartConvCmd(ADC);                                          /* ∆Ù∂Ø»Ìº˛¥•∑¢ */ 
-    while(!ADC_GetFlagStatus(ADC, ADC_FLAG_EOC));                           /* µ»¥˝◊™ªªÕÍ≥… */ 
-    return  ADC_GetConversionValue(ADC);                                    /* ªÒ»°◊™ªª ˝æ› */	
-}
 
 
 

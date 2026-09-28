@@ -17,16 +17,16 @@
 #endif
 
 #include "ys32t031.h"
-#include "main.h"
 
 
-void TIM6_Configuration(void);
+void TIM1_Configuration(void);
 
-	void TIM17_Configuration(void);
+void TIM3_Configuration(void);
+
+void TIM16_Configuration(void);
 
 
-
-
+void TIM17_Configuration(void);
 
 
 #ifdef __cplusplus

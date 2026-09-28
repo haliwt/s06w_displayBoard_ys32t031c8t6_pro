@@ -3,54 +3,37 @@
 #include "main.h"
 
 
+#define LED_POWER_ON()      LL_GPIO_ResetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
+#define LED_POWER_OFF()     LL_GPIO_SetOutputPin(LED_POWER_GPIO_Port, LL_LED_POWER_Pin)
 
+#define LED_FAN_ON()       LL_GPIO_ResetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
+#define LED_FAN_OFF()      LL_GPIO_SetOutputPin(LED_FAN_GPIO_Port, LL_LED_FAN_Pin)
 
-#define LED_PLASMA_ON()             do{LED_PLASMA_GPIO_Port-> BSRR = LL_LED_PLASMA_Pin;}while(0)//{GPIO_SetBits(PLASMA_GPIO_PORT, PLASMA_PIN);}
-#define LED_PLASMA_OFF()            do{LED_PLASMA_GPIO_Port-> BSRR =(uint32_t)LL_LED_PLASMA_Pin <<16;}while(0)//{GPIO_ResetBits(PLASMA_GPIO_PORT, PLASMA_PIN);}
+#define LED_PLASMA_ON()    LL_GPIO_ResetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
+#define LED_PLASMA_OFF()   LL_GPIO_SetOutputPin(LED_PLASMA_GPIO_Port, LL_LED_PLASMA_Pin)
 
-
-
-
-#define LED_WIFI_ON()          		do{LED_WIFI_GPIO_Port ->BSRR = LL_LED_WIFI_Pin;}while(0)        
-#define LED_WIFI_OFF()              do{LED_WIFI_GPIO_Port ->BSRR = (uint32_t)LL_LED_WIFI_Pin << 16;}while(0)  
-#define LED_WIFI_TOGGLE()           do{LED_WIFI_GPIO_Port->ODR ^= LL_LED_WIFI_Pin;}while(0)
-
-#define LED_DRY_ON()                do{LED_DRY_GPIO_Port ->BSRR = LL_LED_DRY_Pin;}while(0)
-#define LED_DRY_OFF()               do{LED_DRY_GPIO_Port ->BSRR = (uint32_t)LL_LED_DRY_Pin<<16;}while(0)
+#define LED_KEY_AI_ON()        LL_GPIO_ResetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
+#define LED_KEY_AI_OFF()       LL_GPIO_SetOutputPin(LED_AI_GPIO_Port, LL_LED_AI_Pin)
 
 
 
-#define LED_MOUSE_ON()             do{LED_MOUSE_GPIO_Port->BSRR = LL_LED_MOUSE_Pin;}while(0)
-#define LED_MOUSE_OFF()            do{LED_MOUSE_GPIO_Port->BSRR = (uint32_t)LL_LED_MOUSE_Pin<<16;}while(0)
+//WATER FULL OR EMPTY
+#define LED_WATER_FULL_ON()      	LL_GPIO_ResetOutputPin(LED_WATER_FULL_GPIO_Port,LL_LED_WATER_FULL_Pin)
+#define LED_WATER_FULL_OFF()        LL_GPIO_SetOutputPin(LED_WATER_FULL_GPIO_Port,LL_LED_WATER_FULL_Pin)
+#define LED_WATER_FULL_TOGGLE()       LL_GPIO_TogglePin(LED_WATER_FULL_GPIO_Port,LL_LED_WATER_FULL_Pin)
+
+
+#define LED_WATER_INDICATE_ON()    	LL_GPIO_ResetOutputPin(LED_WATER_INDICAT_GPIO_Port,LL_LED_WATER_INDICAT_Pin)
+#define LED_WATER_INDICATE_OFF()    LL_GPIO_SetOutputPin(LED_WATER_INDICAT_GPIO_Port,LL_LED_WATER_INDICAT_Pin)
 
 
 
-#define LED_POWER_ON()          do{LED_POWER_GPIO_Port->BSRR =(uint32_t)LL_LED_POWER_Pin<<16 ;}while(0)//{GPIO_ResetBits(LED_POWER_GPIO_PORT, LED_POWER_PIN);}
-#define LED_POWER_OFF()         do{LED_POWER_GPIO_Port->BSRR = LL_LED_POWER_Pin;}while(0)//GPIO_SetBits(LED_POWER_GPIO_PORT, LED_POWER_PIN);}
-#define LED_POWER_TOGGLE()      do{LED_POWER_GPIO_Port->ODR ^= LL_LED_POWER_Pin;}while(0)//GPIO_TogglePin(LED_POWER_GPIO_PORT, LED_POWER_PIN)
+void power_on_led_handler(void);
+
+void power_off_led_handler(void);
 
 
-
-
-
-#define LED_TIME_ON()          do{LED_TIME_GPIO_Port ->BSRR = LL_LED_TIME_Pin;}while(0)
-#define LED_TIME_OFF()         do{LED_TIME_GPIO_Port ->BSRR = (uint32_t)LL_LED_TIME_Pin<<16;}while(0) 
-
-
-
-
-
-
-void all_led_off(void);
-
-void wifi_fast_led_state(void);
-
-
-void wifi_led_state_handler(void);
-void power_on_led_open_handler(void);
-
-
-
+void water_full_led_blink(void);
 
 
 

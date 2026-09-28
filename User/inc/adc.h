@@ -17,17 +17,11 @@
 extern "C" {
 #endif
     
-#include "ys32t031.h"		
+#include "main.h"		
 #include <stdint.h>  
 
 
-
-extern void ADC_Configuration(void);
-extern void ADC_Channel_Init(uint8_t CH);
-extern void ADC_Vrefbuf_Select(uint32_t Mode);
-extern void ADC_Channel_Select(uint8_t CH);
-extern uint16_t ADC_GetValue(uint8_t CHx,uint32_t Vrefx);
-
+void ADC_Configuration(void);
 
 
 

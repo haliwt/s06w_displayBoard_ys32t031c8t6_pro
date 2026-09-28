@@ -17,12 +17,12 @@
 extern "C" {
 #endif
        
-#include "ys32t031.h"			
+#include "main.h"			
 #include <stdint.h>  		
 
 
 
-extern void IWDG_Configuration(void);
+void IWDG_Configuration(void);
 		
 
 

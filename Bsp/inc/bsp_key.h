@@ -1,25 +1,19 @@
 #ifndef __BSP_KEY_H
 #define __BSP_KEY_H
-#include "ys32t031.h"
 #include "main.h"
 
-#define POWER_KEY_VALUE()         ((GPIOA->IDR & LL_GPIO_PIN_4) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_POWER_Pin) //GPIO_1 按键按下，返回�??: 1
+#define KEY_POWER_VALUE()         ((GPIOB->IDR & LL_KEY_POWER_Pin) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_POWER_Pin) //GPIO_1 按键按下，返回�??: 1
+//#define KEY_MODE_VALUE()          ((GPIOB->IDR & GPIO_Pin_5) ? 1 : 0 ) //sys_read_gpio_pin_value(GPIOD, KEY_MODE_Pin)
+#define KEY_AI_VALUE()          ((GPIOB->IDR & LL_KEY_AI_Pin) ? 1 : 0 )
 
-#define MODEL_KEY_VALUE()         ((GPIOA->IDR & LL_GPIO_PIN_5) ? 1 : 0 ) //sys_read_gpio_pin_value(GPIOD, KEY_MODE_Pin)
+//#define KEY_DOWN_VALUE()          ((GPIOB->IDR & GPIO_Pin_3) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_DOWN_Pin)
+#define KEY_FAN_VALUE()           ((GPIOB->IDR & LL_KEY_FAN_Pin) ? 1 : 0 )
 
-#define DEC_KEY_VALUE()          ((GPIOA->IDR & LL_GPIO_PIN_6) ? 1 : 0 )
+#define KEY_PLASMA_VALUE()            ((GPIOB->IDR & LL_KEY_PLASMA_Pin) ? 1 : 0 )
 
-#define ADD_KEY_VALUE()          ((GPIOA->IDR & LL_GPIO_PIN_7) ? 1 : 0 )//sys_read_gpio_pin_value(GPIOD, KEY_DOWN_Pin)
+//WATER KEY 
+#define KEY_WATER_VALUE()      ((GPIOB->IDR & LL_KEY_WATER_Pin) ? 1 : 0 )
 
-///
-
-#define WIFI_KEY_VALUE()          ((GPIOA->IDR & LL_GPIO_PIN_8)? 1:0 )
-
-#define MOUSE_KEY_VALUE()        ((GPIOB->IDR & LL_GPIO_PIN_13) ? 1 : 0 )
-
-#define PLASMA_KEY_VALUE()        ((GPIOB->IDR & LL_GPIO_PIN_14) ? 1 : 0 )
-
-#define DRY_KEY_VALUE()            ((GPIOB->IDR & LL_GPIO_PIN_15) ? 1 : 0 )
 
 
 typedef enum{
@@ -35,26 +29,21 @@ extern uint16_t key_time;
 
 
 
-void Key_Scan(void);
-
-void System_Status_PowerOff(void) ;
-
-void System_Status_PowerOn(void) ;
 
 void key_power_short_handler(void);
 
 void key_power_long_handler(void);
 
-void key_mode_short_handler(void);
+void key_ai_short_handler(void);
 
-void key_mode_long_handler(void);
-
-void key_up_short_handler(void);
+void key_fan_short_handler(void);
 
 
-void key_down_short_handler(void);
 
-void key_down_long_handler(void);
+void key_plasma_short_handler(void);
+
+void ai_module_hanlder(void);
+
 
 
 #endif 

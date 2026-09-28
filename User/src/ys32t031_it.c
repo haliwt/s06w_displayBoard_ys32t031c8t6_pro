@@ -18,13 +18,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "ys32t031_it.h"
-#include "uart.h"
-#include "bsp.h"
-
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN includes */
-
+#include "bsp.h"
 /* USER CODE END includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,7 +99,6 @@ void HardFault_Handler(void)
   * @param  None
   * @retval None
   */
-
 void SVC_Handler(void)
 {
   /* USER CODE BEGIN SVC_Handler */
@@ -110,111 +106,77 @@ void SVC_Handler(void)
   /* USER CODE END SVC_Handler */
 }
 
+#if 0 //be used to threadx 
 /**
   * @brief  This function handles PendSVC exception.
   * @param  None
   * @retval None
   */
-#if 0
 void PendSV_Handler(void)
 {
   /* USER CODE BEGIN PendSV_Handler */
-    _tx_thread_context_switch();
+
   /* USER CODE END PendSV_Handler */
 }
-#endif 
+
 /**
   * @brief  This function handles SysTick Handler.
   * @param  None
   * @retval None
   */
-#if 0
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_Handler */
-    _tx_timer_interrupt();
+
   /* USER CODE END SysTick_Handler */
 }
 #endif 
-
-
 /**
-  * @brief  This function handles TIM6_LPTIM_IRQHandler.
-  * @param  timer 5ms 
+  * @brief  This function handles TIM17_IRQn.
+  * @param  None
   * @retval None
   */
-void TIM6_LPTIM_IRQHandler (void)
+void TIM17_IRQHandler(void)
 {
-
-   
-	
-	if(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1 ) 
+  /* USER CODE BEGIN TIM17_IRQHandler */
+  // 1. 检查是否是由定时器更新（溢出）产生的中断
+	if (LL_TIM_IsActiveFlag_UPDATE(TIM17) == 1)
 	{
-	 // 2. ???????????????,????????
-	  LL_TIM_ClearFlag_UPDATE(TIM6);
-       tim6_isr_hander;
-
+	  // 2. 必须立刻手动清除更新中断标志位，防止重复进入中断
+	  LL_TIM_ClearFlag_UPDATE(TIM17);
+  
+	  // 3. 执行你的 10ms 周期性任务
+	  // 示例：可以用来累加系统滴答时间，或者递减某些超时计数器
+	   tim17_10ms_tick_handler(); 
+  
 	}
+
+     
+  /* USER CODE END TIM17_IRQHandler */
 }
 
-		
 /**
-  * @brief  This function handles Uart1 Handler.
+  * @brief  This function handles UART1_IRQn displayBoard.
   * @param  None
   * @retval None
   */
 void UART1_IRQHandler(void)
 {
-   UART1_Int_Call(); 
+  //extern void UART1_Int_Call(void);
+  UART1_Int_Call();
+  /* USER CODE BEGIN UART1_IRQHandler */
+ 
+  /* USER CODE END UART1_IRQHandler */
 }
 
-
-#if 0
 /**
-  * @brief  This function handles Uart2 Handler.
-  * @param  wifi receive 
+  * @brief  This function handles UART2_IRQn wifi.
+  * @param  None
   * @retval None
   */
-void UART2_IRQHandler(void)
-{
-	  uint8_t res;
-	
-    if(UART_GetFlagStatus(UART2, UART_FLAG_RXNE) == SET)
-    {
-		    UART_ClearFlag(UART2, UART_FLAG_RXNE);
-
-			  res = UART2->RDR;
-			  usart2_rx_callback_invoke(res);
-
-		#if 0
-			
-	      if(uart2_rx_cnt<sizeof(UART2_RX_BUF))
-				{
-				    UART2_RX_BUF[uart2_rx_cnt++] = res;
-				}
-				else
-				{
-				    uart2_rx_cnt = 0;
-				}
-		#endif 
-	}	
-
-    if(UART_GetFlagStatus(UART2, UART_FLAG_TC) == SET)
-    {
-        UART_ClearFlag(UART2, UART_FLAG_TC);
-    }
-	 UART_ClearFlag(UART2, UART_FLAG_ORE);
-    
-    UART2->ICR = 0xFF;  //��������ж������־				
-}
 
 
-
-#endif 
-
+/* USER CODE BEGIN 1 */
 
 
-
-
-
-
+/* USER CODE END 1 */

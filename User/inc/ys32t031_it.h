@@ -47,8 +47,11 @@
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void SVC_Handler(void);
-//void PendSV_Handler(void);
-//void SysTick_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
+void TIM17_IRQHandler(void);
+void UART1_IRQHandler(void);
+void UART2_IRQHandler(void);
 
 /* USER CODE BEGIN prototypes */
 

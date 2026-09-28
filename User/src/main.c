@@ -1,20 +1,11 @@
 /* USER CODE BEGIN header */
 /**
   ******************************************************************************
-  * @file    s06w display board
-  * @author  
+  * @file    main.c  
+  * @author  YSPRING Application Team
   * @version 1.0.0
-  * @date    2026.09.17
-  * @brief  
-  *
-  * 
-  *        
-  *
-  * 
-  *         
-  * 
-  *         
-  *
+  * @date    2023.3.20
+  * @brief   Main program
   ******************************************************************************
   * @attention
   ******************************************************************************
@@ -22,36 +13,39 @@
 /* USER CODE END header */
 #include "ys32t031.h"
 #include "main.h"
-//#include "delay.h"
-
-#include "uart.h"  
-#include "tim.h"
-#include "iwdg.h"
-#include "adc.h"
 #include "gpio.h"
+#include "tim.h"
 #include "dma.h"
-#include "system_ys32t031.h"
+#include "uart.h"
 
 
-
-
-
-#include "bsp.h"
-
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN includes */
 #include "tx_api.h"
+#include "bsp.h"
+/* USER CODE END includes */
 
-///* ThreadX 强制要求的应用定义入口 */
-//void tx_application_define(void *first_unused_memory)
-//{
-//    /* 
-//       此时硬件和内核已就绪。
-//       你可以在这里调用 tx_thread_create 来创建你的 WiFi 或传感器线程。
-//       暂时留空以通过编译。
-//    */
-//    threadx_handler();
-//}
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN typedef */
 
+/* USER CODE END typedef */
 
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN macro */
+
+/* USER CODE END macro */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN variables */
+
+/* USER CODE END variables */
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN prototypes */
+
+/* USER CODE END prototypes */
+
+/* Private user code ---------------------------------------------------------*/
 // RCC initialization configuration
 void RCC_Configuration(void)
 {
@@ -90,71 +84,47 @@ void RCC_Configuration(void)
 
 
 
-
 // NVIC 初始化配置
 void NVIC_Configuration(void)
 {
-  LL_EXTI_InitTypeDef EXTI_InitStruct = {0};
+  NVIC_SetPriority(TIM17_IRQn, 0);
+  NVIC_EnableIRQ(TIM17_IRQn);
 
-  NVIC_SetPriority(TIM6_LPTIM_IRQn, 0);
-  NVIC_EnableIRQ(TIM6_LPTIM_IRQn);
-
-  //NVIC_SetPriority(TIM17_IRQn, 0);
-  //NVIC_EnableIRQ(TIM17_IRQn);
-
-  NVIC_SetPriority(UART1_IRQn, 1);
+  NVIC_SetPriority(UART1_IRQn, 2);
   NVIC_EnableIRQ(UART1_IRQn);
+
+  NVIC_SetPriority(UART2_IRQn, 3);
+  NVIC_EnableIRQ(UART2_IRQn);
 }
 
+/* USER CODE BEGIN 0 */
 
+/* USER CODE END 0 */
 
-/******************************************************
-函数名：main
-功能：主函数入口
-参数：无
-返回值：int
-*********************** ********************************/
 int main(void)
 {
-    RCC_Configuration();           //系统时钟配置   
-	
-    GPIO_Configuration();          //IO口配置
-	
-   Clear_Ram();                   //变量初始化
-	
- UART1_Configuration();   //串口1 用于和外接显示板通信
-	
-	
-	
- TIM6_Configuration();          //TIM6基本定时配置
- TIM17_Configuration();
-   
-	
-    IWDG_Configuration();          //独立看门狗配置
+  RCC_Configuration();
+  GPIO_Configuration();
+  UART1_Configuration();
+  TIM17_Configuration();
+  IWDG_Configuration();
+  DMA_Configuration();
+  UART1_TX_RX_DMA_Init();
 
-    NVIC_Configuration();          //中断嵌套向量配置
-		
-		//RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-		
-		//TSC_StartCmd(ENABLE);          //开始扫描
-		bsp_init();
-	     UART1_TX_RX_DMA_Init();
-		
+  NVIC_Configuration();
+  /* USER CODE BEGIN 1 */
+    bsp_init();
+   tx_kernel_enter(); 
+  /* USER CODE END 1 */
 
-		
-		 tx_kernel_enter(); 
-		
-		
-    while(1)
-    {
-       
-			  
-    }
+  while(1)
+  {
+    /* USER CODE BEGIN while */
+    
+    /* USER CODE END while */
+  }
 }
 
+/* USER CODE BEGIN 2 */
 
-			  
-			
-			
-
-
+/* USER CODE END 2 */
