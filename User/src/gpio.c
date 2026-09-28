@@ -26,12 +26,7 @@ void GPIO_Configuration(void)
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 
-
-
-
-  
-
-  // GPIO_Input
+ // GPIO_Input
   LL_GPIO_StructInit(&GPIO_InitStruct);
   GPIO_InitStruct.Pin = LL_KEY_POWER_Pin | LL_KEY_MODEL_Pin | LL_KEY_DOWN_Pin | LL_KEY_UP_Pin | LL_KEY_WIFI_Pin;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_INPUT;

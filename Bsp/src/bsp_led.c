@@ -8,6 +8,7 @@ void all_led_off(void)
 	LED_PLASMA_OFF();
 	LED_MOUSE_OFF();
 	LED_WIFI_OFF();
+	LED_TIME_OFF();
 
 
 
@@ -23,6 +24,7 @@ void power_on_led_open_handler(void)
 		 LED_MOUSE_ON();
 		 LED_WIFI_ON();
 		 LED_POWER_ON();
+		 LED_TIME_ON();
 		
 	
 		gpro_t.g_dry_flag = 1;        // 默认开启加热
