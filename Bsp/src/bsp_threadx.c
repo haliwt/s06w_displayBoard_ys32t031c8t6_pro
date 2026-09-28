@@ -1,24 +1,44 @@
 #include "bsp.h"
 
-#define KEY_POWER_SHORT  (1 << 0)
-#define KEY_POWER_LONG   (1 << 1)
-
-#define KEY_FAN_SHORT     (1 << 2)
-#define KEY_FAN_LONG      (1 << 3)
-
-#define KEY_PLASMA_SHORT   (1 << 4)
-#define KEY_PLASMA_LONG     (1 << 5)
-
-#define KEY_AI_SHORT   (1 << 6)
-#define KEY_AI_LONG    (1 << 7)
-
-#define  KEY_WATER_LONG    (1<<8)
 
 
 
-#define STACK_SIZE_KEY  512//256//512//1792//3072//2048//1024//896//768
-#define STACK_SIZE_DECODER  512//512//512//256
-#define STACK_SIZE_UI    1024//1536//1536//1024//256
+#define KEY_MODE_SHORT   (1 << 0)
+#define KEY_MODE_LONG    (1 << 1)
+
+#define KEY_UP_SHORT     (1 << 2)
+#define KEY_UP_LONG      (1 << 3)
+
+#define KEY_DOWN_SHORT   (1 << 4)
+#define KEY_DOWN_LONG    (1 << 5)
+
+#define KEY_POWER_SHORT  (1 << 6)
+#define KEY_POWER_LONG   (1 << 7)
+
+#define KEY_MOUSE_SHORT   (1UL <<8 )
+
+#define KEY_PLASMA_SHORT   (1UL<<9)
+
+#define KEY_DRY_SHORT      (1UL<< 10)
+
+#define KEY_AI_SHORT       (1UL << 11)
+
+#define KEY_AI_LONG        (1UL << 12)
+
+
+
+/***********************************************************************************************************
+											函数声明
+***********************************************************************************************************/
+//#define DEMO_BYTE_POOL_SIZE 4096
+
+//unsigned char free_memory[DEMO_BYTE_POOL_SIZE];
+
+
+
+#define STACK_SIZE_KEY  256//512//256//512//1792//3072//2048//1024//896//768
+#define STACK_SIZE_DECODER  256//512//512//256
+#define STACK_SIZE_UI    1536//1536//1024//256
 #define STACK_SIZE_EVENT  512
 //#define  TX_TIMER_THREAD_STACK_SIZE   128
 
@@ -31,11 +51,20 @@ TX_SEMAPHORE wifi_semaphore;
 
 TX_EVENT_FLAGS_GROUP key_event;
 
-TX_TIMER buzzer_timer; // 定时器控制块，仅占用几十字节内存
-
-
 //TX_TIMER beep_timer;
 	
+	
+
+/*队列*/
+//static TX_QUEUE uart1_rx_queue;
+//static uint8_t uart1_rx_queue_buffer[UART1_RX_BUF_SIZE * sizeof(uint8_t)];
+
+
+///static UCHAR s_decoder_stack[STACK_SIZE_DECODER];
+///static UCHAR s_key_stack[STACK_SIZE_KEY];
+///static UCHAR s_ui_stack[STACK_SIZE_UI];
+//static UCHAR stack_event_pro[STACK_SIZE_EVENT];
+
 __attribute__((aligned(8))) static UCHAR s_ui_stack[STACK_SIZE_UI];
 __attribute__((aligned(8))) static UCHAR s_decoder_stack[STACK_SIZE_DECODER];
 __attribute__((aligned(8))) static UCHAR s_key_stack[STACK_SIZE_KEY];
@@ -50,10 +79,8 @@ static void ui_thread_entry(ULONG thread_input);
 static void key_event_thread_entry(ULONG thread_input);
 /* 定时器回调函数 */
 //void my_timer_callback(ULONG input);
-
-
-uint8_t entry_ui_counter,entry_key_counter,entry_key_event_counter;
-
+	
+uint8_t down_cnt_long_f= 0;
 
 #if DEBUG_ENABLE
 
@@ -178,8 +205,7 @@ void tx_application_define(void *first_unused_memory)
        // 阻塞等待 ISR 投递
       if(tx_semaphore_get(&wifi_semaphore, TX_WAIT_FOREVER) == TX_SUCCESS)
       {
-          
-		  decoder_handler() ;
+          decoder_handler() ;
 		    
        }
 	   else{
@@ -204,8 +230,8 @@ void tx_application_define(void *first_unused_memory)
 
     power_on_off_handler();
 
-    LL_IWDG_ReloadCounter(IWDG);//IWDG_ReloadCounter();
-    entry_ui_counter++;
+     LL_IWDG_ReloadCounter(IWDG);//IWDG_ReloadCounter();
+    
 	
 #if DEBUG_ENABLE
 	 debug_stack_ui_check();
@@ -216,95 +242,129 @@ void tx_application_define(void *first_unused_memory)
 }
 
 /**
-  * @brief	:  
+  * @brief	:  static void vTaskStart(void *pvParameters
   * @note	 
   * @param	 None
   * @retval  None
-**/
+  */
  static void key_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
 
-    static uint16_t ai_cnt = 0;
-    static uint16_t fan_cnt = 0;
-    static uint16_t plasma_cnt = 0;
+    static uint16_t mode_cnt = 0;
+    static uint16_t up_cnt = 0;
+    static uint16_t down_cnt = 0;
     static uint16_t power_cnt = 0;
-	static uint16_t  water_cnt  =0 ;
-    static uint8_t  water_pump_on_f;
+	
+	static uint16_t  plasma_cnt  =0 ;
+	static uint16_t  ptc_cnt =0;
+	static uint16_t  mouse_cnt = 0;
+	static uint16_t  ai_cnt = 0;
+
     const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
   
   
  
    while(1){
-
-   // 物理层扫描
-    if(KEY_POWER_VALUE() == KEY_DOWN){ //power key
+   	
+	// 物理层扫描
+    if(POWER_KEY_VALUE()== KEY_DOWN){ //power key
 		  power_cnt++;
-            if(power_cnt == LONG_PRESS_TIME  && gpro_t.g_power_flag == true){
+            if(power_cnt == LONG_PRESS_TIME && gpro_t.g_power_flag == 1){
                 tx_event_flags_set(&key_event, KEY_POWER_LONG, TX_OR);
              }
     }
-	else if(power_cnt > 0 && KEY_POWER_VALUE() == KEY_UP){
-		    if(power_cnt < LONG_PRESS_TIME)
+	else if(power_cnt > 0 && POWER_KEY_VALUE() == KEY_UP){
+		    if(power_cnt > 0 && power_cnt < LONG_PRESS_TIME)
               tx_event_flags_set(&key_event, KEY_POWER_SHORT, TX_OR);
 
             power_cnt = 0;
 
 	}
-	else if(KEY_AI_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
+	else if(MODEL_KEY_VALUE()  == KEY_DOWN && gpro_t.g_power_flag ==true){// == 1 && gpro_t.g_power_flag ==1){ //key mode
 
-	   ai_cnt++;
-            if(ai_cnt == LONG_PRESS_TIME  ){
-				tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
+	   
+		 mode_cnt++;
+            if(mode_cnt == LONG_PRESS_TIME  ){
+				tx_event_flags_set(&key_event, KEY_MODE_LONG, TX_OR);
                
             }
 	   	
     }
-	else  if(ai_cnt > 0 && KEY_AI_VALUE() == KEY_UP ){
-		       if(ai_cnt < LONG_PRESS_TIME)
-                tx_event_flags_set(&key_event, KEY_AI_SHORT, TX_OR);
+	else  if(mode_cnt > 0 && MODEL_KEY_VALUE()  == KEY_UP ){
+		       if(mode_cnt > 0 && mode_cnt < LONG_PRESS_TIME)
+                tx_event_flags_set(&key_event, KEY_MODE_SHORT, TX_OR);
 		
-        ai_cnt = 0;
+        mode_cnt = 0;
 
 	}
-    else if (KEY_FAN_VALUE() == KEY_DOWN  && gpro_t.g_power_flag == true){ //up key
-		  fan_cnt++;
-        if(fan_cnt == LONG_PRESS_TIME)
-               tx_event_flags_set(&key_event, KEY_FAN_LONG, TX_OR);
+    else if (ADD_KEY_VALUE()== KEY_DOWN && gpro_t.g_power_flag ==1){ //up key
+		//key_i = _UP_KEY_DOWN;
+	  
+		up_cnt++;
+        if(up_cnt == LONG_PRESS_TIME)
+               tx_event_flags_set(&key_event, KEY_UP_LONG, TX_OR);
 	   	
 
 	}
-	else if(fan_cnt > 0 && (KEY_FAN_VALUE() == KEY_UP)){
-	         if(fan_cnt < LONG_PRESS_TIME)
-               tx_event_flags_set(&key_event, KEY_FAN_SHORT, TX_OR);
+	else if(up_cnt > 0 && (ADD_KEY_VALUE()== KEY_UP)){
+	         if(up_cnt > 0 && up_cnt < LONG_PRESS_TIME)
+               tx_event_flags_set(&key_event, KEY_UP_SHORT, TX_OR);
 
-          fan_cnt = 0;
+          up_cnt = 0;
 	}
-	else if (KEY_PLASMA_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){ //dwon key
+	else if (DEC_KEY_VALUE()  == KEY_DOWN && gpro_t.g_power_flag ==1){ //dwon key
 		
-		  plasma_cnt++;
-          if(plasma_cnt == LONG_PRESS_TIME ){
-		  	  
-                tx_event_flags_set(&key_event, KEY_PLASMA_LONG, TX_OR);
+		  down_cnt++;
+          if(down_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){
+		  	    down_cnt_long_f =1;
+                tx_event_flags_set(&key_event, KEY_DOWN_LONG, TX_OR);
           	}
 		
     }
-	else if(plasma_cnt > 0 && KEY_PLASMA_VALUE() == KEY_UP){
-		  if(plasma_cnt < LONG_PRESS_TIME){
-		    tx_event_flags_set(&key_event, KEY_PLASMA_SHORT, TX_OR);
-
-		  }
-          plasma_cnt =0;
-
+	else  if(down_cnt > 0 && DEC_KEY_VALUE()  == KEY_UP){
+		 if( down_cnt > 0 && down_cnt < LONG_PRESS_TIME)
+			tx_event_flags_set(&key_event, KEY_DOWN_SHORT, TX_OR);
+			
+	        down_cnt_long_f =0;
+			down_cnt = 0;
 	}
+	else if(ptc_cnt > 0 && DRY_KEY_VALUE() == KEY_UP){
 
+			if(ptc_cnt < LONG_PRESS_TIME)
+			tx_event_flags_set(&key_event, KEY_DRY_SHORT, TX_OR);
+
+			ptc_cnt = 0;
+		}	
+		else if(MOUSE_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==true){   /* 接收到消息，检测那个位被按下 */
+
+			mouse_cnt ++;
+
+		}
+		else if(mouse_cnt > 0 && MOUSE_KEY_VALUE() == KEY_UP){
+
+			if(mouse_cnt < LONG_PRESS_TIME)
+			tx_event_flags_set(&key_event, KEY_MOUSE_SHORT, TX_OR);
+
+			mouse_cnt = 0;
+		}	
+		else if(WIFI_KEY_VALUE()==KEY_DOWN && gpro_t.g_power_flag ==true ){
+
+			ai_cnt ++ ;
+
+			if(ai_cnt == LONG_PRESS_TIME ){
+			tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
+			}
+        }
+		else if(ai_cnt > 0 && WIFI_KEY_VALUE() == KEY_UP){
+
+              ai_cnt = 0;
+		}
 	
-  
 	
 #if DEBUG_ENABLE
 	 debug_stack_key_check();
 #endif 
-    entry_key_counter++;
     tx_thread_sleep(6);//10ms*6=60 
 	
     } 
@@ -334,40 +394,90 @@ void tx_application_define(void *first_unused_memory)
 
 	    if(flags & KEY_POWER_SHORT){
 
-             key_power_short_handler();
+              power_key_handler() ;//key_power_short_handler();
 		} 
-		else if(flags & KEY_POWER_LONG  && gpro_t.fan_warning_flag ==0 ){
+		else if(flags & KEY_POWER_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 			    
-             key_power_long_handler();
+             //key_power_long_handler();
+             
 		} 
-	    else if(flags & KEY_AI_SHORT  && gpro_t.fan_warning_flag ==0 ){
-             key_ai_short_handler();
+	    else if(flags & KEY_MODE_SHORT &&  ptc_high_temperature_f ==0 && fan_warning_f ==0){
+             //key_mode_short_handler();
+              SendData_Set_Command(0x06,0x01);
+		      tx_thread_sleep(1);
+	          mode_key_handler();
 		} 
-		else if(flags & KEY_AI_LONG  && gpro_t.fan_warning_flag ==0 ){
-             //key_mode_long_handler();
+		else if(flags & KEY_MODE_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+           
+               SendData_Set_Command(0x06,0x01);//SendData_Set_Command(0x06,0x01);
+		       tx_thread_sleep(1);
+
+//			 gpro_t.set_timer_timing_doing_value = 1;
+//			 gpro_t.set_timer_first_smg_blink_flag=1;
+//			 gpro_t.key_add_dec_pressed_flag =0;
+//			 gpro_t.set_temperature_special_flag =0; //cancel up,down key be selected temp adjust
+//			 gpro_t.gTimer_key_timing = 0;
+		 
+	
 		} 
-		else if(flags & KEY_FAN_SHORT  && gpro_t.fan_warning_flag ==0 ){
-			 key_fan_short_handler();
+		else if(flags & KEY_UP_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+			
+			 SendData_Set_Command(0x06,0x01);
+             tx_thread_sleep(1);
+		     key_add_fun();
 		}
-	    else if(flags & KEY_PLASMA_SHORT  && gpro_t.fan_warning_flag ==0){
-             key_plasma_short_handler();
+	    else if(flags & KEY_DOWN_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+            // key_down_short_handler();
+             SendData_Set_Command(0x06,0x01);
+             tx_thread_sleep(1);
+		      key_dec_fun();
+		     
 		}
+		else if(flags & KEY_PLASMA_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 		
-		#if DEBUG_ENABLE
-			debug_stack_key_event_check();
-		#endif 
-     }
-	 else{
+		
+		   plasma_key_handler() ;
+		 
 
-	    tx_thread_sleep(10);//WT.EDIT 2026-05-26
+		}
+		else if(flags & KEY_MOUSE_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+			 
+		
+				mouse_key_handler() ;
+			 
+		}
+		else if(flags & KEY_DRY_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 
-	 }
-     
+		   
+			
+				dry_key_handler() ;
+
+		    
+
+		}
+	    else if( flags & KEY_AI_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
+	       
+	       
+		     // 处理WiFi键
+		       SendData_Set_Command(0x06,0x01);
+	           tx_thread_sleep(1);
+	       
+		     
+	         // gpro_t.connect_wifi_state = wifi_connect_null;
+	          // gpro_t.gTimer_wifi_connect_counter =0; //120s counte start
+	     }
+		
+	}   
+       
 	   
-
-	}
+	 
+#if DEBUG_ENABLE
+		  debug_stack_key_event_check();
+#endif 
+     }
+	
+}
       
- }
 /********************************************************************************
 	**
 	*Function Name:

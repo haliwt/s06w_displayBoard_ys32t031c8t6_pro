@@ -87,15 +87,18 @@ void RCC_Configuration(void)
 // NVIC 初始化配置
 void NVIC_Configuration(void)
 {
-  NVIC_SetPriority(TIM17_IRQn, 0);
-  NVIC_EnableIRQ(TIM17_IRQn);
+  LL_EXTI_InitTypeDef EXTI_InitStruct = {0};
 
-  NVIC_SetPriority(UART1_IRQn, 2);
+  NVIC_SetPriority(TIM6_LPTIM_IRQn, 0);
+  NVIC_EnableIRQ(TIM6_LPTIM_IRQn);
+
+  //NVIC_SetPriority(TIM17_IRQn, 0);
+  //NVIC_EnableIRQ(TIM17_IRQn);
+
+  NVIC_SetPriority(UART1_IRQn, 1);
   NVIC_EnableIRQ(UART1_IRQn);
-
-  NVIC_SetPriority(UART2_IRQn, 3);
-  NVIC_EnableIRQ(UART2_IRQn);
 }
+
 
 /* USER CODE BEGIN 0 */
 
@@ -106,7 +109,8 @@ int main(void)
   RCC_Configuration();
   GPIO_Configuration();
   UART1_Configuration();
-  TIM17_Configuration();
+  TIM6_Configuration(); 		 //TIM6基本定时配置
+
   IWDG_Configuration();
   DMA_Configuration();
   UART1_TX_RX_DMA_Init();

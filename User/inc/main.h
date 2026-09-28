@@ -51,6 +51,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN includes */
+#include "gpio.h"
 
 /* USER CODE END includes */
 
@@ -76,53 +77,7 @@ extern "C" {
 
 /* Private defines -----------------------------------------------------------*/
 
-//LED KEY GPIO
-#define KEY_POWER_GPIO_Port 		GPIOB
-#define LL_KEY_POWER_Pin 			LL_GPIO_PIN_4
 
-#define KEY_FAN_GPIO_Port 			GPIOB
-#define LL_KEY_FAN_Pin 				LL_GPIO_PIN_5
-
-#define KEY_PLASMA_GPIO_Port 		GPIOB
-#define LL_KEY_PLASMA_Pin 			LL_GPIO_PIN_6
-
-#define KEY_AI_GPIO_Port 			GPIOB
-#define LL_KEY_AI_Pin 				LL_GPIO_PIN_7
-
-
-//SMG GPIO 
-#define MCU_STB_GPIO_Port      	GPIOA
-#define LL_MCU_STB_Pin 			LL_GPIO_PIN_5
-
-#define MCU_CLK_GPIO_Port 		GPIOA
-#define LL_MCU_CLK_Pin 			LL_GPIO_PIN_6
-
-#define MCU_DIO_GPIO_Port 		GPIOA
-#define LL_MCU_DIO_Pin 			LL_GPIO_PIN_7
-
-
-
-//CTROL GPIO
-
-
-//LED GPIO 
-#define LED_PLASMA_GPIO_Port GPIOB
-#define LL_LED_PLASMA_Pin LL_GPIO_PIN_3
-
-#define LED_FAN_GPIO_Port GPIOB
-#define LL_LED_FAN_Pin LL_GPIO_PIN_8
-
-#define LED_POWER_GPIO_Port GPIOB
-#define LL_LED_POWER_Pin LL_GPIO_PIN_9
-
-#define LED_WATER_INDICAT_GPIO_Port GPIOF
-#define LL_LED_WATER_INDICAT_Pin LL_GPIO_PIN_9
-
-#define LED_AI_GPIO_Port GPIOA
-#define LL_LED_AI_Pin LL_GPIO_PIN_15
-
-#define LED_WATER_FULL_GPIO_Port GPIOC
-#define LL_LED_WATER_FULL_Pin LL_GPIO_PIN_13
 
 /* USER CODE BEGIN Private defines */
 

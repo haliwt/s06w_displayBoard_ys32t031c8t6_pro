@@ -24,8 +24,7 @@ main_ref gpro_t;
 **************************************************************************************/
  void bsp_init(void)
  {
-  gpro_t.g_power_flag=0;
-  
+  LED_POWER_ON(); 
 
 
 	
@@ -46,6 +45,37 @@ main_ref gpro_t;
 
 
 
+/**
+*@brief:  totall task
+*@param:
+#@notice
+
+**/
+
+/**
+ *
+ * @brief 
+ * @param 
+ * @retrval 
+ *
+ **/
+
+/**
+ *
+ * @brief 
+ * @param 
+ * @retrval 
+ *
+ **/
+
+
+/**
+ *
+ * @brief 
+ * @param 
+ * @retrval 
+ *
+ **/
 
 
 
@@ -64,6 +94,61 @@ main_ref gpro_t;
 ---Ç°ÌáÌõ¼ş£º-
 ---Ëµ    Ã÷£º- 
 ---------------------------------------------------------------------------------*/
+void Task_beep_called_100ms(void)
+{
+    if(beep_times)
+	  {
+		    if(beep_times&0x01)
+		    {
+			      SendData_Set_Command(0x06,0x01);
+			
+			      if(beep_lenght>1)
+			      {
+				        beep_lenght--;
+			      }
+			      else 
+			      {
+				        if(beep_times>0)
+				        {
+					          beep_times--;
+				        }
+			      }		
+	       }
+		    else 
+		    {
+			      
+			
+			      if(non_beep_length>1)
+			      {
+				        non_beep_length--;
+			      }
+			      else 
+			      {
+				        if(beep_times>1)//»¹ÓĞÒ»Éù
+				        {
+					          beep_times--;
+					          non_beep_length=NON_BEEP_LENGTH_DEFAULT;
+					          beep_lenght=2;
+				        }
+				        else 
+				        {
+					          beep_times=0;//½áÊø
+					          non_beep_length=0;
+					          beep_lenght=0;
+				        }
+			      }
+		    }	
+		}
+		else 
+	  {
+	      non_beep_length=0;
+		    beep_lenght=0;
+		   
+	  }
+} 
+
+
+
 
 
 
@@ -118,7 +203,6 @@ uint32_t Get_Unique_ID_32bit(void)
     return (mix % 10000000);         // å‹ç¼©æˆ 7 ä½åè¿›åˆ¶ï¼ˆ0~9999999ï¼‰
 }
 
-#if 0
 /**********************************************************************
     *
     *Function Name:uint8_t bcc_check(const unsigned char *data, int len) 
@@ -136,6 +220,6 @@ uint8_t bcc_check(const unsigned char *data, int len)
     return bcc;
 }
 
-#endif 
+
 
 

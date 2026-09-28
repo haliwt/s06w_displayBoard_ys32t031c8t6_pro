@@ -19,14 +19,8 @@
 #include "ys32t031.h"
 
 
-void TIM1_Configuration(void);
+void TIM6_Configuration(void);
 
-void TIM3_Configuration(void);
-
-void TIM16_Configuration(void);
-
-
-void TIM17_Configuration(void);
 
 
 #ifdef __cplusplus

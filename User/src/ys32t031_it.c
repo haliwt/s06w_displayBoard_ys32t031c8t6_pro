@@ -136,6 +136,7 @@ void SysTick_Handler(void)
   * @param  None
   * @retval None
   */
+#if 0
 void TIM17_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM17_IRQHandler */
@@ -154,6 +155,27 @@ void TIM17_IRQHandler(void)
      
   /* USER CODE END TIM17_IRQHandler */
 }
+#else 
+/**
+  * @brief  This function handles TIM6_LPTIM_IRQHandler.
+  * @param  timer 5ms 
+  * @retval None
+  */
+void TIM6_LPTIM_IRQHandler (void)
+{
+
+   
+	
+	if(LL_TIM_IsActiveFlag_UPDATE(TIM6) == 1 ) 
+	{
+	 // 2. ???????????????,????????
+	  LL_TIM_ClearFlag_UPDATE(TIM6);
+     tim6_isr_hander(); // tim17_10ms_tick_handler(); //tim6_isr_hander;
+
+	}
+}
+
+#endif 
 
 /**
   * @brief  This function handles UART1_IRQn displayBoard.

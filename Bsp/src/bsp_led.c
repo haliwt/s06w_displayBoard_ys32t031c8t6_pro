@@ -1,82 +1,83 @@
 #include "bsp.h"
 
 
-
-
-/**
-*@brief:  
-*@param:
-*@notice
-**/
-void power_on_led_handler(void)
+void all_led_off(void)
 {
-   LED_POWER_ON();
-   LED_FAN_ON();
-   LED_PLASMA_ON();
-   LED_KEY_AI_ON();
-   LED_WATER_INDICATE_ON();
-   if(gpro_t.water_pos_warning_flag == 1){
-       LED_WATER_FULL_ON();
+
+	LED_DRY_OFF();
+	LED_PLASMA_OFF();
+	LED_MOUSE_OFF();
+	LED_WIFI_OFF();
+
+
+
+}
+
+void power_on_led_open_handler(void)
+{
+	if(wifi_app_timer_power_on_f==0){
+
+	     
+		 LED_DRY_ON();
+		 LED_PLASMA_ON();
+		 LED_MOUSE_ON();
+		 LED_WIFI_ON();
+		 LED_POWER_ON();
+		
+	
+		gpro_t.g_dry_flag = 1;        // 默认开启加热
+	    gpro_t.g_mouse_flag = 1;     // 默认开启超声波
+	    gpro_t.g_plasma_flag = 1;          // 默认开启等离子
+	    LED_DRY_ON();
+
+
+	  }
+	  else{
+	
+		 LED_WIFI_ON();
+		 LED_POWER_ON();
+	
+		
+
+
+	  }
+
+}
+//300ms
+void wifi_fast_led_state(void)
+{
+   static uint8_t slowly_led_counter = 0;//100ms
+   if((gpro_t.g_power_flag ==1) && (key_net_config_f ==1)){
+	    LED_WIFI_TOGGLE();
+		
    }
-   else LED_WATER_FULL_OFF();
-  
-}
+   else if((gpro_t.g_power_flag ==1) && (key_net_config_f ==0)){
 
+      
+		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
 
-/**
-*@brief:  
-*@param:
-*@notice
-**/
-void power_off_led_handler(void)
-{
-	 LED_POWER_OFF();
-	 LED_FAN_OFF();
-	 LED_PLASMA_OFF();
-	 LED_KEY_AI_OFF();
-   //water pos led 
-      LED_WATER_INDICATE_OFF();
-      LED_WATER_FULL_OFF();
-  
- 
-}
-
-/**
-*@brief:  
-*@param:
-*@notice
-**/
-void water_full_led_blink(void)
-{
-   if(gpro_t.water_pos_warning_flag == true){
-
-        if(gpro_t.gTimer_water_led_blink > 0){
-		    gpro_t.gTimer_water_led_blink =0;
-			LED_WATER_FULL_TOGGLE();
-
-
+		    slowly_led_counter =0;
+		     LED_WIFI_TOGGLE();
 		}
-
    }
-   else{
-     LED_WATER_FULL_OFF();
+   else if(gpro_t.g_power_flag ==0){
+	     
+	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
+	     slowly_led_counter=0;
+        LED_POWER_TOGGLE();
 
+      }
    }
+  
 }
-/**
-*@brief:  
-*@param:
-*@notice
-**/
 
 
-
-/**
-*@brief:  water of detected display led
-*@param:
-*@notice
-**/
-
+void wifi_led_state_handler(void)
+{
+	
+     if(key_net_config_f==1) return ;
+	
+	}
 
 
 
