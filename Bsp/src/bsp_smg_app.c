@@ -220,7 +220,7 @@ static void Timer_Timing_Donot_Display(void)
 		gpro_t.gTimer_timer_seconds_counter = 57 ;
 		gpro_t.timer_dispTime_hours=0;
 		gpro_t.timer_dispTime_minutes=0;
-		power_off_run_handler();
+		//power_off_run_handler();
 
 	}
 	

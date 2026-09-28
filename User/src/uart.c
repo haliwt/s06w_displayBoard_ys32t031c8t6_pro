@@ -120,9 +120,7 @@ void UART1_Int_Call(void)
 
   volatile uint8_t data ;
 
-
-  #if 1
-  if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
+   if(LL_UART_IsActiveFlag_RXNE(UART1)&& LL_UART_IsEnabledIT_RXNE(UART1))
   {
     /* USER CODE BEGIN Code_UART1_Int_Call_UART_FLAG_RXNE */
      // UART_ReceiveData(UART1);
@@ -149,21 +147,8 @@ void UART1_Int_Call(void)
   }
 
   UART1->ICR = 0xFF;
-
-  #else 
-   if(LL_UART_IsActiveFlag_IDLE(UART1) && LL_UART_IsEnabledIT_IDLE(UART1))
-    {
-        LL_UART_ClearFlag_IDLE(UART1);
-        LL_UART_ClearFlag_RTO(UART1);
-       data = LL_UART_ReceiveData8(UART1);
-	    usart1_isr_callback_handler(data);
-
-   	}
-
-
-
-  #endif 
 }
+
 
 
 

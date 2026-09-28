@@ -116,11 +116,13 @@ void handle_key(KeyHandler *handler)
 *	形    参:  无
 *	返 回 值: 按键代码
 **********************************************************************************************************/
+uint8_t power_counter_f;
 void power_key_handler(void) 
 {
 
 
     if(gpro_t.g_power_flag == false){
+		power_counter_f++;
         SendData_Set_Command(0x01,0x01);//SendData_PowerOnOff(1); // power on
         tx_thread_sleep(2); 
     } 

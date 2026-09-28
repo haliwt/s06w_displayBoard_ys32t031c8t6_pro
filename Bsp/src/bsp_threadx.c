@@ -36,9 +36,9 @@
 
 
 
-#define STACK_SIZE_KEY  256//512//256//512//1792//3072//2048//1024//896//768
-#define STACK_SIZE_DECODER  256//512//512//256
-#define STACK_SIZE_UI    1536//1536//1024//256
+#define STACK_SIZE_KEY  512
+#define STACK_SIZE_DECODER  512
+#define STACK_SIZE_UI    1024
 #define STACK_SIZE_EVENT  512
 //#define  TX_TIMER_THREAD_STACK_SIZE   128
 
@@ -266,7 +266,7 @@ void tx_application_define(void *first_unused_memory)
  
    while(1){
 
-   #if 0
+   #if 1
 	// 物理层扫描
     if(POWER_KEY_VALUE()== KEY_DOWN){ //power key
 		  power_cnt++;

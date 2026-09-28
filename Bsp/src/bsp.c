@@ -211,15 +211,5 @@ uint32_t Get_Unique_ID_32bit(void)
     *Return Ref:NO
     *
 **********************************************************************/
-uint8_t bcc_check(const unsigned char *data, int len) 
-{
-    unsigned char bcc = 0;
-    for (int i = 0; i < len; i++) {
-        bcc ^= data[i];
-    }
-    return bcc;
-}
-
-
 
 

@@ -99,12 +99,12 @@ void HardFault_Handler(void)
   * @param  None
   * @retval None
   */
-void SVC_Handler(void)
-{
-  /* USER CODE BEGIN SVC_Handler */
+//void SVC_Handler(void)
+//{
+//  /* USER CODE BEGIN SVC_Handler */
 
-  /* USER CODE END SVC_Handler */
-}
+//  /* USER CODE END SVC_Handler */
+//}
 
 #if 0 //be used to threadx 
 /**

@@ -115,6 +115,7 @@ int main(void)
   DMA_Configuration();
   UART1_TX_RX_DMA_Init();
 
+
   NVIC_Configuration();
   /* USER CODE BEGIN 1 */
     bsp_init();

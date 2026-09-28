@@ -163,7 +163,7 @@ void Task_beep_called_100ms(void);
 
 
 uint32_t Get_Unique_ID_32bit(void);
-uint8_t bcc_check(const unsigned char *data, int len) ;
+
 
 
 
