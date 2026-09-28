@@ -321,19 +321,12 @@ static void power_on_initial(void)
 	  gpro_t.timer_dispTime_minutes = 0;
 	  gpro_t.gTimer_timer_seconds_counter =0;
 						    
-      gpro_t.on_step =1;
+   
 	
 
-   break;
-
-   case 1:
+      power_on_led_open_handler();
   
-    gpro_t.on_step =2;
 
-
-   break;
-
-   case 2:
    	 
 		// 2. 初始化所有任务的 last_tick 镜像
 	    init_tick = tx_time_get();
@@ -341,7 +334,7 @@ static void power_on_initial(void)
 	        g_ui_tasks[i].last_tick = init_tick;
 	    }
 	 
-	   gpro_t.on_step =0xfe;
+	   gpro_t.on_step =0x10;
 
    break;
 
@@ -1268,4 +1261,12 @@ void power_on_off_handler(void)
       }
 
  }
+
+/**
+  * @brief  
+  * @note  
+  * @param: 
+  *
+**/
+
 

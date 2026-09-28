@@ -42,6 +42,22 @@ void power_on_led_open_handler(void)
 
 	  }
 
+	  if(gpro_t.connect_wifi_state == false){
+	  gpro_t.hours_two_decade_bit=0;
+	  gpro_t.hours_two_unit_bit =0;
+	  gpro_t.minutes_one_decade_bit = 0;
+
+	 
+	  TM1639_Write_4Bit_Time(gpro_t.hours_two_decade_bit,gpro_t.hours_two_unit_bit,0,0,0);
+     //Display_DHT11_Value(); //WT.EIDT 2025.05.10
+     }
+	 else{
+
+        Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+		
+	 }
+    
+
 }
 //300ms
 void wifi_fast_led_state(void)

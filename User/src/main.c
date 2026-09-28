@@ -110,6 +110,7 @@ int main(void)
   GPIO_Configuration();
   UART1_Configuration();
   TIM6_Configuration(); 		 //TIM6基本定时配置
+  TIM17_Configuration(); 
 
   IWDG_Configuration();
   DMA_Configuration();

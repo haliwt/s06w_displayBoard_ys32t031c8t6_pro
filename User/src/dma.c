@@ -3,7 +3,7 @@
 
 
 // DMA 初始化配置
-uint8_t BUFFER[BUF_SIZE];
+//uint8_t BUFFER[BUF_SIZE];
 
 
 // DMA 初始化配置
@@ -76,7 +76,7 @@ void UART1_TX_RX_DMA_Init(void)
   //  LL_DMA_DisableChannel(DMA,LL_DMA_CHANNEL_3);
 
     while( ((DMA_CHANNEL2 -> CCR) & 0x1) != 0x00);
-    while( ((DMA_CHANNEL1 -> CCR) & 0x1) != 0x00);
+  //  while( ((DMA_CHANNEL1 -> CCR) & 0x1) != 0x00);
 
 
     DMA_InitStructure.PeriphOrM2MSrcAddress  = (uint32_t)&UART1->TDR;                  //Ö¸¶¨DMA°áÒÆ¶ÔÓ¦µÄÄ¿µÄÍâÉèµØÖ·
@@ -124,7 +124,7 @@ void UART1_DMA_Disp_Send(const uint8_t *pData, uint16_t Size)
   if (pData == NULL || Size == 0) return ;
   /* 1. 等待上一次 DMA 发送完成（如果通道还开启着，说明还没发完） */
  // while(LL_DMA_IsActiveFlag_TC2(DMA)!= SET);  //wait transmit finish     
- // while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_2) && LL_DMA_GetDataLength(DMA,LL_DMA_CHANNEL_2) > 0);
+  while(LL_DMA_IsEnabledChannel(DMA, LL_DMA_CHANNEL_2) && LL_DMA_GetDataLength(DMA,LL_DMA_CHANNEL_2) > 0);
 
 
   LL_DMA_DisableChannel(DMA,LL_DMA_CHANNEL_2);

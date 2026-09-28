@@ -447,11 +447,7 @@ void tx_application_define(void *first_unused_memory)
 		}
 		else if(flags & KEY_DRY_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 
-		   
-			
-				dry_key_handler() ;
-
-		    
+		    dry_key_handler() ;
 
 		}
 	    else if( flags & KEY_AI_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
@@ -461,9 +457,6 @@ void tx_application_define(void *first_unused_memory)
 		       SendData_Set_Command(0x06,0x01);
 	           tx_thread_sleep(1);
 	       
-		     
-	         // gpro_t.connect_wifi_state = wifi_connect_null;
-	          // gpro_t.gTimer_wifi_connect_counter =0; //120s counte start
 	     }
 		
 	}   
