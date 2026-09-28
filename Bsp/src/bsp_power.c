@@ -1020,8 +1020,8 @@ static void power_off_handler(void)
 			wifi_run_step = 0;
 			wifi_off_step =0;
 			
-			all_led_off();
-	        TM1639_Display_ON_OFF(0);
+			//all_led_off();
+	       // TM1639_Display_ON_OFF(0);
 			
 			
 			gpro_t.off_step = 1;

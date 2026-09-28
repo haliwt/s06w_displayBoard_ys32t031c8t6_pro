@@ -208,10 +208,7 @@ void tx_application_define(void *first_unused_memory)
           decoder_handler() ;
 		    
        }
-	   else{
-
-         tx_thread_sleep(10);
-	   }
+	  
 	}
       
  }
@@ -247,6 +244,8 @@ void tx_application_define(void *first_unused_memory)
   * @param	 None
   * @retval  None
   */
+  uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
+  uint16_t power_cnt = 0;
  static void key_thread_entry(ULONG thread_input)
  {
    (void)thread_input;  /* 消除未使用的参数警告 */
@@ -254,19 +253,20 @@ void tx_application_define(void *first_unused_memory)
     static uint16_t mode_cnt = 0;
     static uint16_t up_cnt = 0;
     static uint16_t down_cnt = 0;
-    static uint16_t power_cnt = 0;
+  //  static uint16_t power_cnt = 0;
 	
 	static uint16_t  plasma_cnt  =0 ;
 	static uint16_t  ptc_cnt =0;
 	static uint16_t  mouse_cnt = 0;
 	static uint16_t  ai_cnt = 0;
 
-    const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
+  //  const uint16_t LONG_PRESS_TIME = 40;   // 300 * 10ms = 3000ms
   
   
  
    while(1){
-   	
+
+   #if 0
 	// 物理层扫描
     if(POWER_KEY_VALUE()== KEY_DOWN){ //power key
 		  power_cnt++;
@@ -275,8 +275,7 @@ void tx_application_define(void *first_unused_memory)
              }
     }
 	else if(power_cnt > 0 && POWER_KEY_VALUE() == KEY_UP){
-		    if(power_cnt > 0 && power_cnt < LONG_PRESS_TIME)
-              tx_event_flags_set(&key_event, KEY_POWER_SHORT, TX_OR);
+		    if(power_cnt < LONG_PRESS_TIME)  tx_event_flags_set(&key_event, KEY_POWER_SHORT, TX_OR);
 
             power_cnt = 0;
 
@@ -291,7 +290,7 @@ void tx_application_define(void *first_unused_memory)
             }
 	   	
     }
-	else  if(mode_cnt > 0 && MODEL_KEY_VALUE()  == KEY_UP ){
+	else if(mode_cnt > 0 && MODEL_KEY_VALUE()  == KEY_UP ){
 		       if(mode_cnt > 0 && mode_cnt < LONG_PRESS_TIME)
                 tx_event_flags_set(&key_event, KEY_MODE_SHORT, TX_OR);
 		
@@ -299,7 +298,6 @@ void tx_application_define(void *first_unused_memory)
 
 	}
     else if (ADD_KEY_VALUE()== KEY_DOWN && gpro_t.g_power_flag ==1){ //up key
-		//key_i = _UP_KEY_DOWN;
 	  
 		up_cnt++;
         if(up_cnt == LONG_PRESS_TIME)
@@ -316,8 +314,8 @@ void tx_application_define(void *first_unused_memory)
 	else if (DEC_KEY_VALUE()  == KEY_DOWN && gpro_t.g_power_flag ==1){ //dwon key
 		
 		  down_cnt++;
-          if(down_cnt == LONG_PRESS_TIME && down_cnt_long_f ==0){
-		  	    down_cnt_long_f =1;
+          if(down_cnt == LONG_PRESS_TIME ){
+
                 tx_event_flags_set(&key_event, KEY_DOWN_LONG, TX_OR);
           	}
 		
@@ -329,42 +327,49 @@ void tx_application_define(void *first_unused_memory)
 	        down_cnt_long_f =0;
 			down_cnt = 0;
 	}
-	else if(ptc_cnt > 0 && DRY_KEY_VALUE() == KEY_UP){
+	else if(DRY_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag == true){
+
+	    ptc_cnt ++;
+
+
+	}
+    else if(ptc_cnt > 0 && DRY_KEY_VALUE() == KEY_UP){
 
 			if(ptc_cnt < LONG_PRESS_TIME)
 			tx_event_flags_set(&key_event, KEY_DRY_SHORT, TX_OR);
 
 			ptc_cnt = 0;
-		}	
-		else if(MOUSE_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==true){   /* 接收到消息，检测那个位被按下 */
+	}	
+	else if(MOUSE_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==true){   /* 接收到消息，检测那个位被按下 */
 
 			mouse_cnt ++;
 
-		}
-		else if(mouse_cnt > 0 && MOUSE_KEY_VALUE() == KEY_UP){
+	}
+	else if(mouse_cnt > 0 && MOUSE_KEY_VALUE() == KEY_UP){
 
 			if(mouse_cnt < LONG_PRESS_TIME)
 			tx_event_flags_set(&key_event, KEY_MOUSE_SHORT, TX_OR);
 
 			mouse_cnt = 0;
-		}	
-		else if(WIFI_KEY_VALUE()==KEY_DOWN && gpro_t.g_power_flag ==true ){
+	}	
+	else if(WIFI_KEY_VALUE()==KEY_DOWN && gpro_t.g_power_flag ==true ){
 
 			ai_cnt ++ ;
 
 			if(ai_cnt == LONG_PRESS_TIME ){
 			tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
 			}
-        }
-		else if(ai_cnt > 0 && WIFI_KEY_VALUE() == KEY_UP){
+    }
+	else if(ai_cnt > 0 && WIFI_KEY_VALUE() == KEY_UP){
 
               ai_cnt = 0;
-		}
+	}
 	
 	
 #if DEBUG_ENABLE
 	 debug_stack_key_check();
 #endif 
+    #endif 
     tx_thread_sleep(6);//10ms*6=60 
 	
     } 
@@ -411,12 +416,6 @@ void tx_application_define(void *first_unused_memory)
            
                SendData_Set_Command(0x06,0x01);//SendData_Set_Command(0x06,0x01);
 		       tx_thread_sleep(1);
-
-//			 gpro_t.set_timer_timing_doing_value = 1;
-//			 gpro_t.set_timer_first_smg_blink_flag=1;
-//			 gpro_t.key_add_dec_pressed_flag =0;
-//			 gpro_t.set_temperature_special_flag =0; //cancel up,down key be selected temp adjust
-//			 gpro_t.gTimer_key_timing = 0;
 		 
 	
 		} 
