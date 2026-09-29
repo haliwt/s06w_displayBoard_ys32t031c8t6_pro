@@ -32,13 +32,13 @@ void tim6_isr_hander(void)
 				
 	
 					gpro_t.gTimer_wifi_connect_counter++;
-					gpro_t.gTimer_timer_seconds_counter++;
+					
 			
 					gpro_t.gTimer_time_colon ++;
 
 					if(++gpro_t.gTimer_timer_seconds_counter >59){
-						gpro_t.gTimer_timer_seconds_counter=0;
-                        gpro_t.works_two_minutes_value ++;
+						 gpro_t.gTimer_timer_seconds_counter=0;
+                         gpro_t.timer_one_minute_flag = true;
                     }
 				
 				     if(++ gpro_t.gTimer_timing_seconds_counter> 59){//1s *60 =60s 

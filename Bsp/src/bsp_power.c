@@ -103,6 +103,7 @@ uint8_t ptc_high_temperature_f ;
 
 static void power_on_handler(void);
 static void power_off_handler(void);
+
 static void power_on_initial(void);
 static void set_temperature_compare_value_fun(void);
 void works_two_hours_handler(void);
@@ -570,7 +571,7 @@ void Set_TimerTiming_Number_Value(void)
  * 返回值:无
  *
  ************************************************************************/
-static void power_off_handler(void)
+ void power_off_handler(void)
 {
   
 

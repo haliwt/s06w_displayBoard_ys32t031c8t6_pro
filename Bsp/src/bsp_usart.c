@@ -13,6 +13,33 @@
 #define ACK_FAILURE 0x01U
 
 
+typedef enum {
+    CMD_STATE_IDLE = 0,      // 空闲状态
+    CMD_STATE_WAIT_RESP,     // 已发出指令，等待主板响应
+    CMD_STATE_SUCCESS,       // 成功（收到主板应答）
+    CMD_STATE_FAILED         // 失败（达到最大重试次数仍无应答）
+} Cmd_State_t;
+
+typedef struct {
+    Cmd_State_t state;
+    uint32_t send_timestamp;  // 记录发送时间戳 (ms)
+    uint8_t  retry_count;     // 当前重试次数
+    uint8_t  max_retries;     // 最大重试次数（如 2 次：发1次+重试1次）
+    uint8_t  cmd_type;        // 当前执行的指令类型（区分开机或关机）
+} System_Cmd_Ctrl_t;
+
+static System_Cmd_Ctrl_t g_cmd_ctrl = {0};
+
+#define CMD_TIMEOUT_MS   1000  // 规定超时时间 1秒
+#define MAX_RETRY_TIMES  2     // 最多发送次数
+
+// 定义指令类型
+#define CMD_TYPE_NONE     			0
+#define CMD_TYPE_POWERON  			1
+#define CMD_TYPE_SHUTDOWN 			2
+
+
+
 typedef struct Msg
 {
     
@@ -618,7 +645,11 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	     if(pddata[4] == 0x01){ //open
 
-           if(gpro_t.g_power_flag == true) return;
+           if(gpro_t.g_power_flag == true){
+		   	g_cmd_ctrl.state = CMD_STATE_SUCCESS;
+		   	return;
+
+           }
 		   gpro_t.on_step=0;
 	       gpro_t.g_power_flag = true;
 

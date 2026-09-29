@@ -1,11 +1,11 @@
 #include "bsp.h"
 
 
-static void WorksTime_DonotDisplay_Fun(void);
 
-static void Display_Works_Time_Fun(void);
 
-static void Timer_Timing_Donot_Display(void);
+
+
+
 /******************************************************************************
 *
 *Function Name:static void Setup_Timer_Times(void)
@@ -55,8 +55,8 @@ void Display_SmgTiming_Value(void)
 	   case TIME_MODE_TIMER:
 		
 
-		if(gpro_t.gTimer_timer_seconds_counter > 59){
-			gpro_t.gTimer_timer_seconds_counter =0;
+		if(gpro_t.timer_one_minute_flag == true){
+			gpro_t.timer_one_minute_flag = false;
 
 			gpro_t.timer_dispTime_minutes -- ;
 
@@ -85,10 +85,11 @@ void Display_SmgTiming_Value(void)
 			//dataToSend[3] = {run_t.timer_dispTime_hours,run_t.timer_dispTime_minutes, run_t.gTimer_timer_seconds_counter}; // 要发送的 3 个数据
 			sendData_to_threeData(0x6B,gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes, gpro_t.gTimer_timer_seconds_counter); // cmd=0x1A, 数据长度=3
 			tx_thread_sleep(2);
+			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 		}
 
-		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
-		WorksTime_DonotDisplay_Fun();
+		
+		
 			
         
 	    break;
@@ -106,63 +107,13 @@ void Display_SmgTiming_Value(void)
 			   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
            }
            
-       
-            Timer_Timing_Donot_Display();
+           Timer_Timing_Donot_Display();
+     
 			break;
 
 	   	}
 
 }
-/****************************************************************
- * 
- * Function Name: static void WorksTime_DonotDisplay_Fun(void)
- * Function :function of pointer 
- * 
- *
- * 
-****************************************************************/
-static void WorksTime_DonotDisplay_Fun(void)
-{
-//send to APP works times every minute onece
- 
-   if(gpro_t.one_minute_flag==true &&  gpro_t.set_timer_timing_value_success ==TIME_MODE_TIMER ){//disp_timer_times
-		  gpro_t.one_minute_flag = false;
-		  
-		  if(gpro_t.connect_wifi_state == false){
-			//dataToSend[3] = {run_t.works_dispTime_hours,run_t.works_dispTime_minutes, run_t.gTimer_timing_seconds_counter}; // 要发送的 3 个数据
-		   sendData_to_threeData(0x6C,gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes, gpro_t.gTimer_timing_seconds_counter); // cmd=0x1A, 数据长度=3
-			tx_thread_sleep(2);
-        }
-  }
-}
-
-/******************************************************************************
-* 
-* Function Name: static void Timer_Timing_Donot_Display(void)
-* Function :function of pointer 
-* Input Ref:NO
-* Return Ref:NO
-* 
-*******************************************************************************/
-static void Display_Works_Time_Fun(void)
-{
-     if(gpro_t.one_minute_flag==true ){//gpro_t.one_minute_flag
-          gpro_t.one_minute_flag = false;
-
-			gpro_t.works_dispTime_minutes++; //1 minute 
-		
-			if(gpro_t.works_dispTime_minutes> 59){ //1 hour
-			gpro_t.works_dispTime_minutes=0;
-			gpro_t.works_dispTime_hours++;
-			if(gpro_t.works_dispTime_hours > 99){ //WT.edit times over 99hours 2023.09.20
-			     gpro_t.works_dispTime_hours =0;
-			}
-        
-            }
-
-     	}
-}
-
 
 /****************************************************************
 * 
@@ -175,25 +126,28 @@ static void Display_Works_Time_Fun(void)
 static void Timer_Timing_Donot_Display(void)
 {
 	
-	if(gpro_t.gTimer_timer_seconds_counter > 59 && gpro_t.set_timer_timing_value_success== TIME_MODE_TIMER){
-	gpro_t.gTimer_timer_seconds_counter =0;
-	gpro_t.timer_dispTime_minutes -- ;
+	if(gpro_t.timer_one_minute_flag == true  && gpro_t.set_timer_timing_value_success== TIME_MODE_TIMER){
+	     gpro_t.timer_one_minute_flag = false;
+	    gpro_t.timer_dispTime_minutes -- ;
 
-	if(gpro_t.timer_dispTime_minutes <  0 ){
+	   if(gpro_t.timer_dispTime_minutes <  0 ){
 
-		gpro_t.timer_dispTime_hours -- ;
-		gpro_t.timer_dispTime_minutes =59;
-	}
+		  gpro_t.timer_dispTime_hours -- ;
+		  gpro_t.timer_dispTime_minutes =59;
+	  }
 
 
 
-	if(gpro_t.timer_dispTime_hours <0){ 
-		gpro_t.gTimer_timer_seconds_counter = 57 ;
-		gpro_t.timer_dispTime_hours=0;
-		gpro_t.timer_dispTime_minutes=0;
-		//power_off_run_handler();
+	  if(gpro_t.timer_dispTime_hours <0){ 
+		  gpro_t.gTimer_timer_seconds_counter = 57 ;
+		  gpro_t.timer_dispTime_hours=0;
+		  gpro_t.timer_dispTime_minutes=0;
+		  SendData_Set_Command(0x01,0); // power off
+          tx_thread_sleep(2);
+		  gpro_t.off_step=0;
+		  gpro_t.g_power_flag = false;
 
-	}
+	   }
 	
 		sendData_to_threeData(0x6B,gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes, gpro_t.gTimer_timer_seconds_counter); // cmd=0x1A, 数据长度=3
 		tx_thread_sleep(2); 	

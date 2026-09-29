@@ -305,25 +305,7 @@ extern const uint8_t LED_TAB[11];
 
 void Clear_Ram(void);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 void Countdown_timer_Handler(void);
-
-
-
-
-
 
 void works_two_hours_handler(void);
 
@@ -331,15 +313,9 @@ void beep_power_sound(void);
 
 void power_on_off_handler(void);
 
-	
-
-
-
-
-
-	
 void Heat_Process(void);
 
+void power_off_handler(void);
 
 
 #ifdef __cplusplus
