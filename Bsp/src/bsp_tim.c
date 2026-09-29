@@ -35,14 +35,17 @@ void tim6_isr_hander(void)
 					gpro_t.gTimer_timer_seconds_counter++;
 			
 					gpro_t.gTimer_time_colon ++;
+
+					if(++gpro_t.gTimer_timer_seconds_counter >59){
+						gpro_t.gTimer_timer_seconds_counter=0;
+                        gpro_t.works_two_minutes_value ++;
+                    }
 				
-				
-					
-					
 				     if(++ gpro_t.gTimer_timing_seconds_counter> 59){//1s *60 =60s 
 					    gpro_t.gTimer_timing_seconds_counter = 0;
+						gpro_t.one_minute_flag=true;
 						gpro_t.works_dispTime_minutes++;
-					    gpro_t.works_two_minutes_value ++;
+					   
 					    if(gpro_t.works_dispTime_minutes > 59){
                             gpro_t.works_dispTime_minutes =0;
                             gpro_t.works_dispTime_hours ++ ;

@@ -45,21 +45,12 @@ void Display_SmgTiming_Value(void)
 				    SMG_Display_Err(1);
 
 				 }
-				
-			    
-
-          }
-
-
-
+		}
        return ;
    }
 
 
-
-   
-
-   switch(gpro_t.ui_time_mode){
+    switch(gpro_t.ui_time_mode){
 
 	   case TIME_MODE_TIMER:
 		
@@ -104,25 +95,15 @@ void Display_SmgTiming_Value(void)
 
 		case TIME_MODE_NORMAL: //NO_AI_MODE by timer timing  auto be changed AI_MODE
 			
-          if(gpro_t.gTimer_timing_seconds_counter > 59){
-    		   gpro_t.gTimer_timing_seconds_counter=0;
+          if(gpro_t.one_minute_flag==true){
+    		 gpro_t.one_minute_flag = false;
     		 
-    		   gpro_t.works_dispTime_minutes++; //1 minute 
-    		
-    		  //gpro_t.send_app_wokes_minutes_two++;
-    		   if(gpro_t.works_dispTime_minutes> 59){ //1 hour
-    		   gpro_t.works_dispTime_minutes=0;
-    		   gpro_t.works_dispTime_hours++;
-    		   if(gpro_t.works_dispTime_hours > 24){
-    		        gpro_t.works_dispTime_hours =0;
-    		   }
-    	      }
-                if(gpro_t.connect_wifi_state == 0){
+    		 if(gpro_t.connect_wifi_state == 0){
 				//dataToSend[3] = {run_t.works_dispTime_hours,run_t.works_dispTime_minutes, run_t.gTimer_timing_seconds_counter}; // 要发送的 3 个数据
 				sendData_to_threeData(0x6C,gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes, gpro_t.gTimer_timing_seconds_counter); // cmd=0x1A, 数据长度=3
 				tx_thread_sleep(2);
                 }
-			Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+			   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
            }
            
        
@@ -144,20 +125,10 @@ static void WorksTime_DonotDisplay_Fun(void)
 {
 //send to APP works times every minute onece
  
-   if(gpro_t.gTimer_timing_seconds_counter > 59 &&  gpro_t.set_timer_timing_value_success ==TIME_MODE_TIMER ){//disp_timer_times
-		   gpro_t.gTimer_timing_seconds_counter=0;
-		 
-		   gpro_t.works_dispTime_minutes++; //1 minute 
-		
-		  //gpro_t.send_app_wokes_minutes_two++;
-		   if(gpro_t.works_dispTime_minutes> 59){ //1 hour
-		   gpro_t.works_dispTime_minutes=0;
-		   gpro_t.works_dispTime_hours++;
-		   if(gpro_t.works_dispTime_hours > 24){
-		   gpro_t.works_dispTime_hours =0;
-		   }
-	       }
-		if(gpro_t.connect_wifi_state == 0){
+   if(gpro_t.one_minute_flag==true &&  gpro_t.set_timer_timing_value_success ==TIME_MODE_TIMER ){//disp_timer_times
+		  gpro_t.one_minute_flag = false;
+		  
+		  if(gpro_t.connect_wifi_state == false){
 			//dataToSend[3] = {run_t.works_dispTime_hours,run_t.works_dispTime_minutes, run_t.gTimer_timing_seconds_counter}; // 要发送的 3 个数据
 		   sendData_to_threeData(0x6C,gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes, gpro_t.gTimer_timing_seconds_counter); // cmd=0x1A, 数据长度=3
 			tx_thread_sleep(2);
@@ -175,8 +146,8 @@ static void WorksTime_DonotDisplay_Fun(void)
 *******************************************************************************/
 static void Display_Works_Time_Fun(void)
 {
-     if(gpro_t.gTimer_timing_seconds_counter > 59 ){
-            gpro_t.gTimer_timing_seconds_counter=0;
+     if(gpro_t.one_minute_flag==true ){//gpro_t.one_minute_flag
+          gpro_t.one_minute_flag = false;
 
 			gpro_t.works_dispTime_minutes++; //1 minute 
 		

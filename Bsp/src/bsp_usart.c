@@ -427,7 +427,6 @@ static void parse_cmd_or_data(uint8_t *pdata)
             if(pdata[5] < 24){ //WT.EDIT 2024.11.23
       
 		    gpro_t.connect_wifi_state = true;
-            LED_WIFI_ON();
              gpro_t.works_dispTime_hours= pdata[5];// run_t.dispTime_hours  =  pdata[5];
              gpro_t.works_dispTime_minutes =pdata[6];//run_t.dispTime_minutes = pdata[6];
              gpro_t.gTimer_timing_seconds_counter =  pdata[7];//run_t.gTimer_disp_time_seconds =  pdata[7];

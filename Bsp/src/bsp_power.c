@@ -167,9 +167,11 @@ static void power_on_initial(void)
       wifi_off_step =0; //WT.EDT 2026.05.15
       gpro_t.works_two_minutes_value =0;
 	  gpro_t.gTimer_timing_seconds_counter=0;
+	 //
+	  gpro_t.one_minute_flag = false;
 	  gpro_t.works_dispTime_minutes =0;
       gpro_t.works_dispTime_hours =0;
-	  //
+	  //timer time
 	  gpro_t.timer_dispTime_hours =0;
 	  gpro_t.timer_dispTime_minutes = 0;
 	  gpro_t.gTimer_timer_seconds_counter =0;
