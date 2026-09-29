@@ -316,7 +316,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
       
           link_net_step =0;
           key_net_config_f =1;
-		  key_net_config_time =0;
+
          
 		
           SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28
@@ -504,8 +504,8 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			   	ptc_prohibit_off_f  = 0;
 				gpro_t.connect_wifi_state = true;
 			
-			    setting_temperature = pdata[5] ;
-			    if(setting_temperature > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
+			    gpro_t.setting_temperature_value = pdata[5] ;
+			    if(gpro_t.setting_temperature_value > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
 
 				   gpro_t.g_dry_flag = true;
 			       if(works_interval_f ==0){

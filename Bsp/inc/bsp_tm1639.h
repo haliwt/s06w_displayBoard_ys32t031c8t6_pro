@@ -93,7 +93,7 @@ void TM1639_Init(void);                      // 初始化TM1639
 void TM1639_Set_Brightness(uint8_t bright);  // 设置亮度
 void TM1639_Display_ON_OFF(uint8_t status);  // 显示�?关控�?
 void TM1639_Clear(void);                     // 清空显示
-void TM1639_Display_H(uint8_t position);     // 在指定佝置显示字毝H
+
 void TM1639_Display_Temperature(int8_t temp); // 显示温度值（-9�?99℃）
 void TM1639_Display_Humidity(uint8_t humi);  // 显示湿度值（0-99%RH�?
 void TM1639_Display_Decimal(uint16_t num, uint8_t dot_pos); // 显示带尝数点的数�?

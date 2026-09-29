@@ -52,16 +52,12 @@ typedef enum {BEEP_ONCE,BEEP_TWO,BEEP_THREE,BEEP_1SECONDS,BEEP_TIME_OVER}Beep_Ty
 
 
 
-//extern volatile uint8_t Times5msCnt;
-extern uint8_t Times10msCnt;
-//extern uint8_t Times100msCnt;
-extern uint8_t Times1minute;
-extern uint16_t Times1minCnt;
-extern uint8_t Cacl_time_sec;
 
 
 
-extern uint8_t disp_second_f ;
+
+
+
 extern uint8_t ptc_high_temperature_f;
 
 extern uint16_t ptc_adc_numbers;
@@ -81,14 +77,13 @@ extern uint16_t ptc_current;
 
 
 extern uint16_t current_temperature;
-extern uint16_t setting_temperature;
+
 extern uint16_t disp_temperature;
 extern uint16_t disp_timing_time;
 extern uint16_t disp_humidity;
 
-extern uint8_t AI_led_open_f;
 
-extern uint8_t first_temp_compare_f;
+
 
 extern bool ptc_prohibit_off_f;
 
@@ -98,34 +93,12 @@ extern uint16_t timing_is_reach_disptime;
 /*countdown timer  */
 extern int8_t setting_timing_hour;
 
-extern int8_t timing_min_cnt;
+
 extern uint8_t real_hours_counter;
 extern int8_t temporary_timer_hours;
 
 
-
-//
-
-extern uint8_t Is_time_setting_f;
-
-extern uint8_t Is_countdown_timer_f;
-extern uint8_t set_temperature_value_f;
-extern uint8_t time_1s_counter;
-extern uint8_t read_ntc_temperature_value;
-
-
-
-
-
-
 extern uint8_t key_net_config_f;
-extern uint16_t key_net_config_time;
-
-
-extern uint8_t flash_f;
-
-
-extern uint16_t device_rest_time;
 
 
 
@@ -138,11 +111,6 @@ extern uint8_t fan_speed_level;
 
 
 
-extern volatile uint8_t beep_times;				  //次数
-extern volatile uint8_t beep_lenght;			  //响的长度 *100ms
-extern volatile uint8_t non_beep_length;		//间隔时间
-extern uint16_t beep_interval_time;
-
 //
 extern uint8_t soft_version;
 
@@ -154,7 +122,7 @@ extern uint8_t humidity;
 
 
 extern uint8_t fan_warning_f;
-extern uint16_t fan_current_det_time;
+
 #define _NO_FAN_LOAD_CURRENT       50      //0.06A*0.67*4096/3.3   
 
 
@@ -162,7 +130,7 @@ extern uint16_t fan_current_det_time;
 extern uint8_t key_be_pressed_f;
 extern uint8_t disp_set_hours_time_f;
 extern uint8_t  key_input_temp_f;
-extern uint8_t  time_10ms_f;
+
 
 extern uint8_t heat_open_close_f;
 
@@ -188,7 +156,7 @@ volatile extern  uint8_t  rx_wifi_data_success;
 volatile extern  uint8_t   rx_wifi_data_counter;
 extern  uint8_t  mqtt_status;
 
-extern  uint8_t  key_pressed_set_temp_f; //WT.EDIT 2026-05-16
+
 
 
 /*end*/

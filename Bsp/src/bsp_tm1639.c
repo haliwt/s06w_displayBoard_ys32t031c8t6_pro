@@ -342,10 +342,6 @@ void TM1639_Display_Humidity(uint8_t humi)
     // 显示个位带小数点
     TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L,TM1639_Number_Table[humi % 10] | TM1639_DOT);
     
-    // 显示RH符号
-    //TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_CHAR_RH);
-    //显示小数点�?��?��?? + 数字 �?0�?
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L, TM1639_Number_Table[0]);
 }
 
 /**
@@ -359,23 +355,6 @@ void TM1639_Clear(void)
     TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L, 0x00);
     TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L, 0x00);
     TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, 0x00);
-}
-
-/**
- * @brief  在指定位置显示字母H
- * @param  position: 显示位置(0-2)�?0为最左边
- * @retval None
- */
-void TM1639_Display_H(uint8_t position)
-{
- 
-    
-    if(position > 2) position = 2;
-    
-    TM1639_Start();
-    TM1639_Write_Byte(position); // 设置显示位置
-    TM1639_Write_Byte(TM1639_CHAR_H);              // 写入字母H的段�?
-    TM1639_Stop();
 }
 
 /**
@@ -422,14 +401,12 @@ void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel)
 
 	 
 	 //digital 1
-     
-      //TM1639_Write_Byte(0xC0);//0xC4H->GRID7->BIT_1
      if(sel==0){
-         //TM1639_Write_OneByte(segNumber_Low[onebit]);//display ""
+       
          TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[onebit]);
      }
      else{
-		 //TM1639_Write_Digit_Full(segNumber_Low[0x10]);
+	
 		  TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[0x0A]);
 
 	 }
@@ -437,13 +414,13 @@ void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel)
 
 	 //digital 2
 
-    //  TM1639_Write_Byte(AddrC2H);//0xC7H->GRID8->BIT_2
+
      if(sel==0){
-     	// TM1639_Write_Byte(segNumber_Low[twobit]);//display ""
+     	
      	TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[twobit]|seg_h);
      }
      else{
-	      //TM1639_Write_Byte(segNumber_Low[0x10]);
+	      
 	      
 	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[0X0A]);
 
@@ -608,38 +585,12 @@ void SMG_Display_Err(uint8_t idata)
 *************************************************************************/
 void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 {
-   #if 0
-	TM1639_Start();
-
-	TM1639_Write_Byte(0xCB);//0xC1H->GRID_2->BIT_2
-
-	if(sel==0){
-
-	TM1639_Write_Byte(segNumber_High[twobit]|seg_h); 
-	}
-	else {
-
-	TM1639_Write_Byte(segNumber_High[twobit]);  
-	}
-
-
-	TM1639_Stop();
-
-
-	//minute 
-	TM1639_Start();
-	TM1639_Write_Byte(0xCD);//0xC2H->GRID_3->BIT_3
-	if(sel==0){
-	TM1639_Write_Byte(segNumber_High[threebit]|seg_h);//display ""
-
-	}//TM1639_Write_OneByte(OFFLED);//display "NULL"
-	else TM1639_Write_Byte(segNumber_High[threebit]);
-
-	TM1639_Stop();
-	#else
+  
 	    uint8_t data_twobit;
 		uint8_t data_threebit;
-	
+
+		twobit = twobit % 10 ;
+	    threebit = threebit /10 ;
 		// 1. 根据一秒一次的跳动状态（sel），决定是否叠加冒号段码 seg_h
 		if (sel == 0) {
 			data_twobit   = TM1639_Number_Table[twobit] | seg_h; 	  // 冒号亮起
@@ -657,7 +608,7 @@ void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 		// 刷新第二个数码管 (Digital 7)：高位 0xCC，低位 0xCD
 		TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L, data_threebit);
 	
-	#endif 
+	\
 
 }
 /*************************************************************************

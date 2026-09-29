@@ -13,7 +13,7 @@ void tim6_isr_hander(void)
 		if(cnt10 > 0){//10ms*1=10ms
 
 			cnt10 =0; 
-		    time_10ms_f = 1;
+		    gpro_t.time_10ms_f = 1;
 		
 			gpro_t.time_50ms_f++;
 
@@ -23,14 +23,14 @@ void tim6_isr_hander(void)
 			    wifi_fast_led_state();
 	            if(++cnt1000> 9){ // 100ms *10 =1000ms=1s 
 					cnt1000 = 0;
-					time_1s_counter ++ ;
+	
 
 				
 					time_link_net_counter++;
 					gpro_t.gTimer_disp_mode_switch++;
 
 				
-				    key_net_config_time++;
+	
 					gpro_t.gTimer_wifi_connect_counter++;
 					gpro_t.gTimer_timer_seconds_counter++;
 			

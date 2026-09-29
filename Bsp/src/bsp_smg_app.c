@@ -262,83 +262,19 @@ void Display_TimeColon_Blink_Fun(void)
 	}
 
 
-	if(gpro_t.gTimer_time_colon >0){ //200 //10*20ms=300ms
 
-	gpro_t.gTimer_time_colon =0;
+
+
 	if(timer_f !=0)timer_f = 0;
 
-	gpro_t.g_time_disp_colon_flag = gpro_t.g_time_disp_colon_flag ^ 0x01;
+	gpro_t.g_time_disp_colon_flag = !gpro_t.g_time_disp_colon_flag ;
 
-	SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,gpro_t.g_time_disp_colon_flag);
+	SmgBlink_Colon_Function(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
 
-	}
+	
 }
 
 
 
 
-#if 0
-		else{
 
-		    if(run_t.gTimer_error_digital < 60){//10ms * 51= 510
-
-		      
-               if(alternate_flag ==0){
-			   	  
-                     
-			     if(run_t.ptc_warning ==1){
-                 
-					Display_Error_Digital(0x01,0);
-			     }
-				 else {
-			        if(run_t.fan_warning ==1){
-
-					  
-                      Display_Error_Digital(0x02,0);
-
-			        }
-
-				 }
-			    
-
-               }
-			   else{
-
-			      alternate_flag=2;
-				   if(run_t.ptc_warning ==1 && run_t.fan_warning ==1){
-
-					     Display_Error_Digital(0x02,0);
-
-				   	}
-				    else  if(run_t.ptc_warning ==1 && run_t.fan_warning ==0){
-                       
-					    Display_Error_Digital(0x01,0);
-			        }
-					else  if(run_t.ptc_warning ==0 && run_t.fan_warning ==1){
-                       
-					    Display_Error_Digital(0x02,0);
-			        }
-
-
-			   }
-			   
-
-		   }
-		   else if(run_t.gTimer_error_digital > 59 && run_t.gTimer_error_digital  < 121 ){
-		   		alternate_flag++;
- 				Display_Error_Digital(0x10,1);
- 				if(alternate_flag==2 ||alternate_flag>2 )alternate_flag=0;
-		   }
-		    else if(run_t.gTimer_error_digital > 119){
-
-			  run_t.gTimer_error_digital=0;
-
-
-			 }
-
-		}
-
-
-
-}
-#endif 

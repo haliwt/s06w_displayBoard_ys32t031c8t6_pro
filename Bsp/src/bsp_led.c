@@ -75,19 +75,15 @@ void wifi_fast_led_state(void)
    else if((gpro_t.g_power_flag ==1) && (key_net_config_f ==0)){
 
       
-		if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s 
+		if(++slowly_led_counter > 9){//100ms *10 =100ms =1s 
 
 		    slowly_led_counter =0;
 		     LED_WIFI_TOGGLE();
 		}
    }
-   else if(gpro_t.g_power_flag ==0){
-	     
-	   if(++slowly_led_counter > 9){//100ms *10 =1000ms =1s
-	     slowly_led_counter=0;
-        LED_POWER_TOGGLE();
-
-      }
+   else if(gpro_t.g_power_flag == false){
+	 LED_WIFI_OFF();
+      
    }
   
 }

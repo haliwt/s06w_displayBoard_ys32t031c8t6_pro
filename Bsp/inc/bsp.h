@@ -113,6 +113,11 @@ typedef struct _main_ref{
  bool wifi_led_fast_blink; 
  bool  connect_wifi_state;
 
+ //timer
+ uint8_t seting_timer_flag;
+ uint8_t first_temp_compare_f;
+ uint8_t setting_temperature_value;
+
 
 
  volatile uint8_t time_10ms_f;
@@ -158,7 +163,7 @@ void bsp_init(void);
 
 void task_scheduler(void);
 
-void Task_beep_called_100ms(void);
+
 
 
 
