@@ -214,8 +214,8 @@ void System_Status_PowerOn(void)
 	
 	heat_open_close_f=0; //WT.EIDT 2026-07-13
 	//wifi
-	wifi_run_step=0;
-	wifi_off_step=0;
+
+
 	
     // 2. 设定启动默认参数
     gpro_t.setting_temperature_value = 40;   // 默认设定温度 40°C
@@ -281,8 +281,8 @@ void System_Status_PowerOff(void)
 
 	
 	//wifi
-	wifi_run_step=0;
-	wifi_off_step =0;
+
+
 	ptc_high_temperature_f =0;
 	
     

@@ -24,16 +24,9 @@ void tim6_isr_hander(void)
 	            if(++cnt1000> 9){ // 100ms *10 =1000ms=1s 
 					cnt1000 = 0;
 	
-
-				
-					time_link_net_counter++;
+           
 					gpro_t.gTimer_disp_mode_switch++;
-
-				
-	
-					gpro_t.gTimer_wifi_connect_counter++;
-					
-			
+                    gpro_t.gTimer_wifi_connect_counter++;
 					gpro_t.gTimer_time_colon ++;
 
 					if(++gpro_t.gTimer_timer_seconds_counter >59){

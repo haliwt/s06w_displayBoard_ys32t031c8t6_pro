@@ -73,26 +73,7 @@ int8_t setting_timing_hour;
 
 //wifi 
 
-uint8_t  link_net_step;
-uint8_t  time_link_net_counter;
-uint8_t  wifi_linking_tencent_f;
-uint8_t  wifi_connected_success_f;
-volatile uint8_t  wifi_rx_numbers;
-uint8_t  wifi_cofig_success_f;
 uint8_t  wifi_app_timer_power_on_f;
-uint8_t  wifi_run_step ;
-uint8_t  wifi_off_step;
-
-uint8_t  wifi_first_connectoed_cloud_f;
-uint8_t  wifi_read_net_data_f;
-
-
-uint8_t  wifi_check_net_f;
-
-
-volatile uint8_t  rx_wifi_data_success;
-volatile uint8_t   rx_wifi_data_counter;
-
 
 uint8_t key_be_pressed_f;
 uint8_t disp_set_hours_time_f;
@@ -137,16 +118,9 @@ void Clear_Ram(void)
 		fan_warning_f = 0;
 	
 		//wifi 
-		wifi_linking_tencent_f=0;
+
 		
 	}
-
-/**
-  * @brief  fan run is ok
-  * @note  
-  *
-  *
-**/
 
 /************************************************************************
  * Function Name: LED_Power_Breathing(void)
@@ -165,13 +139,16 @@ static void power_on_initial(void)
 
    case 0:
    	  gpro_t.off_step = 0;
-      wifi_off_step =0; //WT.EDT 2026.05.15
+
       gpro_t.works_two_minutes_value =0;
-	  gpro_t.gTimer_timing_seconds_counter=0;
+	  
 	 //
-	  gpro_t.one_minute_flag = false;
-	  gpro_t.works_dispTime_minutes =0;
-      gpro_t.works_dispTime_hours =0;
+	  if(gpro_t.connect_wifi_state == false){
+		  gpro_t.one_minute_flag = false;
+		  gpro_t.works_dispTime_minutes =0;
+	      gpro_t.works_dispTime_hours =0;
+		  gpro_t.gTimer_timing_seconds_counter=0;
+	  }
 	  //timer time
 	  gpro_t.timer_dispTime_hours =0;
 	  gpro_t.timer_dispTime_minutes = 0;
@@ -582,8 +559,8 @@ void Set_TimerTiming_Number_Value(void)
 	       
 	
 	
-			wifi_run_step = 0;
-			wifi_off_step =0;
+
+	
 			
 			 all_led_off();
 	         TM1639_Display_ON_OFF(0);
@@ -663,9 +640,7 @@ void works_two_hours_handler(void)
 		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
 			 // 立即open
 		      LED_DRY_ON();
-		  
-		  
-		  	}
+		   }
 		 
 		}
 

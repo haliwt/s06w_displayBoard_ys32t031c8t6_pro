@@ -128,6 +128,7 @@ void usart1_isr_callback_handler(uint8_t data)
 
 		  if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFF && gl_tMsg.tx_counter_nums==2){
 		       rx_state = 4;
+			   gl_tMsg.copy_cmd_flag = true;
                
 
 		  }
@@ -153,8 +154,7 @@ void usart1_isr_callback_handler(uint8_t data)
 
 	 case 4:
 	 	   gl_tMsg.tx_counter_nums++;
-		   gl_tMsg.copy_cmd_flag = true;
-           gl_tMsg.usData[gl_tMsg.tx_counter_nums]=data;
+		   gl_tMsg.usData[gl_tMsg.tx_counter_nums]=data;
           if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFE && gl_tMsg.tx_counter_nums> 3){
 		      rx_state = 5;
 		  }
@@ -370,7 +370,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
        if(pdata[3] == 0x01){  // link wifi 
         
       
-          link_net_step =0;
+     
           gpro_t.connecting_wifi_flag =1;
 
          
@@ -641,14 +641,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
     break;
 
-
-	case 0xFF: //copy comand or notice or data.
-
-	       parse_recieve_copy_data(pdata) ;
-
-	break;
-
-	}
+   }
   
 
 }
@@ -660,8 +653,6 @@ static void parse_cmd_or_data(uint8_t *pdata)
 * @return 
 *
 */
-uint8_t test_wifi_counter;
-
 static void parse_recieve_copy_data(uint8_t *pddata)
 {
 
@@ -721,7 +712,7 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 	 case 0x05: //WIFI 
 
          if(pddata[4] ==1){
-		 	test_wifi_counter++;
+		
 		 	gpro_t.gTimer_wifi_connect_counter=0;
 		 	gpro_t.connecting_wifi_flag = true;
 			
@@ -743,13 +734,12 @@ static void parse_recieve_copy_data(uint8_t *pddata)
   * @retrval 
 **/
 
-uint8_t decoder_counter;
+
 void decoder_handler(void)
 {
    
 	gl_tMsg.repeat_check_bcc_code = bcc_check(gl_tMsg.usData,gl_tMsg.rx_total_numbers);
 	if(gl_tMsg.copy_cmd_flag == true && gl_tMsg.repeat_check_bcc_code == gl_tMsg.bcc_check_code){
-	    decoder_counter ++;
 	    parse_recieve_copy_data(gl_tMsg.usData);
 	    gl_tMsg.copy_cmd_flag = false;
 
