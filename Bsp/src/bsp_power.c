@@ -6,7 +6,7 @@
 
 #define MS_TO_TICKS(ms)  ((ms) / THREADX_TICK_MS)
 
-#define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
+
 
 
 
@@ -35,13 +35,14 @@ static void task_compare_temp(void);
 static task_t g_ui_tasks[] = {
     { task_ui_key,             1,   0 }, // 1*10m  
     { task_keys_and_refresh,   5,   0 }, // 5*10ms 刷新UI和按键
-    { task_blink_colon,        96,  0 }, // 50*10ms 冒号闪烁
+    { task_blink_colon,        101,  0 }, // 101*10ms 冒号闪烁
     { task_dht11_display,      32,  0 }, // 300ms DHT11刷新
     { task_compare_temp,       340, 0 }, // 3s 控温比较
     { task_two_hours_timing,   129, 0 }, // 1.2s 运行计时
     { task_send_version,       3080, 0 }, // 3s  发送版本号
 };
 
+#define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
 
 
 typedef enum{
@@ -208,7 +209,7 @@ void power_on_handler(void)
 	uint32_t current_tick = tx_time_get();
 	uint8_t i ;
 
-	if(gpro_t.off_step < 8){
+	if(gpro_t.on_step < 8){
 		power_on_initial();
 	}
 	else{
@@ -344,8 +345,10 @@ static void task_send_version(void)
 *@param
 *@notice
 **/
+uint8_t counter_colon;
 static void task_blink_colon(void)
 {
+    counter_colon++;
 	Display_TimeColon_Blink_Fun();
 	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == false && gpro_t.gTimer_wifi_connect_counter > 125 ){
 		gpro_t.wifi_led_fast_blink=0;
