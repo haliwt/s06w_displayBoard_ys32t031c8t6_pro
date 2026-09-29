@@ -89,7 +89,7 @@
 
 // 函数声明
 void TM1639_Init(void);                      // 初始化TM1639
-void TM1639_Display_3_Digit(uint8_t num);   // 显示3佝数�?
+
 void TM1639_Set_Brightness(uint8_t bright);  // 设置亮度
 void TM1639_Display_ON_OFF(uint8_t status);  // 显示�?关控�?
 void TM1639_Clear(void);                     // 清空显示
@@ -103,9 +103,6 @@ void TM1639_All_Off(void);                  // 关闭�?有显示（包括数�
 //void TM1639_Write_Half_Digit(uint8_t addr,uint8_t data);
 
 
-void TM1639_Display_setTimerHours_3_Digit(uint8_t num);
-
-void TM1639_Display_setTimerMinutes_3_Digit(uint8_t num);
 
 void TM1639_Write_2bit_SetUp_TempData(uint8_t onebit,uint8_t twobit,uint8_t sel);
 

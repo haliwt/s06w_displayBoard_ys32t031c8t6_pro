@@ -51,8 +51,7 @@ void power_on_led_open_handler(void)
 
 	 
 	 // TM1639_Write_4Bit_Time(gpro_t.hours_two_decade_bit,gpro_t.hours_two_unit_bit,9,6,0);
-	  Display_Timing(13,36,0);
-	  tx_thread_sleep(20);
+	
 	  disp_dht11_value();
 	  tx_thread_sleep(20);
      //Display_DHT11_Value(); //WT.EIDT 2025.05.10

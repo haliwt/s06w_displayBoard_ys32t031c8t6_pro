@@ -265,95 +265,8 @@ void TM1639_Write_Half_Digit(uint8_t addr, uint8_t data)
 }
 
 
-/**
- * @brief  显示3位数�?
- * @param  num: 要显示的数字(0-999)
- * @retval None
- */
-void TM1639_Display_3_Digit(uint8_t num)
-{
-    static uint8_t ten, one;
-    
-   // 提取各位数字
-   
-    ten = num  / 10;
-    one = num % 10;
-    
-    // 写入十位（最左边�?
-    
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H,TM1639_ADDR_GRID1_L, TM1639_Number_Table[ten]);
-        
-    // 写入十位（中间）
- 
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L, TM1639_Number_Table[one]);
-        
-    // 写入个位（最右边�?'H'
 
-	TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_CHAR_H);
 
-}
-
-/**
- * @brief  显示3位数�?
- * @param  num: 要显示的数字(0-999)
- * @retval None
- */
-void TM1639_Display_setTimerHours_3_Digit(uint8_t num)
-{
-    static uint8_t ten, one;
-    
-   // 提取各位数字
-   
-    ten = num  / 10;
-    one = num % 10;
-    
-    // 写入十位（最左边�?
-    
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L, TM1639_Number_Table[ten]);
-        
-    // 写入十位（中间）
- 
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L, TM1639_Number_Table[one]);
-        
-    // 写入个位（最右边�?'H'
-	
-	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_CHAR_H);
-	 
-	 
-}
-/**
- *@breif
- *@param :
- *
- *
-**/
-void TM1639_Display_setTimerMinutes_3_Digit(uint8_t num)
-{
-    static uint8_t ten, one;
-    
-   // 提取各位数字
-   
-    ten = num  / 10;
-    one = num % 10;
-    
-    // 写入十位（最左边�?
-    
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L, TM1639_Number_Table[ten]);
-        
-    // 写入十位（中间）
- 
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L, TM1639_Number_Table[one]);
-
-	#if 0 //WT.EDIT 2026.03.09
-        
-    // 写入个位（最右边 N)
-	
-	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_CHAR_N);
-	#else
-	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,0x00);
-	#endif  
-	 
-}
 
 /**
  * @brief  显示带小数点的数�?
@@ -407,10 +320,8 @@ void TM1639_Display_Temperature(int8_t temp)
         // 显示个位
        TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[temp % 10] | TM1639_DOT);
         
-        // 显示度数符号
-       //TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_CHAR_DEGREE);
-        //显示小数点�?��?��?? 显示数字�?0�?
-       TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_Number_Table[0]);
+     
+       
 }
 /**
  * @brief  显示湿度�?
@@ -423,19 +334,18 @@ void TM1639_Display_Humidity(uint8_t humi)
 
     // 显示十位
     if(humi >= 10){
-        TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L, 
-            TM1639_Number_Table[humi / 10]);
+        TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_Number_Table[humi / 10]);
     }
     else
-        TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L, TM1639_Number_Table[0]);
+        TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_Number_Table[0]);
     
     // 显示个位带小数点
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[humi % 10] | TM1639_DOT);
+    TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L,TM1639_Number_Table[humi % 10] | TM1639_DOT);
     
     // 显示RH符号
     //TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_CHAR_RH);
     //显示小数点�?��?��?? + 数字 �?0�?
-    TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L, TM1639_Number_Table[0]);
+    TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L, TM1639_Number_Table[0]);
 }
 
 /**
@@ -570,7 +480,6 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
 	 
     //digital 1
      TM1639_Start();
-     //TM1639_Write_OneByte(0xC8);//0xC0H->GRID_1->BIT_1
     if(sl ==0){
          TM1639_Write_Digit_Full(TM1639_ADDR_GRID5_H, TM1639_ADDR_GRID5_L,TM1639_Number_Table[onebit]);//TM1639_Write_OneByte(segNumber_Low_4bit[onebit]);//display "10"
       }
@@ -579,24 +488,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
           TM1639_Write_Digit_Full(TM1639_ADDR_GRID5_H, TM1639_ADDR_GRID5_L,TM1639_Number_Table[0x0A]);   //TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);//display "10"
 	 	  
 	 }
-//     TM1639_Stop();
-//    // ai_ico_fast_blink();
 
-//	 TM1639_Start();
-//     TM1639_Write_OneByte(0XC9);//0xC1H->GRID_1->BIT_1
-//     if(sl ==0){
-//         TM1639_Write_OneByte(segNumber_High_4bit[onebit]);//display "01"
-//     }
-//     else {
-//	 	     TM1639_Write_OneByte(segNumber_High_4bit[0x10]);//display "10"
-//     }
-//     TM1639_Stop();
-    
-     // ai_ico_fast_blink();
-     //dighital 2
-   
-    // TM1639_Start();
-    // TM1639_Write_OneByte(0xCA);//0xC1H->GRID_2->BIT_2
      if(sl==0){
 	 	if(gpro_t.g_time_disp_colon_flag== true){
          TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[twobit|seg_h]); //TM1639_Write_OneByte(segNumber_Low_4bit[twobit]);//display "2 :"
@@ -613,25 +505,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     
   
 
-//	TM1639_Start();
 
-//    TM1639_Write_OneByte(0xCB);//0xC1H->GRID_2->BIT_2
-//     if(gpro_t.g_time_disp_colon_flag==1){
-//         TM1639_Write_OneByte(segNumber_High_4bit[twobit]|seg_h);//WT.EDIT 2025.03.10
-   
-//     }
-//     else {
-      
-//        TM1639_Write_OneByte(segNumber_High_4bit[twobit]); //WT.EDIT 2025.03.10
-//	 }
-	 
-//    TM1639_Stop();
-	 
- 
-     //digital 3 
-     //minute 
-   // TM1639_Start();
-    //TM1639_Write_OneByte(0xCC);//0xC2H->GRID_3->BIT_3
     if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
 	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[threebit]);//TM1639_Write_OneByte(segNumber_Low_4bit[threebit]);//display ""
 
@@ -639,24 +513,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     else{
         TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
      }
-    //TM1639_Stop();
-  
-    //minute 
-//    TM1639_Start();
-//    TM1639_Write_OneByte(0xCD);//0xC2H->GRID_3->BIT_3
-//    if(gpro_t.g_time_disp_colon_flag==1){
-//	    TM1639_Write_OneByte(segNumber_High_4bit[threebit]|seg_h);//display ""
 
-//	}//TM1639_Write_OneByte(OFFLED);//display "NULL"
-//    else TM1639_Write_OneByte(segNumber_High_4bit[threebit]); //WT.EDIT 2025.03.10
-	
-//    TM1639_Stop();
-	
-   
-    //digital 4
-	//minute 
-   // TM1639_Start();
-   // TM1639_Write_OneByte(0xCE);//0xC2H->GRID_4
     if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
 	     TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[fourbit]);//TM1639_Write_OneByte(segNumber_Low_4bit[fourbit]);//display ""
 
@@ -664,18 +521,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     else{
 		TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
     }
-    //TM1639_Stop();
-  
-    //minute 
-//    TM1639_Start();
-//    TM1639_Write_OneByte(0xCF);//0xC2H->GRID_4
-//    if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
-//	    TM1639_Write_OneByte(segNumber_High_4bit[fourbit]);//display ""
 
-//    }
-//    else TM1639_Write_OneByte(segNumber_High_4bit[0x10]);
-//    TM1639_Stop();
-     //open diplay
     TM1639_Start();
     TM1639_Write_Byte(OpenDispTM1639|0x8f);//0xC2H->GRID3->BIT_3
     TM1639_Stop();
@@ -850,53 +696,24 @@ void disp_dht11_value(void)
 static void TM1639_Write_2bit_TempData(uint8_t onebit,uint8_t twobit)
 {
 	 TM1639_STB_SetLow();
-	 TM1639_Write_Byte(0X40);//To Address of fixed reg 0x44
+	 TM1639_Write_Byte(0x40);//To write display register 0x40
 	 TM1639_STB_SetHigh();
-    
-    TM1639_STB_SetLow();
-     TM1639_Write_Byte(0X44);//To Address of fixed reg 0x44
-     TM1639_STB_SetHigh();
+
+
+	 TM1639_Start();
+     TM1639_Write_Byte(0x44);//Add fixed reg
+     TM1639_Stop();
 
 	 
-    //digital 1
-    // TM1639_Start();
-     //TM1639_Write_Byte(0xC0);//0xC0H->GRID_1->BIT_1
-
-     //TM1639_Write_OneByte(segNumber_Low[onebit]);//display "10"
-     TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[onebit]);
-   
-    // TM1639_Stop();
-
-//	 TM1639_Start();
-//     TM1639_Write_OneByte(0XC1);//0xC1H->GRID_1->BIT_1
-  
-//      TM1639_Write_OneByte(segNumber_High[onebit]);//display "01"
+	 //digital 1
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID1_H, TM1639_ADDR_GRID1_L,TM1639_Number_Table[onebit]);
     
-//     TM1639_Stop();
     
-      
-     //dighital 2
-   
-    // TM1639_Start();
-     //TM1639_Write_OneByte(AddrC2H);//0xC1H->GRID_2->BIT_2
+
+	 //digital 2
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[twobit]|seg_h);
     
-     //TM1639_Write_OneByte(segNumber_Low[twobit]);//display "2 :"
-     TM1639_Write_Digit_Full(TM1639_ADDR_GRID2_H, TM1639_ADDR_GRID2_L,TM1639_Number_Table[twobit]);
-     
-     //TM1639_Stop();
-   
-
-//	TM1639_Start();
-
-//     TM1639_Write_OneByte(AddrC3H);//0xC1H->GRID_2->BIT_2
-   
-//     TM1639_Write_OneByte(segNumber_High[twobit]|seg_h);//TM1639_Write_OneByte(segNumber_High[twobit]|0x80|seg_h);//display "2 :"
-   
-  
-//     TM1639_Stop();
-
-
-	  //open diplay
+    //open diplay
     TM1639_Start();
     TM1639_Write_Byte(OpenDispTM1639|0x8f);//
     TM1639_Stop();
@@ -925,43 +742,15 @@ static void TM1639_Write_2bit_HumData(uint8_t onebit,uint8_t twobit)
      TM1639_STB_SetHigh();
 
 
-//digital 3 
-     //minute 
-    //TM1639_Start();
-    //TM1639_Write_OneByte(AddrC4H);//0xC2H->GRID_3->BIT_3
-    // TM1639_Write_OneByte(segNumber_Low[onebit]);//display ""
-      TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_Number_Table[onebit]);
-     //TM1639_Stop();
-    
-//    //minute 
-//    TM1639_Start();
-//    TM1639_Write_OneByte(AddrC5H);//0xC2H->GRID_3->BIT_3
-  
-//	 TM1639_Write_OneByte(segNumber_High[onebit]);//display ""
 
-	
-//    TM1639_Stop();
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID3_H, TM1639_ADDR_GRID3_L,TM1639_Number_Table[onebit]);
+
 	
     //digital 4
-	//minute 
-    //TM1639_Start();
-    //TM1639_Write_OneByte(AddrC6H);//0xC2H->GRID_4
-   
-	//TM1639_Write_OneByte(segNumber_Low[twobit]);//display ""
-	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L,TM1639_Number_Table[twobit]);
-    //TM1639_Stop();
-    
-    //minute 
-//    TM1639_Start();
-//    TM1639_Write_OneByte(AddrC7H);//0xC2H->GRID_4
 
-//	TM1639_Write_OneByte(segNumber_High[twobit]|seg_h);//display ""
-//     TM1639_Stop();
+	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID4_H, TM1639_ADDR_GRID4_L,TM1639_Number_Table[twobit]|seg_h);
 
 	
-
-
-    //open diplay
     TM1639_Start();
     TM1639_Write_Byte(OpenDispTM1639|0x8f);//0xC2H->GRID3->BIT_3
     TM1639_Stop();

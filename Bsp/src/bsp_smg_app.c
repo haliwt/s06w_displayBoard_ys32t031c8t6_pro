@@ -16,7 +16,7 @@ static void Timer_Timing_Donot_Display(void);
 ******************************************************************************/
 void Display_SmgTiming_Value(void)
 {
-     static uint8_t switch_f;
+    static uint8_t switch_f;
 
    if(ptc_high_temperature_f == 1 || fan_warning_f ==1){
 
@@ -122,10 +122,10 @@ void Display_SmgTiming_Value(void)
 				sendData_to_threeData(0x6C,gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes, gpro_t.gTimer_timing_seconds_counter); // cmd=0x1A, 数据长度=3
 				tx_thread_sleep(2);
                 }
+			Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
            }
-  
-            Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
-            //Display_Works_Time_Fun();
+           
+       
             Timer_Timing_Donot_Display();
 			break;
 
