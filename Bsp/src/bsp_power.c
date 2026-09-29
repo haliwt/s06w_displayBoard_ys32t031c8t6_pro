@@ -505,6 +505,7 @@ static void task_blink_colon(void)
 
 	}
 	 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+	 tx_thread_sleep(20);
 }
 /**
 *@brief 
