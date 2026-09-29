@@ -100,9 +100,13 @@ typedef struct _main_ref{
  bool ui_time_mode;
  bool one_minute_flag;
  bool timer_one_minute_flag;
+ bool connecting_wifi_flag;
+
+ 
  uint8_t first_set_ptc_on;
  uint8_t  first_ptc_on;
  uint8_t  set_timer_first_smg_blink_flag;
+ 
 
  uint8_t set_timer_timing_doing_value;
  uint8_t dht11_temperature_value;

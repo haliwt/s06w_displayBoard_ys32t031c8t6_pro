@@ -64,8 +64,8 @@ void Process_Long_Key(uint16_t key) {
         case _POWER_KEY_DOWN:
             if (key_time >= KEY_TICKS_LONG_P) {
                 //key_long_f = 1;
-                if (gpro_t.g_power_flag && !key_net_config_f) {
-                    key_net_config_f = 1;
+                if (gpro_t.g_power_flag && !gpro_t.connecting_wifi_flag) {
+                    gpro_t.connecting_wifi_flag = 1;
 					link_net_step=0;
 				   
 					wifi_first_connectoed_cloud_f =0;
@@ -234,7 +234,7 @@ void System_Status_PowerOn(void)
             
     works_interval_f = 0 ; // device_rest_f = 0;          // 退出休息模式
 
-	key_net_config_f =0;
+	gpro_t.connecting_wifi_flag =0;
     
     // 5. 清除异常标志
     fan_warning_f = 0;          // 清除负载异常
@@ -264,7 +264,7 @@ void System_Status_PowerOff(void)
    
     gpro_t.g_plasma_flag = 0;
     fan_open_f = 0;
-	key_net_config_f =0;
+	gpro_t.connecting_wifi_flag =0;
 
 
 	 gpro_t.g_dry_flag = 0;        // 默认--from smart phone define.
@@ -318,25 +318,7 @@ void key_power_short_handler(void)
     else System_Status_PowerOn();
 
 }
-/**
-* @brief  : 
-* @note    
-* @param   None
-* @retval  None
-*/
-void key_power_long_handler(void)
-{
-	//key_long_f = 1;
-    if (!key_net_config_f) {
-        key_net_config_f = 1;
-		link_net_step=0;
-	 
-		wifi_first_connectoed_cloud_f =0;
-       
-       
-		SendData_Set_Command(0x06,0x01);//Beep(BEEP_ONCE);
-    }
-}
+
 /**
 * @brief  : 
 * @note    

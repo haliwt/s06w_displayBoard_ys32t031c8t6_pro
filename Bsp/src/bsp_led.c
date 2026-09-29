@@ -68,11 +68,15 @@ void power_on_led_open_handler(void)
 void wifi_fast_led_state(void)
 {
    static uint8_t slowly_led_counter = 0;//100ms
-   if((gpro_t.g_power_flag ==true) && (key_net_config_f ==1)){
+   if((gpro_t.g_power_flag ==true) && (gpro_t.connecting_wifi_flag ==true)){
 	    LED_WIFI_TOGGLE();
+
+        if(gpro_t.gTimer_wifi_connect_counter > 130 || gpro_t.connect_wifi_state==true ){
+		   gpro_t.connecting_wifi_flag = false;
+        }
 		
    }
-   else if((gpro_t.g_power_flag ==true) && (key_net_config_f ==0) && gpro_t.connect_wifi_state==false){
+   else if((gpro_t.g_power_flag ==true) && (gpro_t.connecting_wifi_flag == false) && gpro_t.connect_wifi_state==false){
 
       
 		if(++slowly_led_counter > 9){//100ms *10 =100ms =1s 
@@ -94,13 +98,6 @@ void wifi_fast_led_state(void)
   
 }
 
-
-void wifi_led_state_handler(void)
-{
-	
-     if(key_net_config_f==1) return ;
-	
-	}
 
 
 

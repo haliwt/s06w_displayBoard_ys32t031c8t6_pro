@@ -45,13 +45,10 @@ typedef struct Msg
     
     uint8_t   tx_counter_nums;
     uint8_t   bcc_check_code;
-	uint8_t   check_code_hex;
-    uint8_t   receive_data_length;
-    uint8_t   data_length;
-	uint8_t   rc_data_length;
-	uint8_t   total_data_length;
-	uint8_t   rx_total_numbers;
-	uint8_t   rx_data[4];
+	uint8_t   repeat_check_bcc_code;
+	bool      copy_cmd_flag ;
+    uint8_t   rx_total_numbers;
+
 	uint8_t   usData[12];
 
 
@@ -128,8 +125,13 @@ void usart1_isr_callback_handler(uint8_t data)
 	 
 		   gl_tMsg.tx_counter_nums++;
            gl_tMsg.usData[gl_tMsg.tx_counter_nums]=data;
-		   
-		  if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFE && gl_tMsg.tx_counter_nums> 4){
+
+		  if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFF && gl_tMsg.tx_counter_nums==2){
+		       rx_state = 4;
+               
+
+		  }
+		  else if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFE && gl_tMsg.tx_counter_nums> 4){
 		      rx_state = 3;
 		  }
 		 
@@ -148,6 +150,33 @@ void usart1_isr_callback_handler(uint8_t data)
                wifi_semaphore_xtask();//display_board_xtask_notice();
 
 	 break;
+
+	 case 4:
+	 	   gl_tMsg.tx_counter_nums++;
+		   gl_tMsg.copy_cmd_flag = true;
+           gl_tMsg.usData[gl_tMsg.tx_counter_nums]=data;
+          if(gl_tMsg.usData[gl_tMsg.tx_counter_nums]==0xFE && gl_tMsg.tx_counter_nums> 3){
+		      rx_state = 5;
+		  }
+
+	 break;
+
+	 case 5:
+
+           gl_tMsg.tx_counter_nums++;
+		   gl_tMsg.usData[gl_tMsg.tx_counter_nums]=data;
+		 
+		   rx_state = 0;
+		   gl_tMsg.rx_total_numbers = gl_tMsg.tx_counter_nums;
+
+
+		   gl_tMsg.bcc_check_code = data;
+
+		   wifi_semaphore_xtask();//display_board_xtask_notice();
+
+	 break;
+
+	 
 
 	 default:
 	   rx_state =0;
@@ -342,7 +371,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
         
       
           link_net_step =0;
-          key_net_config_f =1;
+          gpro_t.connecting_wifi_flag =1;
 
          
 		
@@ -631,6 +660,8 @@ static void parse_cmd_or_data(uint8_t *pdata)
 * @return 
 *
 */
+uint8_t test_wifi_counter;
+
 static void parse_recieve_copy_data(uint8_t *pddata)
 {
 
@@ -646,7 +677,7 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 	     if(pddata[4] == 0x01){ //open
 
            if(gpro_t.g_power_flag == true){
-		   	g_cmd_ctrl.state = CMD_STATE_SUCCESS;
+		   		g_cmd_ctrl.state = CMD_STATE_SUCCESS;
 		   	return;
 
            }
@@ -655,8 +686,10 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 		 }
         else if(pddata[4] == 0x0){ //close 
-		  if(gpro_t.g_power_flag == false) return;
-
+		  if(gpro_t.g_power_flag == false){
+		  	 g_cmd_ctrl.state = CMD_STATE_SUCCESS;
+		  	 return;
+		  	}
 		   gpro_t.off_step=0;
            gpro_t.g_power_flag =false;
 			 
@@ -685,6 +718,18 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
     break;
 
+	 case 0x05: //WIFI 
+
+         if(pddata[4] ==1){
+		 	test_wifi_counter++;
+		 	gpro_t.gTimer_wifi_connect_counter=0;
+		 	gpro_t.connecting_wifi_flag = true;
+			
+         }
+		 else if(pddata[4] ==0)gpro_t.connecting_wifi_flag = false;
+
+	 break;
+
 	   
     }
       
@@ -697,11 +742,20 @@ static void parse_recieve_copy_data(uint8_t *pddata)
   * @param
   * @retrval 
 **/
+
+uint8_t decoder_counter;
 void decoder_handler(void)
 {
-    uint8_t check_bcc_code;
-	check_bcc_code = bcc_check(gl_tMsg.usData,gl_tMsg.rx_total_numbers);
-	if(check_bcc_code == gl_tMsg.bcc_check_code){
+   
+	gl_tMsg.repeat_check_bcc_code = bcc_check(gl_tMsg.usData,gl_tMsg.rx_total_numbers);
+	if(gl_tMsg.copy_cmd_flag == true && gl_tMsg.repeat_check_bcc_code == gl_tMsg.bcc_check_code){
+	    decoder_counter ++;
+	    parse_recieve_copy_data(gl_tMsg.usData);
+	    gl_tMsg.copy_cmd_flag = false;
+
+
+	}
+	else if(gl_tMsg.repeat_check_bcc_code == gl_tMsg.bcc_check_code){
 		parse_cmd_or_data(gl_tMsg.usData);
     }
 }

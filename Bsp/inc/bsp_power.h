@@ -98,7 +98,7 @@ extern uint8_t real_hours_counter;
 extern int8_t temporary_timer_hours;
 
 
-extern uint8_t key_net_config_f;
+
 
 
 
@@ -315,7 +315,7 @@ void power_on_off_handler(void);
 
 void Heat_Process(void);
 
-void power_off_handler(void);
+
 
 
 #ifdef __cplusplus

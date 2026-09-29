@@ -43,7 +43,7 @@ void System_Status_PowerOn(void) ;
 
 void key_power_short_handler(void);
 
-void key_power_long_handler(void);
+
 
 void key_mode_short_handler(void);
 

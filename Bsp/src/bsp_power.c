@@ -65,7 +65,7 @@ uint8_t fan_speed_level;
 uint8_t fan_warning_f;
 //ptc
 uint8_t heat_open_close_f;
-uint8_t key_net_config_f;
+
 
 //
 uint8_t soft_version;

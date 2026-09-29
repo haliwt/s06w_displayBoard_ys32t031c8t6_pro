@@ -339,7 +339,20 @@ void tx_application_define(void *first_unused_memory)
 			tx_event_flags_set(&key_event, KEY_DRY_SHORT, TX_OR);
 
 			ptc_cnt = 0;
-	}	
+	}
+	else if(PLASMA_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==true){
+
+         plasma_cnt ++ ;
+
+
+	}
+	else if(plasma_cnt > 0 && PLASMA_KEY_VALUE() == KEY_UP ){
+
+	      if(plasma_cnt < LONG_PRESS_TIME)
+				tx_event_flags_set(&key_event, KEY_PLASMA_SHORT, TX_OR);
+          plasma_cnt = 0;
+
+	}
 	else if(MOUSE_KEY_VALUE() == KEY_DOWN && gpro_t.g_power_flag ==true){   /* 接收到消息，检测那个位被按下 */
 
 			mouse_cnt ++;
@@ -357,7 +370,7 @@ void tx_application_define(void *first_unused_memory)
 			ai_cnt ++ ;
 
 			if(ai_cnt == LONG_PRESS_TIME ){
-			tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
+			     tx_event_flags_set(&key_event, KEY_AI_LONG, TX_OR);
 			}
     }
 	else if(ai_cnt > 0 && WIFI_KEY_VALUE() == KEY_UP){
@@ -403,7 +416,7 @@ void tx_application_define(void *first_unused_memory)
 		} 
 		else if(flags & KEY_POWER_LONG && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 			    
-             //key_power_long_handler();
+            
              
 		} 
 	    else if(flags & KEY_MODE_SHORT &&  ptc_high_temperature_f ==0 && fan_warning_f ==0){
@@ -436,8 +449,6 @@ void tx_application_define(void *first_unused_memory)
 		
 		
 		   plasma_key_handler() ;
-		 
-
 		}
 		else if(flags & KEY_MOUSE_SHORT && ptc_high_temperature_f ==0 && fan_warning_f ==0){
 			 
@@ -454,8 +465,8 @@ void tx_application_define(void *first_unused_memory)
 	       
 	       
 		     // 处理WiFi键
-		       SendData_Set_Command(0x06,0x01);
-	           tx_thread_sleep(1);
+		       SendData_Set_Command(0x05,0x01);
+	           tx_thread_sleep(2);
 	       
 	     }
 		
