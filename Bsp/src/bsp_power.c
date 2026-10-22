@@ -6,7 +6,7 @@
 
 #define MS_TO_TICKS(ms)  ((ms) / THREADX_TICK_MS)
 
-
+#define DEFAULT_TEMP    40
 
 
 
@@ -24,22 +24,25 @@ typedef struct {
 
 // 任务函数前置声明
 static void task_ui_key(void);
-static void task_keys_and_refresh(void);
+static void task_display_smg_timing(void);
 static void task_dht11_display(void);
 static void task_two_hours_timing(void);
 static void task_send_version(void);
 static void task_blink_colon(void);
 static void task_compare_temp(void);
+static void task_display_error_numbers(void);
+
 
 // 任务配置表 (Table-Driven)
 static task_t g_ui_tasks[] = {
-    { task_ui_key,             1,   0 }, // 1*10m  
-    { task_keys_and_refresh,   5,   0 }, // 5*10ms 刷新UI和按键
+    { task_ui_key,             4,    0 }, // 1*10m  
+    {task_display_smg_timing,  6,    0}, //
     { task_blink_colon,        101,  0 }, // 101*10ms 冒号闪烁
-    { task_dht11_display,      32,  0 }, // 300ms DHT11刷新
-    { task_compare_temp,       340, 0 }, // 3s 控温比较
-    { task_two_hours_timing,   129, 0 }, // 1.2s 运行计时
-    { task_send_version,       3080, 0 }, // 3s  发送版本号
+    { task_dht11_display,      32,   0 }, // 300ms DHT11刷新
+    { task_compare_temp,       340,  0 }, // 3s 控温比较
+    { task_two_hours_timing,   129,  0 }, // 1.2s 运行计时
+    { task_send_version,       3080,  0 }, // 3s  发送版本号
+    {task_display_error_numbers,260,   0}
 };
 
 #define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
@@ -64,7 +67,7 @@ uint8_t fan_open_f;
 uint8_t fan_speed_level;
 uint8_t fan_warning_f;
 //ptc
-uint8_t heat_open_close_f;
+
 
 
 //
@@ -154,7 +157,8 @@ static void power_on_initial(void)
 	  gpro_t.timer_dispTime_minutes = 0;
 	  gpro_t.gTimer_timer_seconds_counter =0;
 						    
-   
+      //default temperature value 40 degree
+      gpro_t.set_up_temperature_value = 40;
 	
 
       power_on_led_open_handler();
@@ -198,14 +202,20 @@ void power_on_handler(void)
 
 		if(gpro_t.time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
 			gpro_t.time_10ms_f=0;
-			if(heat_open_close_f == 1 && ptc_high_temperature_f == 0 && fan_warning_f ==0)
+			if( gpro_t.direct_compare_temp_flag == true )
 			{
-			heat_open_close_f = 0; // 立即清除触发标志，防止重复执行
+			    gpro_t.direct_compare_temp_flag = 0; // 立即清除触发标志，防止重复执行
 
 			// 强制、立刻执行一次加热控制函数
 			// 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
-			// compare_set_temp_value(); //set_temperature_value_handler(); 
+			
+              TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
+	        // direct_temperature_compraison_handler();
+			 
 			}
+
+			
+		 
 		}
 
 		// 2. 独立的 UI 周期任务轮询调度器（无论 10ms 标志位如何，时间到了就执行）
@@ -262,31 +272,21 @@ static void task_ui_key(void)
 	// disp_smg_blink_set_tempeature_value();
 
 }
-
-
 /**
 *@brief 
 *@param
 *@notice
 **/
-static void task_keys_and_refresh(void)
+static void task_display_smg_timing(void)
 {
-	
-	// 1. 有告警时优先显示告警
-		if (ptc_high_temperature_f || fan_warning_f) {
-			
-			return;
-		}
-	
-	
-		// 4. 正常显示工作时间（你原来的 Display_SmgTiming_Value）
-		if (gpro_t.set_timer_timing_doing_value == 0){
-				 
-			if(gpro_t.key_model_short_flag == 1) return;
-			
-			Display_SmgTiming_Value();
-			return;
-		}
+
+      if(ptc_high_temperature_f == 1 ||  fan_warning_f == 1) return;
+   
+     // 4. 正常显示工作时间（你原来的 Display_SmgTiming_Value）
+	if(gpro_t.set_timer_timing_doing_value == 0 && gpro_t.key_model_short_flag == 0){
+		 Display_SmgTiming_Value();
+				
+	}
 
 }
 /**
@@ -352,6 +352,18 @@ static void task_compare_temp(void)
 	set_temperature_compare_value_fun();
 
 }
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_display_error_numbers(void)
+{
+
+  display_error_numbers_handler();
+
+}
+
 /************************************************************************************************
 *
 *Function Name:void set_temperature_compare_value_fun(void)

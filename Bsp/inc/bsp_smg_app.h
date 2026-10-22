@@ -8,6 +8,7 @@
 void Display_SmgTiming_Value(void);
 
 
+void display_error_numbers_handler(void);
 
 
 #endif 

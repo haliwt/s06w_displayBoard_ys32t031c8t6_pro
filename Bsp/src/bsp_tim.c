@@ -28,6 +28,7 @@ void tim6_isr_hander(void)
 					gpro_t.gTimer_disp_mode_switch++;
                     gpro_t.gTimer_wifi_connect_counter++;
 					gpro_t.gTimer_time_colon ++;
+					gpro_t.gTimer_key_temp_timing++;
 
 					if(++gpro_t.gTimer_timer_seconds_counter >59){
 						 gpro_t.gTimer_timer_seconds_counter=0;

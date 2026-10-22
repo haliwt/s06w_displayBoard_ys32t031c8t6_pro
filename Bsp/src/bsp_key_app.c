@@ -33,8 +33,6 @@ typedef struct {
  **********************************************************************************/
 void set_temperature_value(int8_t delta) 
 {
-   
-
      gpro_t.set_up_temperature_value   = gpro_t.set_up_temperature_value + delta;
 	 if (gpro_t.set_up_temperature_value < 20) gpro_t.set_up_temperature_value = 20;
      if (gpro_t.set_up_temperature_value > 40) gpro_t.set_up_temperature_value= 40;
@@ -49,10 +47,10 @@ void set_temperature_value(int8_t delta)
     gpro_t.gTimer_key_temp_timing       = 0;
     gpro_t.g_manual_shutoff_dry_flag   = 0;
    
-	
+      gpro_t.direct_compare_temp_flag= true;
 
-    TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
-	direct_temperature_compraison_handler();
+    //TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
+	//direct_temperature_compraison_handler();
 }
 
 
@@ -328,17 +326,17 @@ void direct_temperature_compraison_handler(void)
 	   gpro_t.g_dry_flag = true; //gpro_t.gPtc=1;
 	   LED_DRY_ON();
 	   SendData_Set_Command(0x23,1);
-	   tx_thread_sleep(1);
+	   tx_thread_sleep(5);
 	
 
 	}
 	else{
 
-		gpro_t.g_dry_flag =0;//gpro_t.gPtc =0 ;//gctl_t.g_dry_flag =0;
+		gpro_t.g_dry_flag =false;//gpro_t.gPtc =0 ;//gctl_t.g_dry_flag =0;
 
 		LED_DRY_OFF();//PTC_SetLow();
 	    SendData_Set_Command(0x23,0);
-	    tx_thread_sleep(1);
+	    tx_thread_sleep(5);
 
 		
 	}

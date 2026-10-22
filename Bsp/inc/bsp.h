@@ -75,6 +75,7 @@ typedef struct _main_ref{
  uint8_t set_temperature_unit_value;
  bool  set_temperature_special_flag;
  bool g_manual_shutoff_dry_flag ;
+ bool direct_compare_temp_flag ;
 
  int8_t timer_dispTime_minutes;
  uint8_t timer_dispTime_hours ;

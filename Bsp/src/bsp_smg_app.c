@@ -16,41 +16,7 @@ static void Timer_Timing_Donot_Display(void);
 ******************************************************************************/
 void Display_SmgTiming_Value(void)
 {
-    static uint8_t switch_f;
-
-   if(ptc_high_temperature_f == 1 || fan_warning_f ==1){
-
-        if(ptc_high_temperature_f  ==1  && fan_warning_f ==0){
-                 
-				 SMG_Display_Err(0);
-				
-		}
-		else  if(ptc_high_temperature_f  ==0 && fan_warning_f ==1){
-
-
-                SMG_Display_Err(1);
-
-		 }
-		 else  if(ptc_high_temperature_f == 1 && fan_warning_f ==1){
-
-				 switch_f = switch_f ^ 0x01;
-
-		         if(switch_f ==1){
-				    SMG_Display_Err(0);
-
-
-				 }
-				 else{
-
-				    SMG_Display_Err(1);
-
-				 }
-		}
-       return ;
-   }
-
-
-    switch(gpro_t.ui_time_mode){
+     switch(gpro_t.ui_time_mode){
 
 	   case TIME_MODE_TIMER:
 		
@@ -86,6 +52,7 @@ void Display_SmgTiming_Value(void)
 			sendData_to_threeData(0x6B,gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes, gpro_t.gTimer_timer_seconds_counter); // cmd=0x1A, 数据长度=3
 			tx_thread_sleep(2);
 			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+			tx_thread_sleep(20);
 		}
 
 		
@@ -105,6 +72,7 @@ void Display_SmgTiming_Value(void)
 				tx_thread_sleep(2);
                 }
 			   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+			   tx_thread_sleep(20);
            }
            
            Timer_Timing_Donot_Display();
@@ -112,6 +80,52 @@ void Display_SmgTiming_Value(void)
 			break;
 
 	   	}
+
+}
+
+/******************************************************************************
+*
+*Function Name:static void Setup_Timer_Times(void)
+*Funcion:display setup timer times  //__asm("NOP");//等待1个指令周期，系统主频24M
+*Iinput Ref:NO
+*Return Ref:NO
+*
+******************************************************************************/
+void display_error_numbers_handler(void)
+{
+    static uint8_t switch_f;
+
+   if(ptc_high_temperature_f == 1 || fan_warning_f ==1){
+
+        if(ptc_high_temperature_f  ==1  && fan_warning_f ==0){
+                 
+				 SMG_Display_Err(0);
+				
+		}
+		else  if(ptc_high_temperature_f  ==0 && fan_warning_f ==1){
+
+
+                SMG_Display_Err(1);
+
+		 }
+		 else  if(ptc_high_temperature_f == 1 && fan_warning_f ==1){
+
+				 switch_f = switch_f ^ 0x01;
+
+		         if(switch_f ==1){
+				    SMG_Display_Err(0);
+
+
+				 }
+				 else{
+
+				    SMG_Display_Err(1);
+
+				 }
+		}
+     
+   }
+
 
 }
 

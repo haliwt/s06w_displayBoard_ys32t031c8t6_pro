@@ -621,8 +621,26 @@ void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 *************************************************************************/
 void disp_dht11_value(void)
 {
+
     static uint8_t hum1,hum2; 
     static uint8_t temp1,temp2;
+
+	if(gpro_t.gTimer_key_temp_timing >= 3 && gpro_t.set_temperature_special_flag == true){
+	      gpro_t.gTimer_key_temp_timing =0;
+		  
+
+	     gpro_t.set_temperature_special_flag  = false;
+	     return ;
+
+	}
+
+	if(gpro_t.set_temperature_special_flag == true){
+		
+		direct_temperature_compraison_handler();
+
+		return ;
+
+	}
 
 	hum1 =  gpro_t.dht11_humidity_value/10;  //Humidity 
 	hum2 =  gpro_t.dht11_humidity_value%10;

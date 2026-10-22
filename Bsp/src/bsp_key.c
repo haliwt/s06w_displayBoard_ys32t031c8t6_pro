@@ -176,7 +176,7 @@ void Handle_Value_Adjustment(uint8_t is_up)
 	
 		key_be_pressed_f =0;
 		key_input_temp_f= 1;
-		heat_open_close_f= 1;//WT.EDIT 2026.05-15
+
 
 		
        TM1639_Display_Temperature(gpro_t.setting_temperature_value);
@@ -212,7 +212,7 @@ void System_Status_PowerOn(void)
    
 	ptc_high_temperature_f =0;  //高温报警标志位,清零
 	
-	heat_open_close_f=0; //WT.EIDT 2026-07-13
+	
 	//wifi
 
 
