@@ -171,14 +171,6 @@ static void Timer_Timing_Donot_Display(void)
 
 /********************************************************************************
 *
-*Functin Name: void Display_Error_Digital(uint8_t errnumbers,uint8_t sel)
-*Function : Timer of key be pressed handle
-*Input Ref:  error digital 
-*Return Ref: NO
-*
-********************************************************************************/
-/********************************************************************************
-*
 *Functin Name: void Display_TimeColon_Blink_Fun(void)
 *Function : 
 *Input Ref:  NO
