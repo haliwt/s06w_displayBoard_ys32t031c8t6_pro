@@ -78,10 +78,12 @@ typedef struct _main_ref{
  bool direct_compare_temp_flag ;
 
  int8_t timer_dispTime_minutes;
- uint8_t timer_dispTime_hours ;
+ int8_t timer_dispTime_hours ;
 
  uint8_t works_dispTime_hours;
  int8_t works_dispTime_minutes;
+
+  bool rx_temp_flag ;
 
 
  uint8_t works_two_minutes_value;
@@ -138,18 +140,9 @@ typedef struct _main_ref{
  volatile uint8_t time_400ms_f;
  volatile uint8_t time_500ms_f;
  volatile uint8_t time_600ms_f;
- volatile uint8_t time_900ms_f;
 
 
-
-
-
-
-
-
-
-
-  volatile uint8_t gTimer_key_temp_timing  ;
+   volatile uint8_t gTimer_key_temp_timing  ;
   volatile uint8_t gTimer_key_timing ;
   volatile uint8_t gTimer_disp_mode_switch;
   volatile uint8_t gTimer_wifi_connect_counter;

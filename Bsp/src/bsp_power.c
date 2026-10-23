@@ -202,13 +202,25 @@ void power_on_handler(void)
 
 		if(gpro_t.time_10ms_f ==1 &&  ptc_high_temperature_f == 0 && fan_warning_f ==0){
 			gpro_t.time_10ms_f=0;
-			if( gpro_t.direct_compare_temp_flag == true )
+
+		    if( gpro_t.direct_compare_temp_flag == true &&  gpro_t.rx_temp_flag == true){
+
+				 TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
+                 if( gpro_t.gTimer_key_temp_timing   > 2){
+				    gpro_t.direct_compare_temp_flag =false;
+				   gpro_t.rx_temp_flag =0;
+
+
+				 }
+
+			}
+			else if(gpro_t.direct_compare_temp_flag == true &&  gpro_t.rx_temp_flag == false)
 			{
-			    gpro_t.direct_compare_temp_flag = 0; // 立即清除触发标志，防止重复执行
+			    gpro_t.direct_compare_temp_flag = false; // 立即清除触发标志，防止重复执行
 
 			// 强制、立刻执行一次加热控制函数
 			// 确保底层硬件（如继电器、PWM、PTC）在 20ms 内得到响应
-			
+
               TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
 	        // direct_temperature_compraison_handler();
 			 
@@ -329,7 +341,7 @@ uint8_t counter_colon;
 static void task_blink_colon(void)
 {
     counter_colon++;
-	Display_TimeColon_Blink_Fun();
+	//Display_TimeColon_Blink_Fun();
 	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == false && gpro_t.gTimer_wifi_connect_counter > 125 ){
 		gpro_t.wifi_led_fast_blink=0;
 

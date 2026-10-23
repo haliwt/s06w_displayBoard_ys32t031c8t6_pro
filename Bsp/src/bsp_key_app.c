@@ -46,6 +46,7 @@ void set_temperature_value(int8_t delta)
     gpro_t.set_temperature_special_flag = 1;
     gpro_t.gTimer_key_temp_timing       = 0;
     gpro_t.g_manual_shutoff_dry_flag   = 0;
+	gpro_t.rx_temp_flag = false;
    
       gpro_t.direct_compare_temp_flag= true;
 
