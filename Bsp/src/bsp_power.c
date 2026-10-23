@@ -80,7 +80,7 @@ uint8_t  wifi_app_timer_power_on_f;
 
 uint8_t key_be_pressed_f;
 uint8_t disp_set_hours_time_f;
-uint8_t key_input_temp_f;
+
 
 uint8_t ptc_high_temperature_f ;
 
@@ -713,24 +713,21 @@ void Heat_Process(void)
 {
      static uint8_t default_init = 0xff;   // 第一次比较标志
      
-     if(gpro_t.g_power_flag == 1){
+     
 	   if(ptc_prohibit_off_f == 1  ) return ;
 
 	  uint8_t target_temp;
 
-	  target_temp = gpro_t.setting_temperature_value;
+	  target_temp = gpro_t.set_up_temperature_value;
 
 	  if(gpro_t.dht11_temperature_value > 39){
 
         gpro_t.g_dry_flag = 0;   // 立即关闭
+        LED_DRY_OFF();
+	    SendData_Set_Command(0x22,0);
+		tx_thread_sleep(2);
 	    gpro_t.first_temp_compare_f = 1; 
-	    if(default_init != gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init= gpro_t.g_dry_flag;
-					key_input_temp_f++;
-			
-		      
-
-				}
+	   
 	  
 	     return ;
 
@@ -739,27 +736,22 @@ void Heat_Process(void)
       // -----------------------------
     // 2. 第一次比较：必须立即决定 PTC 开关
     // -----------------------------
-	  if(gpro_t.first_temp_compare_f == 0){
+	if(gpro_t.first_temp_compare_f == 0){
 
 		if(gpro_t.dht11_temperature_value >= target_temp){
             gpro_t.g_dry_flag = 0;   // 立即关闭
-
-		       if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = gpro_t.g_dry_flag;
-					key_input_temp_f ++;
-			
-
-				}
-		}
-        else{
+            LED_DRY_OFF();
+		    SendData_Set_Command(0x22,0);
+		    tx_thread_sleep(2);
+		       
+	}
+    else{
             gpro_t.g_dry_flag = 1;   // 立即打开
+            LED_DRY_ON();
+		    SendData_Set_Command(0x22,1);
+		    tx_thread_sleep(2);
             gpro_t.first_temp_compare_f = 1;         // 以后进入滞后控制
-            if(default_init!= gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = gpro_t.g_dry_flag;
-					key_input_temp_f++;
-			
-		      
-			}
+           
         }
         return;
 
@@ -774,32 +766,26 @@ void Heat_Process(void)
 			// 当前是开启状态 → 高于设定温度则关闭
 			if(gpro_t.dht11_temperature_value >= target_temp){
 					gpro_t.g_dry_flag = 0;
-				if(default_init != gpro_t.g_dry_flag  || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = gpro_t.g_dry_flag;
-					key_input_temp_f++;
+					LED_DRY_OFF();
+			        SendData_Set_Command(0x22,0);
+		            tx_thread_sleep(2);
 				
-		      
-
-				}
 			}
 			else
 			{
 				// 当前是关闭状态 → 低于设定温度 - 2 才重新打开
-				if(gpro_t.dht11_temperature_value <  (target_temp - 2))
-				gpro_t.g_dry_flag = 1;
-				
-				if(default_init!= gpro_t.g_dry_flag || key_input_temp_f ==1 || key_input_temp_f==2 ){
-					default_init = gpro_t.g_dry_flag;
-					key_input_temp_f++;
-				
-		      
-
-				}
-			}
-		}
+				if(gpro_t.dht11_temperature_value <  (target_temp - 2)){
+					gpro_t.g_dry_flag = 1;
+					LED_DRY_ON();
+					SendData_Set_Command(0x22,1);
+			        tx_thread_sleep(2);
+					
+					
+			    }
+		    }
 
        }
-
+		 
 }
 /**
   * @brief  

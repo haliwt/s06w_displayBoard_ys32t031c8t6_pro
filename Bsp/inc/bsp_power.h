@@ -76,7 +76,7 @@ extern uint8_t fan_warning_f;
 //peripheral 
 extern uint8_t key_be_pressed_f;
 extern uint8_t disp_set_hours_time_f;
-extern uint8_t  key_input_temp_f;
+
 
 
 

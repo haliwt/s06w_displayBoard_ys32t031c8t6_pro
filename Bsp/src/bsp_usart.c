@@ -559,16 +559,25 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			   	ptc_prohibit_off_f  = 0;
 				gpro_t.connect_wifi_state = true;
 			
-			    gpro_t.setting_temperature_value = pdata[5] ;
-			    if(gpro_t.setting_temperature_value > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
+			    gpro_t.set_up_temperature_value = pdata[5] ;
+				gpro_t.direct_compare_temp_flag= true; // 2026.10.23 ADD 
+			    if(gpro_t.set_up_temperature_value > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
 
 				   gpro_t.g_dry_flag = true;
+				   
 			       if(works_interval_f ==0){
 
                        LED_DRY_ON();
 				   }
 				  
                 }
+				else{
+				  gpro_t.g_dry_flag = false;
+                  LED_DRY_OFF();
+
+
+				}
+				
 			  }
 		   
 		   }

@@ -124,7 +124,7 @@ typedef struct _main_ref{
  //timer
  uint8_t seting_timer_flag;
  uint8_t first_temp_compare_f;
- uint8_t setting_temperature_value;
+
 
 
 

@@ -18,7 +18,7 @@ void Process_Short_Key(uint16_t key);
 void Process_Long_Key(uint16_t key);
 
 
-void Handle_Value_Adjustment(uint8_t is_up);
+//void Handle_Value_Adjustment(uint8_t is_up);
 
 #if 0
 
@@ -137,6 +137,7 @@ void Process_Short_Key(uint16_t key)
   * @brief  数值调节处理函数
   * @param  is_up: 1 为增加(UP), 0 为减少(DOWN)
   */
+#if 0
 void Handle_Value_Adjustment(uint8_t is_up) 
 {
 
@@ -172,18 +173,13 @@ void Handle_Value_Adjustment(uint8_t is_up)
 		disp_set_hours_time_f = 0;
 	
 		gpro_t.first_temp_compare_f = 0; 
-	
-	
-		key_be_pressed_f =0;
-		key_input_temp_f= 1;
-
-
+	    key_be_pressed_f =0;
 		
        TM1639_Display_Temperature(gpro_t.setting_temperature_value);
 	  // direct_compare_set_temp_value();
     }
 }
-
+#endif 
 
 /**
   * @brief  系统状态初始化（开机）
@@ -218,7 +214,7 @@ void System_Status_PowerOn(void)
 
 	
     // 2. 设定启动默认参数
-    gpro_t.setting_temperature_value = 40;   // 默认设定温度 40°C
+    gpro_t.set_up_temperature_value = 40;   // 默认设定温度 40°C
     setting_timing_hour = 0;    // 默认不设置定时（常开模式）
   
 
@@ -369,7 +365,7 @@ void key_mode_long_handler(void)
 void key_up_short_handler(void)
 {
      SendData_Set_Command(0x06,0x01); 
-	 Handle_Value_Adjustment(1);
+	// Handle_Value_Adjustment(1);
     //Beep(BEEP_ONCE);  
 
 }
@@ -383,7 +379,7 @@ void key_up_short_handler(void)
 void key_down_short_handler(void)
 {
   SendData_Set_Command(0x06,0x01); //Beep(BEEP_ONCE);
-  Handle_Value_Adjustment(0);
+ // Handle_Value_Adjustment(0);
   
 
 }
