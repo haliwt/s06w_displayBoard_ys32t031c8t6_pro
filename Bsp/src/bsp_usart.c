@@ -561,6 +561,9 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			
 			    gpro_t.set_up_temperature_value = pdata[5] ;
 				gpro_t.direct_compare_temp_flag= true; // 2026.10.23 ADD 
+				
+    			gpro_t.set_temperature_decade_value =  gpro_t.set_up_temperature_value / 10;
+    			gpro_t.set_temperature_unit_value   =  gpro_t.set_up_temperature_value % 10;
 			    if(gpro_t.set_up_temperature_value > gpro_t.dht11_temperature_value ){ //gpro_t.dht11_temperature_value
 
 				   gpro_t.g_dry_flag = true;
