@@ -465,6 +465,7 @@ void tx_application_define(void *first_unused_memory)
 	       
 	       
 		     // 处理WiFi键
+		       gpro_t.connect_wifi_state = false; //2026-10-23
 		       SendData_Set_Command(0x05,0x01);
 	           tx_thread_sleep(2);
 	       

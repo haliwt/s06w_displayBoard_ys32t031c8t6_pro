@@ -156,9 +156,14 @@ static void power_on_initial(void)
 	  gpro_t.timer_dispTime_hours =0;
 	  gpro_t.timer_dispTime_minutes = 0;
 	  gpro_t.gTimer_timer_seconds_counter =0;
+	  gpro_t.works_two_minutes_value=0;
 						    
       //default temperature value 40 degree
       gpro_t.set_up_temperature_value = 40;
+
+	  //wifi 
+	  gpro_t.connecting_wifi_flag = false ;
+	  
 	
 
       power_on_led_open_handler();
@@ -634,56 +639,61 @@ void Countdown_timer_Handler(void)
 **/
 void works_two_hours_handler(void)
 {
-     static uint8_t interval_10m_f = 0;
+     
 
-	 switch( works_interval_f){
+	 switch(works_interval_f){
 
 
 	   case 0:
 	 
-		#if  0 //DEBUG_ENABLE 
-			if( gpro_t.works_two_minutes_value >3 && works_interval_f==0){
+		#if  1 //DEBUG_ENABLE 
+			if( gpro_t.works_two_minutes_value>4 && works_interval_f==0){
 		#else 
 			if(gpro_t.works_two_minutes_value > 119 && works_interval_f==0){
 
 		#endif
 		    gpro_t.works_two_minutes_value =0;
+		    gpro_t.gTimer_timer_seconds_counter =0;
             works_interval_f=1;
-	
+	        gpro_t.send_cmd_waiting_ack = 1;
+			gpro_t.gTime_waiting_ack=0;
 			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);
+			gpro_t.gTime_waiting_ack=0;
 			
 		#if DEBUG_ENABLE 
 			printf("works_interval_f = %d \n\r",works_interval_f);
 		#endif 
 		}
 
-		if(interval_10m_f == 1 && works_interval_f==0){
-             interval_10m_f ++;
+		
 		
 		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
 			 // 立即open
 		      LED_DRY_ON();
 		   }
 		 
-		}
+		
 
 	   break;
 
 	   case 1:
 
-		#if 0
+		#if 1
 		   if(works_interval_f==1 &&  gpro_t.works_two_minutes_value>2){
 		#else 
 		   if(works_interval_f==1 && gpro_t.works_two_minutes_value >10){
 
 		#endif 
 			   gpro_t.works_two_minutes_value=0;
+		       gpro_t.gTimer_timer_seconds_counter =0;
 				works_interval_f =0;
-		    
-				interval_10m_f = 1;
-				 SendData_Set_Command(0x19,0x0);
-	             tx_thread_sleep(2);
+				gpro_t.send_cmd_waiting_ack = 2;
+				gpro_t.gTime_waiting_ack=0;
+				SendData_Set_Command(0x19,0x0);
+	            tx_thread_sleep(2);
+				gpro_t.gTime_waiting_ack=0;
+				 
 				
 		#if DEBUG_ENABLE 
 			printf("works_interval_f = %d \n\r",works_interval_f);
@@ -695,9 +705,9 @@ void works_two_hours_handler(void)
 		break;
 
 	}
-		
- }
-  
+
+
+}
 
 /**
   * @brief  // 按键按下时调用
@@ -831,5 +841,21 @@ void power_on_off_handler(void)
   * @param: 
   *
 **/
+void com_timeout_check_ack(void)
+{
+  	if(gpro_t.send_cmd_waiting_ack == 1 && gpro_t.gTime_waiting_ack > 1){
+		    gpro_t.gTime_waiting_ack=0;
+			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
+	        tx_thread_sleep(2);
+	
+	}
+	else if(gpro_t.send_cmd_waiting_ack == 2 && gpro_t.gTime_waiting_ack > 1){
+		   gpro_t.gTime_waiting_ack =0;
+			SendData_Set_Command(0x19,0) ;//works two hours ,then have a rest 10 minutes.
+	        tx_thread_sleep(2);
+	
+	}
 
+
+}
 

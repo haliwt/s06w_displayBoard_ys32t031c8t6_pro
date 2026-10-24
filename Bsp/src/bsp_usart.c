@@ -740,6 +740,14 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	 break;
 
+	case 0x19:
+
+	      if(pddata[4] ==1) gpro_t.send_cmd_waiting_ack =0;
+		  else if(pddata[4] ==0)gpro_t.send_cmd_waiting_ack =0;
+
+
+	break;
+
 	   
     }
       
@@ -768,5 +776,9 @@ void decoder_handler(void)
 		parse_cmd_or_data(gl_tMsg.usData);
     }
 }
+
+
+ 
+
 
 
