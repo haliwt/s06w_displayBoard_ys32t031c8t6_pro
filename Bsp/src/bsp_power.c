@@ -346,17 +346,7 @@ uint8_t counter_colon;
 static void task_blink_colon(void)
 {
     counter_colon++;
-	//Display_TimeColon_Blink_Fun();
-	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == false && gpro_t.gTimer_wifi_connect_counter > 125 ){
-		gpro_t.wifi_led_fast_blink=0;
-
-	}
-	if(gpro_t.wifi_led_fast_blink==1 && gpro_t.connect_wifi_state == true){
-
-		gpro_t.wifi_led_fast_blink=0;
-
-	}
-
+	Display_TimeColon_Blink_Fun();
 	
 }
 /**
@@ -586,12 +576,7 @@ void Set_TimerTiming_Number_Value(void)
 		 case 0:
 			gpro_t.on_step =0;
 	       
-	
-	
-
-	
-			
-			 all_led_off();
+	         all_led_off();
 	         TM1639_Display_ON_OFF(0);
 			
 			
@@ -622,11 +607,8 @@ void Set_TimerTiming_Number_Value(void)
 **/
 void Countdown_timer_Handler(void)
 {
-   
- 
-   
-             gpro_t.g_power_flag = 0;
-			 System_Status_PowerOff() ;
+   gpro_t.g_power_flag = 0;
+   System_Status_PowerOff() ;
 
         
     

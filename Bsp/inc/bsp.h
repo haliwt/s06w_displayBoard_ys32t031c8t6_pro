@@ -121,7 +121,7 @@ typedef struct _main_ref{
  bool key_model_short_flag ;
 
  //wifi
- bool wifi_led_fast_blink; 
+
  bool  connect_wifi_state;
 
  //timer
