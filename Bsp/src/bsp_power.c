@@ -213,7 +213,7 @@ void power_on_handler(void)
 				 TM1639_Write_2bit_SetUp_TempData(gpro_t.set_temperature_decade_value, gpro_t.set_temperature_unit_value, 0);
                  if( gpro_t.gTimer_key_temp_timing   > 2){
 				    gpro_t.direct_compare_temp_flag =false;
-				   gpro_t.rx_temp_flag =0;
+				   gpro_t.rx_temp_flag = false;
 
 
 				 }
@@ -668,10 +668,14 @@ void works_two_hours_handler(void)
 
 		
 		
-		  if(ptc_prohibit_off_f == 0 &&  gpro_t.g_dry_flag == true){
+		  if(ptc_prohibit_off_f == false &&  gpro_t.g_dry_flag == true){
 			 // 立即open
 		      LED_DRY_ON();
 		   }
+		   else if(ptc_prohibit_off_f == true){
+		      LED_DRY_OFF();
+
+           }
 		 
 		
 
@@ -736,7 +740,7 @@ void Heat_Process(void)
      static uint8_t default_init = 0xff;   // 第一次比较标志
      
      
-	   if(ptc_prohibit_off_f == 1  ) return ;
+	   if(ptc_prohibit_off_f == true  ) return ;
 
 	  uint8_t target_temp;
 

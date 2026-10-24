@@ -222,8 +222,8 @@ void SendWifiData_olderCmd(uint8_t cmd,uint8_t data)
 *******************************************************************************/
 void SendWifiData_To_Data(uint8_t cmd,uint8_t data)
 {
-        outputBuf[0]=0xA5; //head : main board 0x5A
-        outputBuf[1]=0x01; //main board device No: 0x10
+        outputBuf[0]=0xA5; //head : display board ID = 0xA5
+        outputBuf[1]=0x01; // display board NO: 0X01
         outputBuf[2]=cmd; //command type: fan speed of value 
         outputBuf[3]=0x0F; // 0x0F : is data ,don't command order.
         outputBuf[4]= 0x01; // don't data ,onlay is command order,recieve data is 1byte .

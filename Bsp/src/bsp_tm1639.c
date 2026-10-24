@@ -628,6 +628,8 @@ void disp_dht11_value(void)
 	if(gpro_t.gTimer_key_temp_timing >= 3 && gpro_t.set_temperature_special_flag == true){
 	      gpro_t.gTimer_key_temp_timing =0;
 		  
+		 SendWifiData_To_Data(0x2A, gpro_t.set_up_temperature_value);
+		 tx_thread_sleep(2);
 
 	     gpro_t.set_temperature_special_flag  = false;
 	     return ;
@@ -637,6 +639,7 @@ void disp_dht11_value(void)
 	if(gpro_t.set_temperature_special_flag == true){
 		
 		direct_temperature_compraison_handler();
+		
 
 		return ;
 

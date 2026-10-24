@@ -253,6 +253,31 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
      break;
 
+	 case 0x20://smart phone is normal opne and close device .
+            
+        if(pdata[3] == 0x01){ //open
+                
+		        gpro_t.connect_wifi_state = true; 
+				gpro_t.g_power_flag  = true;
+				gpro_t.on_step=0;
+				SendWifiData_Answer_Cmd(0x20,0x01);
+	            tx_thread_sleep(2);
+				
+				
+				
+		}
+	    else if(pdata[3] == 0x0){ //close 
+
+		  gpro_t.connect_wifi_state = true;
+		   gpro_t.off_step=0;
+            gpro_t.g_power_flag  = false ;//gpro_t.gpower_on = false;
+             SendWifiData_Answer_Cmd(0x20,0); //compatible older version 
+	          tx_thread_sleep(2);
+		     
+        }
+
+	 break;
+
 	 case 0x21: //smart phone power on or off that App timer .
            if(pdata[3]==0x01){
 
@@ -449,19 +474,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
         }
 		else if(pdata[3]==0){
 			  works_interval_f=0;//WT.EDIT 2026.01.26
-	
-		  
-        
-              if(ptc_prohibit_off_f >1)ptc_prohibit_off_f=1;//2026.02.27 WT.EDIT
-            
-		
-              if(ptc_prohibit_off_f ==1 &&ptc_prohibit_off_f==0){
-			  
-				
-              }
-			  if(gpro_t.g_plasma_flag==true)LED_PLASMA_ON();
-			  
-		}
+	    }
 	   
 
 	  break;
@@ -509,10 +522,10 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
 	case 0x22: //PTC ON OR OFF by compare gpro_t.dht11_temperature_value value .
 
-	    if(ptc_prohibit_off_f  == 1)return ;
+	    if(ptc_prohibit_off_f  == true)return ;
 		
         if(pdata[3]== 0x01){
-		     if(works_interval_f ==0 &&ptc_prohibit_off_f==0){
+		     if(works_interval_f ==0){
 			     gpro_t.g_dry_flag = true;
 				 LED_DRY_ON();
 			 
@@ -520,7 +533,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 	   }
        else if(pdata[3]== 0x0){
 	   
-           ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+           ptc_prohibit_off_f = false ;//gctl_t.g_dry_flag =0;
            gpro_t.g_dry_flag = false;
 		   LED_DRY_ON();
 	    }
@@ -532,7 +545,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
 	    if(pdata[3]== 0x01){
 
-		    ptc_prohibit_off_f =0;
+		    ptc_prohibit_off_f =false;
 		     if(works_interval_f ==0){
 			     gpro_t.g_dry_flag = true;
 				 LED_DRY_ON();
@@ -541,7 +554,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 	   }
        else if(pdata[3]== 0x0){
 	   
-           ptc_prohibit_off_f =0 ;//gctl_t.g_dry_flag =0;
+           ptc_prohibit_off_f = false ;//gctl_t.g_dry_flag =0;
            gpro_t.g_dry_flag = false;
 		   LED_DRY_ON();
 	    }
@@ -556,7 +569,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 		   if(pdata[4]==0x01 && gpro_t.g_power_flag == true){
 			  
 			   if(pdata[5] >19 && pdata[5] < 41){
-			   	ptc_prohibit_off_f  = 0;
+			   	ptc_prohibit_off_f  = false;
 				gpro_t.connect_wifi_state = true;
 			
 			    gpro_t.set_up_temperature_value = pdata[5] ;
@@ -714,13 +727,13 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
          if(gpro_t.g_dry_flag== true) return ;
 		 gpro_t.g_dry_flag= true ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
-         ptc_prohibit_off_f =0;
+         ptc_prohibit_off_f = false;
 		 LED_DRY_ON();
     }
     else if(pddata[4]==0){
       if(gpro_t.g_dry_flag== false) return ;
 	  gpro_t.g_dry_flag= false ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
-      ptc_prohibit_off_f =0;
+      ptc_prohibit_off_f = true;
 		
 	  LED_DRY_OFF();
 
