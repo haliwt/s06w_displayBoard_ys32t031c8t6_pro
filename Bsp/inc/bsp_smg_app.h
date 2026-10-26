@@ -11,5 +11,9 @@ void Display_SmgTiming_Value(void);
 void display_error_numbers_handler(void);
 
 
+void Display_TimeColon_Blink_Fun(void);
+
+
+
 #endif 
 

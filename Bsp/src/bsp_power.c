@@ -267,6 +267,8 @@ void power_on_handler(void)
 static void task_ui_key(void)
 {
 
+  if(ptc_high_temperature_f == 1  ||  fan_warning_f == 1) return;
+
   if(gpro_t.key_model_short_flag == 1 &&  gpro_t.gTimer_disp_mode_switch < 3){
 
 		 mode_key_short_fun();
@@ -281,16 +283,10 @@ static void task_ui_key(void)
 
    
 
-   if (gpro_t.set_timer_timing_doing_value == 1 &&	ptc_high_temperature_f == 0 &&  fan_warning_f == 0) {
+   if (gpro_t.set_timer_timing_doing_value == 1 ){
 
-        if( gpro_t.gTimer_disp_mode_switch < 3){
+       Set_TimerTiming_Number_Value();
 
-
-		}
-
-		Set_TimerTiming_Number_Value();
-
-		return ;
 	}
 	
 	// disp_smg_blink_set_tempeature_value();
@@ -502,10 +498,11 @@ void Set_TimerTiming_Number_Value(void)
 
 	if(gpro_t.set_timer_timing_doing_value== 1 && gpro_t.gTimer_key_timing > 2){
 
-
+  
 		if( gpro_t.timer_dispTime_hours >0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
 			gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER;//disp_timer_times;
 			//key_t.disp_smg_mode_flag = disp_timer_times;
+			gpro_t.ui_time_mode = TIME_MODE_TIMER;
 			gpro_t.gTimer_timer_seconds_counter = 0;
 
 	        Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
@@ -515,8 +512,8 @@ void Set_TimerTiming_Number_Value(void)
 
 		}
 	    else if(gpro_t.timer_dispTime_hours	== 0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
-			gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER; //disp_works_times;
-			gpro_t.ui_time_mode = TIME_MODE_TIMER;//key_t.disp_smg_mode_flag = disp_works_times;
+			gpro_t.set_timer_timing_value_success  = TIME_MODE_NORMAL; //disp_works_times;
+			gpro_t.ui_time_mode = TIME_MODE_NORMAL;//key_t.disp_smg_mode_flag = disp_works_times;
 			gpro_t.gTimer_timer_seconds_counter = 0;
 
             Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
@@ -530,7 +527,7 @@ void Set_TimerTiming_Number_Value(void)
 			//tx_thread_sleep(2);
 		}
 	    else{
-		  gpro_t.set_timer_timing_doing_value =0;
+		  gpro_t.set_timer_timing_doing_value=0;
 
 
 	    }
@@ -636,7 +633,7 @@ void works_two_hours_handler(void)
 		    gpro_t.works_two_minutes_value =0;
 		    gpro_t.gTimer_timer_seconds_counter =0;
             works_interval_f=1;
-	        gpro_t.send_cmd_waiting_ack = 1;
+	        gpro_t.send_cmd_0x19_wating_ack= 1;
 			gpro_t.gTime_waiting_ack=0;
 			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);
@@ -673,7 +670,7 @@ void works_two_hours_handler(void)
 			   gpro_t.works_two_minutes_value=0;
 		       gpro_t.gTimer_timer_seconds_counter =0;
 				works_interval_f =0;
-				gpro_t.send_cmd_waiting_ack = 2;
+				gpro_t.send_cmd_0x19_wating_ack= 2;
 				gpro_t.gTime_waiting_ack=0;
 				SendData_Set_Command(0x19,0x0);
 	            tx_thread_sleep(2);
@@ -828,13 +825,13 @@ void power_on_off_handler(void)
 **/
 void com_timeout_check_ack(void)
 {
-  	if(gpro_t.send_cmd_waiting_ack == 1 && gpro_t.gTime_waiting_ack > 1){
+  	if(gpro_t.send_cmd_0x19_wating_ack== 1 && gpro_t.gTime_waiting_ack > 1){
 		    gpro_t.gTime_waiting_ack=0;
 			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);
 	
 	}
-	else if(gpro_t.send_cmd_waiting_ack == 2 && gpro_t.gTime_waiting_ack > 1){
+	else if(gpro_t.send_cmd_0x19_wating_ack== 2 && gpro_t.gTime_waiting_ack > 1){
 		   gpro_t.gTime_waiting_ack =0;
 			SendData_Set_Command(0x19,0) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);

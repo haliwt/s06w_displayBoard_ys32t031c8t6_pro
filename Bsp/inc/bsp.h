@@ -114,7 +114,7 @@ typedef struct _main_ref{
  uint8_t set_timer_timing_doing_value;
  uint8_t dht11_temperature_value;
  uint8_t dht11_humidity_value;
- uint8_t send_cmd_waiting_ack;
+ uint8_t send_cmd_0x19_wating_ack;
  
 
  

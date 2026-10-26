@@ -57,7 +57,7 @@ typedef struct Msg
 MSG_T   gl_tMsg; 
 
 static void parse_cmd_or_data(uint8_t *pddata);
-static void parse_copy_cmd_or_data_handler(uint8_t *pdata);
+//static void parse_copy_cmd_or_data_handler(uint8_t *pdata);
 static void parse_recieve_copy_data(uint8_t *pddata);
 
 /**********************************************************************
@@ -755,8 +755,8 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	case 0x19:
 
-	      if(pddata[4] ==1) gpro_t.send_cmd_waiting_ack =0;
-		  else if(pddata[4] ==0)gpro_t.send_cmd_waiting_ack =0;
+	      if(pddata[4] ==1) gpro_t.send_cmd_0x19_wating_ack=0xfe;
+		  else if(pddata[4] ==0)gpro_t.send_cmd_0x19_wating_ack=0xfd;
 
 
 	break;
