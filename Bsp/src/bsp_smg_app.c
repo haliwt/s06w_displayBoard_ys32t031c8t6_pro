@@ -36,8 +36,7 @@ void Display_SmgTiming_Value(void)
 			}
 
 
-
-			if(gpro_t.timer_dispTime_hours < 0 ){
+             if(gpro_t.timer_dispTime_hours < 0 ){
 
 				gpro_t.gTimer_timer_seconds_counter = 57 ;
 				gpro_t.timer_dispTime_hours=0;
@@ -55,6 +54,7 @@ void Display_SmgTiming_Value(void)
 			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 			tx_thread_sleep(20);
 		     }
+		    //Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
 	    }
 		else{
@@ -74,13 +74,14 @@ void Display_SmgTiming_Value(void)
           if(gpro_t.one_minute_flag==true){
     		 gpro_t.one_minute_flag = false;
     		 
-    		 if(gpro_t.connect_wifi_state == 0){
+    		
+			   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+		       if(gpro_t.connect_wifi_state == 0){
 				//dataToSend[3] = {run_t.works_dispTime_hours,run_t.works_dispTime_minutes, run_t.gTimer_timing_seconds_counter}; // 要发送的 3 个数据
 				sendData_to_threeData(0x6C,gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes, gpro_t.gTimer_timing_seconds_counter); // cmd=0x1A, 数据长度=3
 				tx_thread_sleep(2);
                 }
-			   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
-			   tx_thread_sleep(20);
+			  
            }
            
            Timer_Timing_Donot_Display();
@@ -102,6 +103,8 @@ void Display_SmgTiming_Value(void)
 void display_error_numbers_handler(void)
 {
     static uint8_t switch_f;
+
+  if(ptc_high_temperature_f == 0 && fan_warning_f == 0) return;
 
    if(ptc_high_temperature_f == 1 || fan_warning_f ==1){
 
@@ -188,25 +191,43 @@ static void Timer_Timing_Donot_Display(void)
 void Display_TimeColon_Blink_Fun(void)
 {
 	static uint8_t timer_f = 0;
+	
+	if(gpro_t.set_timer_timing_doing_value==1) return ;
 
+
+#if 0
 	if(gpro_t.set_timer_timing_doing_value==1){
 
 		if(timer_f ==0){
 			timer_f ++;
 
-			SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,1);
+		    if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
+             SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,1);
+		    }
+			else{
+
+
+			}
 		}
 		return ;
 
 	}
 
+#endif 
+   // if(timer_f !=0)timer_f = 0;
 
-    if(timer_f !=0)timer_f = 0;
 
-	gpro_t.g_time_disp_colon_flag = !gpro_t.g_time_disp_colon_flag ;
+    gpro_t.g_time_disp_colon_flag = gpro_t.g_time_disp_colon_flag ^ 0x01;
 
-	SmgBlink_Colon_Function(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
 
+	if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
+
+	   SmgBlink_Colon_Function(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
+	}
+	else{
+        SmgBlink_Colon_Function(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
+
+	}
 	
 }
 

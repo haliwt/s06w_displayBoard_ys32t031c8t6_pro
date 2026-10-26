@@ -77,11 +77,6 @@ void adjust_timer_minutes(int8_t delta_min)
         gpro_t.timer_dispTime_hours = 0 ;  // 循环处理负值
     }
 
-	gpro_t.hours_two_decade_bit    = gpro_t.timer_dispTime_hours / 10;
-    gpro_t.hours_two_unit_bit      = gpro_t.timer_dispTime_hours % 10;
-  
-
-
 	Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
     
@@ -294,11 +289,12 @@ void key_dec_fun(void)
 void mode_key_handler(void)
 {
 
-     
+   if(gpro_t.set_timer_timing_doing_value == 1) return ;
+   
    gpro_t.gTimer_disp_mode_switch=0;
    gpro_t.key_model_short_flag = 1;
    if(gpro_t.ui_time_mode == TIME_MODE_TIMER){
-      gpro_t.ui_time_mode=TIME_MODE_TIMER;
+      gpro_t.ui_time_mode=TIME_MODE_NORMAL;
    }
    else if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
      gpro_t.ui_time_mode= TIME_MODE_TIMER;
@@ -317,7 +313,6 @@ void mode_key_handler(void)
 void mode_long_key_handler(void)
 {
     gpro_t.set_timer_timing_doing_value= 1;
-	
 	gpro_t.key_model_short_flag  =0;
 	gpro_t.gTimer_disp_mode_switch=0;
 	gpro_t.gTimer_key_timing =0;
@@ -366,7 +361,7 @@ void direct_temperature_compraison_handler(void)
 	*Return Ref:NO
 	*
 ******************************************************************************/
-void mode_key_short_fun(void)
+void disp_mode_key_short_handler(void)
 {
 
      switch(gpro_t.ui_time_mode){
@@ -376,38 +371,27 @@ void mode_key_short_fun(void)
 
         if(gpro_t.set_timer_timing_value_success==true){
 
-			Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+			//Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
-			gpro_t.ui_time_mode = TIME_MODE_NORMAL; 
-			//gpro_t.key_disp_mode_flag =0xff;
-			SendData_Set_Command(0x07,0x01); // ai model
-			tx_thread_sleep(1);
+		}
+		else{
+			gpro_t.timer_dispTime_hours=0;
+			gpro_t.timer_dispTime_minutes=0;
 
-          }
+		    Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+       }
 
 		
    
 	  break;
 
 	  case TIME_MODE_NORMAL:
-		   if(gpro_t.set_timer_timing_value_success== true){ 
+		  
 			    // gpro_t.ai_flag = no_ai_mode; //don't AI
 
-				Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
-			    gpro_t.ui_time_mode = TIME_MODE_TIMER; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
-			   // gpro_t.key_disp_mode_flag =0xff;
-				SendData_Set_Command(0x07,0x02); //reverse switch don't displayb "AI"
-				tx_thread_sleep(2);
-
-		   }
-		   else if(gpro_t.set_timer_timing_value_success== false){
-
-                   Display_Timing(0,0,0);
-				   gpro_t.ui_time_mode = TIME_MODE_NORMAL; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
-				  // gpro_t.key_disp_mode_flag =0xff;
-				   SendData_Set_Command(0x07,0x01); //ai model
-				   tx_thread_sleep(2);
-		  }
+				 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+			    
 
          break;
      	}

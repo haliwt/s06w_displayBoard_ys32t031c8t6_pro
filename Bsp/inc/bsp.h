@@ -80,7 +80,7 @@ typedef struct _main_ref{
  int8_t timer_dispTime_minutes;
  int8_t timer_dispTime_hours ;
 
- uint8_t works_dispTime_hours;
+ int8_t works_dispTime_hours;
  int8_t works_dispTime_minutes;
 
   bool rx_temp_flag ;

@@ -516,12 +516,19 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
 **********************************************************************/
 void Display_Timing(uint8_t hours,uint8_t minutes,uint8_t disp)
 { 
-    static uint8_t m,q;
-	m = hours /10 ;
-	gpro_t.hours_two_unit_bit =	hours%10; 
-	gpro_t.minutes_one_decade_bit= minutes/10 ;
-	q=  minutes%10;
-	TM1639_Write_4Bit_Time(m,gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,q,disp) ; //timer is default 12 hours "12:00"
+    //static uint8_t m,q;
+	static uint8_t h1,h2,m1,m2;
+	//m = hours /10 ;
+	//gpro_t.hours_two_unit_bit =	hours%10; 
+	//gpro_t.minutes_one_decade_bit= minutes/10 ;
+	//q=  minutes%10;
+     h1= hours /10;
+	 h2= hours %10;
+
+	 m1 = minutes /10;
+	 m2 = minutes %10;
+	
+	TM1639_Write_4Bit_Time(h1,h2,m1,m2,disp) ; //timer is default 12 hours "12:00"
 
 
 }
@@ -585,19 +592,21 @@ void SMG_Display_Err(uint8_t idata)
 *************************************************************************/
 void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 {
-  
+        static uint8_t two_decade, three_unit;
 	    uint8_t data_twobit;
 		uint8_t data_threebit;
 
-		twobit = twobit % 10 ;
-	    threebit = threebit /10 ;
+		//twobit = twobit % 10 ;
+	    ///threebit = threebit /10 ;
+	    two_decade = twobit % 10;
+		three_unit = threebit / 10;
 		// 1. 根据一秒一次的跳动状态（sel），决定是否叠加冒号段码 seg_h
 		if (sel == 0) {
-			data_twobit   = TM1639_Number_Table[twobit] | seg_h; 	  // 冒号亮起
-			data_threebit = TM1639_Number_Table[threebit] | seg_h; // 冒号亮起
+			data_twobit   = TM1639_Number_Table[two_decade] | seg_h; 	  // 冒号亮起
+			data_threebit = TM1639_Number_Table[three_unit] | seg_h; // 冒号亮起
 		} else {
-			data_twobit   = TM1639_Number_Table[twobit]; 			  // 冒号熄灭
-			data_threebit = TM1639_Number_Table[threebit];		  // 冒号熄灭
+			data_twobit   = TM1639_Number_Table[two_decade]; 			  // 冒号熄灭
+			data_threebit = TM1639_Number_Table[three_unit];		  // 冒号熄灭
 		}
 	
 		// 2. 调用 Full 函数，传入对应的数码管高低位地址宏（它们正好只相差一个数字且连续）

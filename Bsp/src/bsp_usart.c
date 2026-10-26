@@ -588,7 +588,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 
 				   gpro_t.g_dry_flag = true;
 				   
-			       if(works_interval_f ==0){
+			       if(works_interval_f == false ){
 
                        LED_DRY_ON();
 				   }
