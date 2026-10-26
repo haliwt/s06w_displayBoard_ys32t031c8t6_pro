@@ -35,7 +35,7 @@ static void task_display_error_numbers(void);
 
 // 任务配置表 (Table-Driven)
 static task_t g_ui_tasks[] = {
-    { task_ui_key,             4,    0 }, // 1*10m  
+    { task_ui_key,             10,    0 }, // 1*10m  
     {task_display_smg_timing,  6,    0}, //
     { task_blink_colon,        101,  0 }, // 101*10ms 冒号闪烁
     { task_dht11_display,      32,   0 }, // 300ms DHT11刷新
@@ -279,7 +279,14 @@ static void task_ui_key(void)
 
    }
 
+   
+
    if (gpro_t.set_timer_timing_doing_value == 1 &&	ptc_high_temperature_f == 0 &&  fan_warning_f == 0) {
+
+        if( gpro_t.gTimer_disp_mode_switch < 3){
+
+
+		}
 
 		Set_TimerTiming_Number_Value();
 
@@ -342,10 +349,10 @@ static void task_send_version(void)
 *@param
 *@notice
 **/
-uint8_t counter_colon;
+
 static void task_blink_colon(void)
 {
-    counter_colon++;
+    
 	Display_TimeColon_Blink_Fun();
 	
 }
@@ -470,82 +477,74 @@ void Set_TimerTiming_Number_Value(void)
 {
 
 	// switch(gpro_t.set_timer_first_smg_blink_flag)
-	if(gpro_t.set_timer_first_smg_blink_flag ==1){
-	gpro_t.set_timer_first_smg_blink_flag++;
-
-	//以前已经设置过定时模式,现在显示之前的定时时间
-	if(gpro_t.set_timer_timing_value_success  == TIME_MODE_TIMER && gpro_t.key_add_dec_pressed_flag ==0){
-		gpro_t.hours_two_decade_bit = gpro_t.timer_dispTime_hours/10,
-		gpro_t.hours_two_unit_bit  = gpro_t.timer_dispTime_hours %10;
+    //以前已经设置过定时模式,现在显示之前的定时时间
+    if(gpro_t.key_add_dec_pressed_flag == 0 && gpro_t.set_timer_timing_doing_value== 1){
+		if(gpro_t.set_timer_timing_value_success  == TIME_MODE_TIMER && gpro_t.key_add_dec_pressed_flag ==0 ){
+			gpro_t.hours_two_decade_bit = gpro_t.timer_dispTime_hours/10,
+			gpro_t.hours_two_unit_bit  = gpro_t.timer_dispTime_hours %10;
 
 
-		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
+			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
 
-	}
-	else{
+		}
+		else if( gpro_t.set_timer_timing_value_success  == TIME_MODE_NORMAL && gpro_t.key_add_dec_pressed_flag ==0){
 
-		gpro_t.hours_two_decade_bit = 0;//gpro_t.timer_dispTime_hours/10,
-		gpro_t.hours_two_unit_bit  = 0;//gpro_t.timer_dispTime_hours %10;
+			gpro_t.hours_two_decade_bit = 0;//gpro_t.timer_dispTime_hours/10,
+			gpro_t.hours_two_unit_bit  = 0;//gpro_t.timer_dispTime_hours %10;
 
-		gpro_t.timer_dispTime_hours =0;
-		gpro_t.timer_dispTime_minutes =0;
+			gpro_t.timer_dispTime_hours =0;
+			gpro_t.timer_dispTime_minutes =0;
 
-		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
-	}
+			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
+		}
+    }
 
 
-	}
-	else if(gpro_t.set_timer_first_smg_blink_flag==2 && gpro_t.gTimer_key_timing > 2){
+	if(gpro_t.set_timer_timing_doing_value== 1 && gpro_t.gTimer_key_timing > 2){
 
 
 		if( gpro_t.timer_dispTime_hours >0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
-		gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER;//disp_timer_times;
-		//key_t.disp_smg_mode_flag = disp_timer_times;
-		gpro_t.gTimer_timer_seconds_counter = 0;
+			gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER;//disp_timer_times;
+			//key_t.disp_smg_mode_flag = disp_timer_times;
+			gpro_t.gTimer_timer_seconds_counter = 0;
+
+	        Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+
+	        gpro_t.set_timer_timing_doing_value =0;
 
 
+		}
+	    else if(gpro_t.timer_dispTime_hours	== 0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
+			gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER; //disp_works_times;
+			gpro_t.ui_time_mode = TIME_MODE_TIMER;//key_t.disp_smg_mode_flag = disp_works_times;
+			gpro_t.gTimer_timer_seconds_counter = 0;
+
+            Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+
+		
+			gpro_t.set_timer_timing_doing_value =0;
 
 
-		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+			//SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
+			//SendData_Set_Command(0x2B, gpro_t.timer_dispTime_hours);
+			//tx_thread_sleep(2);
+		}
+	    else{
+		  gpro_t.set_timer_timing_doing_value =0;
 
 
-		gpro_t.set_timer_first_smg_blink_flag ++;
-		gpro_t.set_timer_timing_doing_value =0;
-
-
-		//SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
-		SendData_Set_Command(0x2B, gpro_t.timer_dispTime_hours);
-		tx_thread_sleep(2);
-
-
+	    }
 	}
-	else if(gpro_t.timer_dispTime_hours	== 0 && gpro_t.key_add_dec_pressed_flag ==1){ //set up timer numbers value 
-		gpro_t.set_timer_timing_value_success  = TIME_MODE_TIMER; //disp_works_times;
-		gpro_t.ui_time_mode = TIME_MODE_TIMER;//key_t.disp_smg_mode_flag = disp_works_times;
-		gpro_t.gTimer_timer_seconds_counter = 0;
+}
 
-
-
-		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
-
-		gpro_t.set_timer_first_smg_blink_flag ++;
-		gpro_t.set_timer_timing_doing_value =0;
-
-
-		//SendData_Tx_Data(0x2B, gpro_t.timer_dispTime_hours) ;
-		SendData_Set_Command(0x2B, gpro_t.timer_dispTime_hours);
-		tx_thread_sleep(2);
-
-
-	}
-	else{
+#if 0
 
 		gpro_t.timer_dispTime_hours = 0 ;
 		gpro_t.timer_dispTime_minutes = 0;
 
 		Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
-		gpro_t.set_timer_first_smg_blink_flag ++;
+		
 		gpro_t.set_timer_timing_doing_value =0;
 
 
@@ -553,10 +552,10 @@ void Set_TimerTiming_Number_Value(void)
 		key_t.disp_smg_mode_flag = TIME_MODE_TIMER; //disp_works_times;
 
 
-	}
+	   }
 
 	}
-}
+#endif 
 
 
 /************************************************************************

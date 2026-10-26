@@ -67,6 +67,7 @@ void direct_temperature_compraison_handler(void);
 void mode_key_short_fun(void);
 
 
+void mode_long_key_handler(void);
 
 
 #endif 

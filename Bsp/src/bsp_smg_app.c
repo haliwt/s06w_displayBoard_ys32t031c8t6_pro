@@ -19,8 +19,9 @@ void Display_SmgTiming_Value(void)
      switch(gpro_t.ui_time_mode){
 
 	   case TIME_MODE_TIMER:
-		
 
+	    if(gpro_t.set_timer_timing_value_success  == TIME_MODE_TIMER){
+          
 		if(gpro_t.timer_one_minute_flag == true){
 			gpro_t.timer_one_minute_flag = false;
 
@@ -53,9 +54,16 @@ void Display_SmgTiming_Value(void)
 			tx_thread_sleep(2);
 			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 			tx_thread_sleep(20);
-		}
+		     }
 
-		
+	    }
+		else{
+
+
+		  gpro_t.ui_time_mode = TIME_MODE_NORMAL;
+
+
+		}
 		
 			
         
@@ -193,10 +201,7 @@ void Display_TimeColon_Blink_Fun(void)
 	}
 
 
-
-
-
-	if(timer_f !=0)timer_f = 0;
+    if(timer_f !=0)timer_f = 0;
 
 	gpro_t.g_time_disp_colon_flag = !gpro_t.g_time_disp_colon_flag ;
 

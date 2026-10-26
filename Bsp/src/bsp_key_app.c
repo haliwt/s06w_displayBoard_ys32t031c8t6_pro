@@ -312,6 +312,20 @@ void mode_key_handler(void)
    #endif 
    
  }
+
+
+void mode_long_key_handler(void)
+{
+    gpro_t.set_timer_timing_doing_value= 1;
+	
+	gpro_t.key_model_short_flag  =0;
+	gpro_t.gTimer_disp_mode_switch=0;
+	gpro_t.gTimer_key_timing =0;
+	gpro_t.ui_time_mode=TIME_MODE_TIMER;
+
+
+}
+
 		  
 /****************************************************************
 	*
@@ -344,17 +358,6 @@ void direct_temperature_compraison_handler(void)
 	}
 
 }
-
-
- 
-/****************************************************************
-	*
-	*Function Name :void wifi_mode_key_handler(void)
-	*Function : 
-	*Input Parameters :NO
-	*Retrurn Parameter :NO
-	*
-*****************************************************************/
 /******************************************************************************
 	*
 	*Function Name:
@@ -369,7 +372,7 @@ void mode_key_short_fun(void)
      switch(gpro_t.ui_time_mode){
 
 
-	 case 1:
+	 case TIME_MODE_TIMER:
 
         if(gpro_t.set_timer_timing_value_success==true){
 
@@ -386,7 +389,7 @@ void mode_key_short_fun(void)
    
 	  break;
 
-	  case 0:
+	  case TIME_MODE_NORMAL:
 		   if(gpro_t.set_timer_timing_value_success== true){ 
 			    // gpro_t.ai_flag = no_ai_mode; //don't AI
 
@@ -394,7 +397,7 @@ void mode_key_short_fun(void)
 			    gpro_t.ui_time_mode = TIME_MODE_TIMER; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
 			   // gpro_t.key_disp_mode_flag =0xff;
 				SendData_Set_Command(0x07,0x02); //reverse switch don't displayb "AI"
-				tx_thread_sleep(1);
+				tx_thread_sleep(2);
 
 		   }
 		   else if(gpro_t.set_timer_timing_value_success== false){
@@ -403,7 +406,7 @@ void mode_key_short_fun(void)
 				   gpro_t.ui_time_mode = TIME_MODE_NORMAL; //key_t.disp_smg_mode_flag = TIME_MODE_TIMER;
 				  // gpro_t.key_disp_mode_flag =0xff;
 				   SendData_Set_Command(0x07,0x01); //ai model
-				   tx_thread_sleep(1);
+				   tx_thread_sleep(2);
 		  }
 
          break;
