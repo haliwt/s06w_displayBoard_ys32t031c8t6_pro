@@ -54,6 +54,9 @@ void power_on_led_open_handler(void)
        disp_dht11_value();
 	   tx_thread_sleep(20);
 
+	    gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	    gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
+
        Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
 	   tx_thread_sleep(20);
 	 

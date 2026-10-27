@@ -76,7 +76,7 @@ void adjust_timer_minutes(int8_t delta_min)
 	else if (gpro_t.timer_dispTime_hours < 0) {
         gpro_t.timer_dispTime_hours = 0 ;  // 循环处理负值
     }
-
+    
 	Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
     
@@ -295,9 +295,15 @@ void mode_key_handler(void)
    gpro_t.key_model_short_flag = 1;
    if(gpro_t.ui_time_mode == TIME_MODE_TIMER){
       gpro_t.ui_time_mode=TIME_MODE_NORMAL;
+	  gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	  gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
+	  Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
    }
    else if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
      gpro_t.ui_time_mode= TIME_MODE_TIMER;
+	 gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	 gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
+	 Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
    }
    #if DEBUG_FALG
@@ -369,13 +375,20 @@ void disp_mode_key_short_handler(void)
 
 	 case TIME_MODE_TIMER:
 
-        Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+	   gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	   gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
+       
+       Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+	   tx_thread_sleep(20);
 
 	break;
 
 	  case TIME_MODE_NORMAL:
+	  	 gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	     gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
 		  
 		Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+		tx_thread_sleep(20);
 	  break;
      }
 }

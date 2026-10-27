@@ -59,11 +59,14 @@ void Display_SmgTiming_Value(void)
 			tx_thread_sleep(20);
 		     }
 		    //Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
+		    gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+		    gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
 
 	    }
 		else{
 
-
+          gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+		  gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
 		  gpro_t.ui_time_mode = TIME_MODE_NORMAL;
 
 
@@ -87,6 +90,8 @@ void Display_SmgTiming_Value(void)
                 }
 			  
            }
+		  gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+		  gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
            
            Timer_Timing_Donot_Display();
      
@@ -219,19 +224,14 @@ void Display_TimeColon_Blink_Fun(void)
 
 #endif 
    // if(timer_f !=0)timer_f = 0;
-
+    if(gpro_t.gTime_colon_counter > 0){
+		gpro_t.gTime_colon_counter =0;
 
     gpro_t.g_time_disp_colon_flag = gpro_t.g_time_disp_colon_flag ^ 0x01;
 
 
-	if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
-
-	   SmgBlink_Colon_Function(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
-	}
-	else{
-        SmgBlink_Colon_Function(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,gpro_t.g_time_disp_colon_flag);
-
-	}
+	SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,gpro_t.g_time_disp_colon_flag);
+    }
 	
 }
 

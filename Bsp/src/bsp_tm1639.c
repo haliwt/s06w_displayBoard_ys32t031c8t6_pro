@@ -466,6 +466,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
 	 	  
 	 }
 
+     #if 0
      if(sl==0){
 	 	if(gpro_t.g_time_disp_colon_flag== true){
          TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[twobit|seg_h]); //TM1639_Write_OneByte(segNumber_Low_4bit[twobit]);//display "2 :"
@@ -479,10 +480,12 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
 	 	  
      	 TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[0x0A]);// TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
      }
-    
-  
+
+	 #endif 
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L,TM1639_Number_Table[twobit]);
 
 
+    #if 0
     if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
 	    TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[threebit]);//TM1639_Write_OneByte(segNumber_Low_4bit[threebit]);//display ""
 
@@ -490,7 +493,10 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     else{
         TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
      }
-
+    #endif 
+	TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[threebit]);
+	
+   
     if(sl==0){//TM1639_Write_OneByte(OFFLED);//display "NULL"
 	     TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[fourbit]);//TM1639_Write_OneByte(segNumber_Low_4bit[fourbit]);//display ""
 
@@ -498,6 +504,7 @@ void TM1639_Write_4Bit_Time(uint8_t onebit,uint8_t twobit,uint8_t threebit,uint8
     else{
 		TM1639_Write_Digit_Full(TM1639_ADDR_GRID8_H, TM1639_ADDR_GRID8_L,TM1639_Number_Table[0x0A]);//TM1639_Write_OneByte(segNumber_Low_4bit[0x10]);
     }
+
 
     TM1639_Start();
     TM1639_Write_Byte(OpenDispTM1639|0x8f);//0xC2H->GRID3->BIT_3
@@ -598,15 +605,15 @@ void SmgBlink_Colon_Function(uint8_t twobit,uint8_t threebit,uint8_t sel)
 
 		//twobit = twobit % 10 ;
 	    ///threebit = threebit /10 ;
-	    two_decade = twobit % 10;
-		three_unit = threebit / 10;
+	    //two_decade = twobit % 10;
+		//three_unit = threebit / 10;
 		// 1. 根据一秒一次的跳动状态（sel），决定是否叠加冒号段码 seg_h
 		if (sel == 0) {
-			data_twobit   = TM1639_Number_Table[two_decade] | seg_h; 	  // 冒号亮起
-			data_threebit = TM1639_Number_Table[three_unit] | seg_h; // 冒号亮起
+			data_twobit   = TM1639_Number_Table[twobit] | seg_h; 	  // 冒号亮起
+			data_threebit = TM1639_Number_Table[threebit] | seg_h; // 冒号亮起
 		} else {
-			data_twobit   = TM1639_Number_Table[two_decade]; 			  // 冒号熄灭
-			data_threebit = TM1639_Number_Table[three_unit];		  // 冒号熄灭
+			data_twobit   = TM1639_Number_Table[twobit] & 0xFF; 			  // 冒号熄灭
+			data_threebit = TM1639_Number_Table[threebit] & 0xFF;		  // 冒号熄灭
 		}
 	
 		// 2. 调用 Full 函数，传入对应的数码管高低位地址宏（它们正好只相差一个数字且连续）

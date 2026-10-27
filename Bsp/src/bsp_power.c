@@ -511,7 +511,8 @@ void Set_TimerTiming_Number_Value(void)
 		
 			
 			gpro_t.ui_time_mode = TIME_MODE_TIMER;
-			
+			 gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	         gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
 
 	        Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
@@ -523,6 +524,9 @@ void Set_TimerTiming_Number_Value(void)
 			//gpro_t.ui_time_mode = TIME_MODE_NORMAL;//key_t.disp_smg_mode_flag = disp_works_times;
 			gpro_t.gTimer_timer_seconds_counter = 0;
 			gpro_t.timer_dispTime_minutes=0;
+
+			 gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	         gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
 
             Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
@@ -544,6 +548,9 @@ void Set_TimerTiming_Number_Value(void)
 		gpro_t.timer_one_minute_flag = false;
 		if(gpro_t.set_timer_timing_value_success==false){
 			gpro_t.ui_time_mode = TIME_MODE_NORMAL;
+
+		      gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	          gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
 			
 			 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
 			
@@ -551,6 +558,8 @@ void Set_TimerTiming_Number_Value(void)
 		else if(gpro_t.set_timer_timing_value_success==true){
            
 		   gpro_t.ui_time_mode = TIME_MODE_TIMER;
+		    gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	        gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
 		   Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
 		}
