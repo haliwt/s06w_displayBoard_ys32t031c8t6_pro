@@ -16,7 +16,11 @@ static void Timer_Timing_Donot_Display(void);
 ******************************************************************************/
 void Display_SmgTiming_Value(void)
 {
-     switch(gpro_t.ui_time_mode){
+
+   if(gpro_t.set_timer_timing_doing_value== 1) return ; //2026-10.27 add item
+
+
+	 switch(gpro_t.ui_time_mode){
 
 	   case TIME_MODE_TIMER:
 

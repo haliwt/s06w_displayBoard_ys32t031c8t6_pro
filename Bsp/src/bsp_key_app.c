@@ -369,32 +369,15 @@ void disp_mode_key_short_handler(void)
 
 	 case TIME_MODE_TIMER:
 
-        if(gpro_t.set_timer_timing_value_success==true){
+        Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
 
-			//Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
-			Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
-
-		}
-		else{
-			gpro_t.timer_dispTime_hours=0;
-			gpro_t.timer_dispTime_minutes=0;
-
-		    Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);
-       }
-
-		
-   
-	  break;
+	break;
 
 	  case TIME_MODE_NORMAL:
 		  
-			    // gpro_t.ai_flag = no_ai_mode; //don't AI
-
-				 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
-			    
-
-         break;
-     	}
+		Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
+	  break;
+     }
 }
 
 
