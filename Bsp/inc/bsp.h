@@ -149,7 +149,6 @@ typedef struct _main_ref{
   volatile uint8_t gTimer_wifi_connect_counter;
   volatile uint8_t gTimer_timer_seconds_counter;
   volatile uint8_t gTimer_timing_seconds_counter;
-  volatile uint8_t  gTimer_time_colon ;
   volatile uint8_t gTime_waiting_ack ;
   volatile uint8_t gTime_colon_counter ;
 

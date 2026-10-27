@@ -201,36 +201,22 @@ void Display_TimeColon_Blink_Fun(void)
 {
 	static uint8_t timer_f = 0;
 	
-	if(gpro_t.set_timer_timing_doing_value==1) return ;
+   if(gpro_t.set_timer_timing_doing_value==1) return ;
 
 
-#if 0
-	if(gpro_t.set_timer_timing_doing_value==1){
-
-		if(timer_f ==0){
-			timer_f ++;
-
-		    if(gpro_t.ui_time_mode == TIME_MODE_NORMAL){
-             SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,1);
-		    }
-			else{
-
-
-			}
-		}
-		return ;
-
-	}
-
-#endif 
    // if(timer_f !=0)timer_f = 0;
-    if(gpro_t.gTime_colon_counter > 0){
+    if(gpro_t.g_time_disp_colon_flag== true && gpro_t.gTime_colon_counter > 0){
+		gpro_t.gTime_colon_counter=0;
+        gpro_t.g_time_disp_colon_flag = false;
+
+    }
+    else if(gpro_t.gTime_colon_counter > 0 && gpro_t.g_time_disp_colon_flag== false){
 		gpro_t.gTime_colon_counter =0;
 
-    gpro_t.g_time_disp_colon_flag = gpro_t.g_time_disp_colon_flag ^ 0x01;
-
-
-	SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,gpro_t.g_time_disp_colon_flag);
+    //gpro_t.g_time_disp_colon_flag = gpro_t.g_time_disp_colon_flag ^ 0x01;
+    timer_f = timer_f ^ 0x01;
+	 
+	SmgBlink_Colon_Function(gpro_t.hours_two_unit_bit,gpro_t.minutes_one_decade_bit,timer_f);
     }
 	
 }
