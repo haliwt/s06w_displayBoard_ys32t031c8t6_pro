@@ -390,6 +390,7 @@ void disp_mode_key_short_handler(void)
 
 	  case TIME_MODE_NORMAL:
 	  	 gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+		 
 	     gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
 		 
 		 Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);

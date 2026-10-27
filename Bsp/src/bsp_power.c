@@ -280,6 +280,8 @@ static void task_ui_key(void)
 	  gpro_t.key_model_short_flag  =0;
 	  
      if(gpro_t.set_timer_timing_value_success==false){
+	 	  gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	      gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
           gpro_t.ui_time_mode = TIME_MODE_NORMAL;
      }
 
@@ -478,8 +480,10 @@ void Set_TimerTiming_Number_Value(void)
     //以前已经设置过定时模式,现在显示之前的定时时间
     if(gpro_t.key_add_dec_pressed_flag == 0 && gpro_t.set_timer_timing_doing_value== 1 && gpro_t.gTimer_key_timing  < 4){
 		if(gpro_t.set_timer_timing_value_success  == TIME_MODE_TIMER && gpro_t.key_add_dec_pressed_flag ==0 ){
-			
-              Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
+			 gpro_t.hours_two_unit_bit = gpro_t.timer_dispTime_hours %10 ;
+	         gpro_t.minutes_one_decade_bit = gpro_t.timer_dispTime_minutes /10;
+
+			  Display_Timing(gpro_t.timer_dispTime_hours,gpro_t.timer_dispTime_minutes,0);//don't display numbers
 
 		}
 		else if( gpro_t.set_timer_timing_value_success  == TIME_MODE_NORMAL && gpro_t.key_add_dec_pressed_flag ==0){
@@ -496,6 +500,8 @@ void Set_TimerTiming_Number_Value(void)
 
         gpro_t.set_timer_timing_doing_value=0;
 		if(gpro_t.set_timer_timing_value_success==false){
+			gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
+	        gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
 			gpro_t.ui_time_mode = TIME_MODE_NORMAL;
 		}
         return ;
