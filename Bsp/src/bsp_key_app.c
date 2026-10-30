@@ -168,6 +168,8 @@ void dry_key_handler(void)
         if(gpro_t.g_dry_flag == 0) {
             SendData_Set_Command(0x02, 0x01);//sendCommandAndAck(dry_cmd, 0x01, check_ack_ptc_on);
 			tx_thread_sleep(2);
+		   
+	
             gpro_t.g_dry_flag = 1;
             gpro_t.g_manual_shutoff_dry_flag = 0;
             LED_DRY_ON();
@@ -175,6 +177,7 @@ void dry_key_handler(void)
 		else if(gpro_t.g_dry_flag == 1){
             SendData_Set_Command(0x02, 0x00);//sendCommandAndAck(dry_cmd, 0x00, check_ack_ptc_off);
 			tx_thread_sleep(2);
+	
             gpro_t.g_dry_flag = 0;
             gpro_t.g_manual_shutoff_dry_flag = 1; // 手动关闭后不再自动开启
             LED_DRY_OFF();

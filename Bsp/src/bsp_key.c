@@ -17,6 +17,7 @@ void Process_Short_Key(uint16_t key) ;
 void Process_Short_Key(uint16_t key);
 void Process_Long_Key(uint16_t key);
 
+void power_off_clear_refer(void);
 
 //void Handle_Value_Adjustment(uint8_t is_up);
 
@@ -270,6 +271,9 @@ void System_Status_PowerOff(void)
     // 2. 重置所有功能模式标志
 
     gpro_t.seting_timer_flag = 0;
+	gpro_t.set_timer_timing_value_success = false;
+	gpro_t.timer_dispTime_hours =0;
+	gpro_t.timer_dispTime_minutes =0;
  
 
 	works_interval_f =0;
@@ -301,6 +305,50 @@ void System_Status_PowerOff(void)
     TM1639_Display_ON_OFF(0);
 }
 
+
+void power_off_clear_refer(void)
+{
+	gpro_t.g_power_flag = 0;
+	 wifi_app_timer_power_on_f =0; //smart app power on by timer timing clear .
+	
+	 gpro_t.first_temp_compare_f=0;
+	 gpro_t.g_mouse_flag = 0;
+	
+	 gpro_t.g_plasma_flag = 0;
+	 fan_open_f = 0;
+	 gpro_t.connecting_wifi_flag =0;
+	
+	
+	  gpro_t.g_dry_flag = 0;		// 默认--from smart phone define.
+	  gpro_t.g_mouse_flag = 0;	   // 默
+	  gpro_t.g_plasma_flag = 0; 		 // 默
+	
+	 // 2. 重置所有功能模式标志
+	
+	 gpro_t.seting_timer_flag = 0;
+	 gpro_t.set_timer_timing_value_success = false;
+	 gpro_t.timer_dispTime_hours =0;
+	 gpro_t.timer_dispTime_minutes =0;
+	
+	
+	 works_interval_f =0;
+	
+	
+	 
+	 //wifi
+	
+	
+	 ptc_high_temperature_f =0;
+	 
+	 
+	 // 3. 重置所有时间/计数器
+	
+	 // 4. 特殊逻辑处理
+	 fan_warning_f = 0;
+
+
+
+}
 /**
 * @brief  : 
 * @note    

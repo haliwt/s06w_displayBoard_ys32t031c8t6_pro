@@ -31,18 +31,21 @@ static void task_send_version(void);
 static void task_blink_colon(void);
 static void task_compare_temp(void);
 static void task_display_error_numbers(void);
+static void task_copy_wating_ack(void);
 
 
 // 任务配置表 (Table-Driven)
 static task_t g_ui_tasks[] = {
     { task_ui_key,             10,    0 }, // 1*10m  
-    {task_display_smg_timing,  6,    0}, //
+    { task_display_smg_timing,  6,    0}, //
     { task_blink_colon,        101,  0 }, // 101*10ms 冒号闪烁
     { task_dht11_display,      32,   0 }, // 300ms DHT11刷新
     { task_compare_temp,       340,  0 }, // 3s 控温比较
     { task_two_hours_timing,   129,  0 }, // 1.2s 运行计时
     { task_send_version,       3080,  0 }, // 3s  发送版本号
-    {task_display_error_numbers,260,   0}
+    {task_display_error_numbers,260,   0},
+    {task_copy_wating_ack,20,0}
+    
 };
 
 #define TASK_NUM (sizeof(g_ui_tasks) / sizeof(task_t))
@@ -65,7 +68,7 @@ bool  works_interval_f;
 
 uint8_t fan_open_f;
 uint8_t fan_speed_level;
-uint8_t fan_warning_f;
+bool fan_warning_f;
 //ptc
 
 
@@ -82,7 +85,7 @@ uint8_t key_be_pressed_f;
 uint8_t disp_set_hours_time_f;
 
 
-uint8_t ptc_high_temperature_f ;
+bool ptc_high_temperature_f ;
 
 
 static void power_on_handler(void);
@@ -90,7 +93,8 @@ static void power_off_handler(void);
 
 static void power_on_initial(void);
 static void set_temperature_compare_value_fun(void);
-void works_two_hours_handler(void);
+static void works_two_hours_handler(void);
+static void copy_order_waiting_ack(void);
 
 
 
@@ -231,9 +235,9 @@ void power_on_handler(void)
 			 
 			}
 
-			
-		 
 		}
+
+		copy_order_waiting_ack();
 
 		// 2. 独立的 UI 周期任务轮询调度器（无论 10ms 标志位如何，时间到了就执行）
 		for (i = 0; i < TASK_NUM; i++) {
@@ -282,6 +286,8 @@ static void task_ui_key(void)
      if(gpro_t.set_timer_timing_value_success==false){
 	 	  gpro_t.hours_two_unit_bit = gpro_t.works_dispTime_hours %10 ;
 	      gpro_t.minutes_one_decade_bit = gpro_t.works_dispTime_minutes /10;
+
+		   Display_Timing(gpro_t.works_dispTime_hours,gpro_t.works_dispTime_minutes,0);
           gpro_t.ui_time_mode = TIME_MODE_NORMAL;
      }
 
@@ -330,6 +336,8 @@ static void task_dht11_display(void)
 **/
 static void task_two_hours_timing(void)
 {
+	if(fan_warning_f == 1 || ptc_high_temperature_f == true) return ;
+
 	  works_two_hours_handler();
 
 }
@@ -352,7 +360,7 @@ static void task_send_version(void)
 
 static void task_blink_colon(void)
 {
-    
+   if(fan_warning_f == 1 || ptc_high_temperature_f == true) return ;
 	Display_TimeColon_Blink_Fun();
 	
 }
@@ -377,6 +385,17 @@ static void task_display_error_numbers(void)
   display_error_numbers_handler();
 
 }
+/**
+*@brief 
+*@param
+*@notice
+**/
+static void task_copy_wating_ack(void)
+{
+   copy_order_waiting_ack();
+
+}
+
 
 /************************************************************************************************
 *
@@ -612,6 +631,7 @@ void Set_TimerTiming_Number_Value(void)
 		 case 0:
 			gpro_t.on_step =0;
 	       
+		     power_off_clear_refer();
 	         all_led_off();
 	         TM1639_Display_ON_OFF(0);
 			
@@ -673,7 +693,7 @@ void works_two_hours_handler(void)
 		    gpro_t.works_two_minutes_value =0;
 		    gpro_t.gTimer_timer_seconds_counter =0;
             works_interval_f=1;
-	        gpro_t.send_cmd_0x19_wating_ack= 1;
+	        gpro_t.send_cmd_0x19_waiting_ack= 1;
 			gpro_t.gTime_waiting_ack=0;
 			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);
@@ -710,7 +730,7 @@ void works_two_hours_handler(void)
 			   gpro_t.works_two_minutes_value=0;
 		       gpro_t.gTimer_timer_seconds_counter =0;
 				works_interval_f =0;
-				gpro_t.send_cmd_0x19_wating_ack= 2;
+				gpro_t.send_cmd_0x19_waiting_ack= 2;
 				gpro_t.gTime_waiting_ack=0;
 				SendData_Set_Command(0x19,0x0);
 	            tx_thread_sleep(2);
@@ -863,15 +883,15 @@ void power_on_off_handler(void)
   * @param: 
   *
 **/
-void com_timeout_check_ack(void)
+static void copy_order_waiting_ack(void)
 {
-  	if(gpro_t.send_cmd_0x19_wating_ack== 1 && gpro_t.gTime_waiting_ack > 1){
+  	if(gpro_t.send_cmd_0x19_waiting_ack== 1 && gpro_t.gTime_waiting_ack > 1){
 		    gpro_t.gTime_waiting_ack=0;
 			SendData_Set_Command(0x19,0x01) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);
 	
 	}
-	else if(gpro_t.send_cmd_0x19_wating_ack== 2 && gpro_t.gTime_waiting_ack > 1){
+	else if(gpro_t.send_cmd_0x19_waiting_ack== 2 && gpro_t.gTime_waiting_ack > 1){
 		   gpro_t.gTime_waiting_ack =0;
 			SendData_Set_Command(0x19,0) ;//works two hours ,then have a rest 10 minutes.
 	        tx_thread_sleep(2);

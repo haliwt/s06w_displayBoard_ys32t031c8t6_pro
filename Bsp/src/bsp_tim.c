@@ -32,6 +32,7 @@ void tim6_isr_hander(void)
 					gpro_t.gTimer_key_timing++;
 					gpro_t.gTime_colon_counter ++;
 					
+					
 
 					if(++gpro_t.gTimer_timer_seconds_counter >59){
 						 gpro_t.gTimer_timer_seconds_counter=0;

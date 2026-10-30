@@ -21,7 +21,7 @@ extern "C" {
 #include <stdint.h> 
 
 
-extern uint8_t ptc_high_temperature_f;
+extern bool ptc_high_temperature_f;
 
 extern uint16_t current_temperature;
 
@@ -68,7 +68,7 @@ extern uint8_t humidity;
 
 
 
-extern uint8_t fan_warning_f;
+extern bool fan_warning_f;
 
 #define _NO_FAN_LOAD_CURRENT       50      //0.06A*0.67*4096/3.3   
 

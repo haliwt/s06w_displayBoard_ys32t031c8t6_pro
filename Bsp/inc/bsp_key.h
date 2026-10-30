@@ -56,6 +56,9 @@ void key_mode_long_handler(void);
 
 void key_down_long_handler(void);
 
+void power_off_clear_refer(void);
+
+
 
 #endif 
 

@@ -207,22 +207,22 @@ static void parse_cmd_or_data(uint8_t *pdata)
          
         if(pdata[3] == 0x01){ //open
                 
-		        
+		        gpro_t.g_power_flag  = true;
+				gpro_t.on_step=0;
 				SendWifiData_Answer_Cmd(0x01,0x01);
 	            tx_thread_sleep(2);
 				
-				gpro_t.g_power_flag  = true;
-				gpro_t.on_step=0;
+				
 				
 		}
 	    else if(pdata[3] == 0x0){ //close 
 
-		  
+		      gpro_t.off_step=0;
+              gpro_t.g_power_flag  = false ;//gpro_t.gpower_on = false;
 		
              SendWifiData_Answer_Cmd(0x01,0); //compatible older version 
 	          tx_thread_sleep(2);
-		      gpro_t.off_step=0;
-              gpro_t.g_power_flag  = false ;//gpro_t.gpower_on = false;
+		    
         }
       
        
@@ -309,23 +309,23 @@ static void parse_cmd_or_data(uint8_t *pdata)
         if(pdata[3] == 0x01 ){//phone_cmd_power
                ptc_prohibit_off_f =0; 
 			 
-			 if(works_interval_f==0){//two hours have a rest ten minutes .
-	            if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
+			  if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
                     gpro_t.g_dry_flag = true;
 					LED_DRY_ON();
-               }
+               
 			 }
            SendWifiData_Answer_Cmd(0x02,0x01); //
-           tx_thread_sleep(1); 
+           tx_thread_sleep(2); 
 	   }
        else if(pdata[3]== 0x0 ){
 	   
 		    ptc_prohibit_off_f = 1;
+			gpro_t.g_dry_flag = false;
+			LED_DRY_OFF();
             SendWifiData_Answer_Cmd(0x02,0x0); //
-             tx_thread_sleep(1); 
+             tx_thread_sleep(2); 
 
-		     gpro_t.g_dry_flag = false;
-			 LED_DRY_OFF();
+		  
        }
       break;
 
@@ -334,23 +334,22 @@ static void parse_cmd_or_data(uint8_t *pdata)
    
 		  if(pdata[3]== 0x01){
 			 
-		     if(works_interval_f==0){//two hours have a rest ten minutes .
-	            if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
+		      if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){ //PTC warning flag
                     gpro_t.g_plasma_flag = true;
 					LED_PLASMA_ON();
                }
-			 }
+			 
 			SendWifiData_Answer_Cmd(0x03,0x01); //
-			tx_thread_sleep(1); 
+			tx_thread_sleep(2); 
 			 
 		  }
 		  else if(pdata[3]  == 0x0){
-			
-		    SendWifiData_Answer_Cmd(0x03,0x0); //
-			tx_thread_sleep(1); 
-			  
-		    gpro_t.g_plasma_flag = false;
+			 gpro_t.g_plasma_flag = false;
 			LED_PLASMA_OFF();
+		    SendWifiData_Answer_Cmd(0x03,0x0); //
+			tx_thread_sleep(2); 
+			  
+		  
 		  }
    
    
@@ -363,7 +362,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 		
 			
    
-			if(works_interval_f==0 && fan_warning_f  ==0 && ptc_high_temperature_f ==0){
+			if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){
 				
                gpro_t.g_mouse_flag = true;
 			   LED_MOUSE_ON();
@@ -375,7 +374,7 @@ static void parse_cmd_or_data(uint8_t *pdata)
 		  }
 		  else if(pdata[3] == 0x0){ //close 
           
-		   if(works_interval_f==0 && fan_warning_f  ==0 && ptc_high_temperature_f ==0){
+		   if(fan_warning_f  ==0 && ptc_high_temperature_f ==0){
 				
                gpro_t.g_mouse_flag = false;
 			   LED_MOUSE_OFF();
@@ -397,9 +396,6 @@ static void parse_cmd_or_data(uint8_t *pdata)
       
      
           gpro_t.connecting_wifi_flag =1;
-
-         
-		
           SendWifiData_Answer_Cmd(0x05,0x01); //WT.EDIT 2024.12.28
           tx_thread_sleep(1);
          
@@ -442,11 +438,8 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			 else if(pdata[3] == 0x0){ //close
 	 
 				 ptc_high_temperature_f  = 0;
-				// gpro_t.g_dry_flag = true;
-				// LED_DRY_ON();   
-	 
-	 
-		    }
+			
+	        }
 	 
 		   break;
 	 
@@ -455,10 +448,14 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			  if(pdata[3] == 0x01){  //warning
 	 
 				fan_warning_f = 1;
+				SendWifiData_Answer_Cmd(0x09,0x01);
+				tx_thread_sleep(2);
 	         }
 			 else if(pdata[3] == 0x0){ //close
 	 
 				fan_warning_f = 0;
+				SendWifiData_Answer_Cmd(0x09,0);
+				tx_thread_sleep(2);
 	 
 			 }
 	 
@@ -725,13 +722,12 @@ static void parse_recieve_copy_data(uint8_t *pddata)
    
     if(pddata[4]==1){
 
-         if(gpro_t.g_dry_flag== true) return ;
-		 gpro_t.g_dry_flag= true ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
+         gpro_t.g_dry_flag= true ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
          ptc_prohibit_off_f = false;
 		 LED_DRY_ON();
     }
     else if(pddata[4]==0){
-      if(gpro_t.g_dry_flag== false) return ;
+
 	  gpro_t.g_dry_flag= false ;//&& run_t.gPlasma ==1  && run_t.gUltransonic==1
       ptc_prohibit_off_f = true;
 		
@@ -740,6 +736,15 @@ static void parse_recieve_copy_data(uint8_t *pddata)
     }
 
     break;
+
+	case 0x03:
+
+	break;
+
+	case 0x04:
+
+
+	break;
 
 	 case 0x05: //WIFI 
 
@@ -755,8 +760,8 @@ static void parse_recieve_copy_data(uint8_t *pddata)
 
 	case 0x19:
 
-	      if(pddata[4] ==1) gpro_t.send_cmd_0x19_wating_ack=0xfe;
-		  else if(pddata[4] ==0)gpro_t.send_cmd_0x19_wating_ack=0xfd;
+	      if(pddata[4] ==1) gpro_t.send_cmd_0x19_waiting_ack=0xfe;
+		  else if(pddata[4] ==0)gpro_t.send_cmd_0x19_waiting_ack=0xfd;
 
 
 	break;
@@ -773,8 +778,6 @@ static void parse_recieve_copy_data(uint8_t *pddata)
   * @param
   * @retrval 
 **/
-
-
 void decoder_handler(void)
 {
    
