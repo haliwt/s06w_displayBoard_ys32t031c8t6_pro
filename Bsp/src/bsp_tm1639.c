@@ -569,7 +569,7 @@ void SMG_Display_Err(uint8_t idata)
      TM1639_Write_Digit_Full(TM1639_ADDR_GRID6_H, TM1639_ADDR_GRID6_L, TM1639_Char_Err_Table[1]|seg_h); //TM1639_Write_OneByte(segNumber_Low_4bit[twobit]);//display "2 :"
 	 	
      //digital 3 
-      TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[0]);//TM1639_Write_OneByte(segNumber_Low_4bit[threebit]);//display ""
+      TM1639_Write_Digit_Full(TM1639_ADDR_GRID7_H, TM1639_ADDR_GRID7_L,TM1639_Number_Table[0]|seg_h);//TM1639_Write_OneByte(segNumber_Low_4bit[threebit]);//display ""
 
      //digital 4
 

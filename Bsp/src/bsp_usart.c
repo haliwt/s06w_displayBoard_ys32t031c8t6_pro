@@ -448,6 +448,8 @@ static void parse_cmd_or_data(uint8_t *pdata)
 			  if(pdata[3] == 0x01){  //warning
 	 
 				fan_warning_f = 1;
+				gpro_t.g_dry_flag = false;
+				LED_DRY_OFF();
 				SendWifiData_Answer_Cmd(0x09,0x01);
 				tx_thread_sleep(2);
 	         }
