@@ -684,7 +684,7 @@ void works_two_hours_handler(void)
 
 	   case 0:
 	 
-		#if  1 //DEBUG_ENABLE 
+		#if  0 //DEBUG_ENABLE 
 			if( gpro_t.works_two_minutes_value>4 && works_interval_f==0){
 		#else 
 			if(gpro_t.works_two_minutes_value > 119 && works_interval_f==0){
@@ -721,7 +721,7 @@ void works_two_hours_handler(void)
 
 	   case 1:
 
-		#if 1
+		#if 0
 		   if(works_interval_f==1 &&  gpro_t.works_two_minutes_value>2){
 		#else 
 		   if(works_interval_f==1 && gpro_t.works_two_minutes_value >10){
